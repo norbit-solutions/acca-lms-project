@@ -43,7 +43,7 @@ export default class EnrollmentsController {
 
     // Find user by ID, email, or phone
     let user: User | null = null
-    
+
     if (userId) {
       user = await User.find(userId)
     } else if (email) {

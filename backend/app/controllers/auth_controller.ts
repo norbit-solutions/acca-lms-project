@@ -15,10 +15,7 @@ export default class AuthController {
     ])
 
     // Check if user already exists
-    const existingUser = await User.query()
-      .where('email', email)
-      .orWhere('phone', phone)
-      .first()
+    const existingUser = await User.query().where('email', email).orWhere('phone', phone).first()
 
     if (existingUser) {
       return response.conflict({ message: 'User with this email or phone already exists' })

@@ -9,7 +9,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "ACCA LMS - Learn ACCA Online",
-  description: "Your trusted platform for ACCA exam preparation with quality video lessons",
+  description:
+    "Your trusted platform for ACCA exam preparation with quality video lessons",
 };
 
 export default function RootLayout({
@@ -20,9 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

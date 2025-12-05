@@ -23,9 +23,7 @@ export default class LessonsController {
     // Get max sort order if not provided
     let order = sortOrder
     if (order === undefined) {
-      const maxOrder = await Lesson.query()
-        .where('chapter_id', chapter.id)
-        .max('sort_order as max')
+      const maxOrder = await Lesson.query().where('chapter_id', chapter.id).max('sort_order as max')
       order = (maxOrder[0]?.$extras?.max || 0) + 1
     }
 
@@ -129,7 +127,7 @@ export default class LessonsController {
     if (type === 'video.asset.ready') {
       // Find lesson by upload ID stored in muxAssetId
       const lesson = await Lesson.findBy('mux_asset_id', data.upload_id)
-      
+
       if (lesson) {
         lesson.muxAssetId = data.id
         lesson.muxPlaybackId = data.playback_ids?.[0]?.id || null
@@ -141,7 +139,7 @@ export default class LessonsController {
 
     if (type === 'video.asset.errored') {
       const lesson = await Lesson.findBy('mux_asset_id', data.upload_id)
-      
+
       if (lesson) {
         lesson.muxStatus = 'error'
         await lesson.save()

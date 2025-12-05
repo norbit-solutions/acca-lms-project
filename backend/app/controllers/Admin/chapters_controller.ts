@@ -14,9 +14,7 @@ export default class ChaptersController {
     // Get max sort order if not provided
     let order = sortOrder
     if (order === undefined) {
-      const maxOrder = await Chapter.query()
-        .where('course_id', course.id)
-        .max('sort_order as max')
+      const maxOrder = await Chapter.query().where('course_id', course.id).max('sort_order as max')
       order = (maxOrder[0]?.$extras?.max || 0) + 1
     }
 

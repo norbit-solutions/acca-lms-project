@@ -1,14 +1,18 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { useAuthStore } from '@/lib/store'
+import { useEffect } from "react";
+import { useAuthStore } from "@/lib/store";
 
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
-  const checkAuth = useAuthStore((state) => state.checkAuth)
+export default function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const checkAuth = useAuthStore((state) => state.checkAuth);
 
   useEffect(() => {
-    checkAuth()
-  }, [checkAuth])
+    checkAuth();
+  }, [checkAuth]);
 
-  return <>{children}</>
+  return <>{children}</>;
 }

@@ -8,9 +8,7 @@ export default class UsersController {
   async index({ request, response }: HttpContext) {
     const { search, role } = request.qs()
 
-    const query = User.query()
-      .withCount('enrollments')
-      .orderBy('created_at', 'desc')
+    const query = User.query().withCount('enrollments').orderBy('created_at', 'desc')
 
     if (role) {
       query.where('role', role)
@@ -61,7 +59,8 @@ export default class UsersController {
     const users = await User.query()
       .where('role', 'student')
       .where((query) => {
-        query.whereILike('full_name', `%${q}%`)
+        query
+          .whereILike('full_name', `%${q}%`)
           .orWhereILike('email', `%${q}%`)
           .orWhereILike('phone', `%${q}%`)
       })

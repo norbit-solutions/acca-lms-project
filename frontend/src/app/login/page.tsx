@@ -1,39 +1,46 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { useAuthStore } from '@/lib/store'
-import Navbar from '@/components/Navbar'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuthStore } from "@/lib/store";
+import Navbar from "@/components/Navbar";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  
-  const login = useAuthStore((state) => state.login)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { login, user } = useAuthStore();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
-      await login(email, password)
-      router.push('/dashboard')
+      await login(email, password);
+      // Get fresh user state after login
+      const currentUser = useAuthStore.getState().user;
+      // Redirect based on role
+      if (currentUser?.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid email or password')
+      setError(err.response?.data?.message || "Invalid email or password");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="flex items-center justify-center py-12 px-4">
         <div className="max-w-md w-full">
           <div className="bg-white rounded-xl shadow-md p-8">
@@ -82,13 +89,16 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? "Signing in..." : "Sign In"}
               </button>
             </form>
 
             <p className="text-center mt-6 text-gray-600">
-              Don't have an account?{' '}
-              <Link href="/register" className="text-blue-600 font-medium hover:text-blue-700">
+              Don't have an account?{" "}
+              <Link
+                href="/register"
+                className="text-blue-600 font-medium hover:text-blue-700"
+              >
                 Register
               </Link>
             </p>
@@ -96,5 +106,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

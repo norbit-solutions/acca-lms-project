@@ -1,201 +1,207 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { adminApi } from '@/lib/api'
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { adminApi } from "@/lib/api";
 
 interface Lesson {
-  id: number
-  title: string
-  sortOrder: number
-  isFree: boolean
-  maxViews: number
-  muxAssetId: string | null
-  muxPlaybackId: string | null
-  duration: number | null
+  id: number;
+  title: string;
+  sortOrder: number;
+  isFree: boolean;
+  maxViews: number;
+  muxAssetId: string | null;
+  muxPlaybackId: string | null;
+  duration: number | null;
 }
 
 interface Chapter {
-  id: number
-  title: string
-  sortOrder: number
-  lessons: Lesson[]
+  id: number;
+  title: string;
+  sortOrder: number;
+  lessons: Lesson[];
 }
 
 interface Course {
-  id: number
-  title: string
-  slug: string
-  description: string
-  thumbnail: string | null
-  isPublished: boolean
-  chapters: Chapter[]
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  thumbnail: string | null;
+  isPublished: boolean;
+  chapters: Chapter[];
 }
 
 export default function CourseDetailPage() {
-  const params = useParams()
-  const router = useRouter()
-  const courseId = Number(params.id)
-  
-  const [course, setCourse] = useState<Course | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [expandedChapters, setExpandedChapters] = useState<Set<number>>(new Set())
-  
+  const params = useParams();
+  const router = useRouter();
+  const courseId = Number(params.id);
+
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [expandedChapters, setExpandedChapters] = useState<Set<number>>(
+    new Set()
+  );
+
   // Modal states
-  const [showChapterModal, setShowChapterModal] = useState(false)
-  const [showLessonModal, setShowLessonModal] = useState(false)
-  const [editingChapter, setEditingChapter] = useState<Chapter | null>(null)
-  const [editingLesson, setEditingLesson] = useState<Lesson | null>(null)
-  const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null)
-  
-  const [chapterForm, setChapterForm] = useState({ title: '' })
+  const [showChapterModal, setShowChapterModal] = useState(false);
+  const [showLessonModal, setShowLessonModal] = useState(false);
+  const [editingChapter, setEditingChapter] = useState<Chapter | null>(null);
+  const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
+  const [selectedChapterId, setSelectedChapterId] = useState<number | null>(
+    null
+  );
+
+  const [chapterForm, setChapterForm] = useState({ title: "" });
   const [lessonForm, setLessonForm] = useState({
-    title: '',
+    title: "",
     isFree: false,
     maxViews: 2,
-  })
+  });
 
   useEffect(() => {
-    loadCourse()
-  }, [courseId])
+    loadCourse();
+  }, [courseId]);
 
   const loadCourse = async () => {
     try {
-      const { data } = await adminApi.getCourse(courseId)
-      setCourse(data)
+      const { data } = await adminApi.getCourse(courseId);
+      setCourse(data);
       // Expand all chapters by default
-      setExpandedChapters(new Set(data.chapters.map((c: Chapter) => c.id)))
+      setExpandedChapters(new Set(data.chapters.map((c: Chapter) => c.id)));
     } catch (error) {
-      console.error('Failed to load course:', error)
-      router.push('/admin/courses')
+      console.error("Failed to load course:", error);
+      router.push("/admin/courses");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const toggleChapter = (id: number) => {
-    const newExpanded = new Set(expandedChapters)
+    const newExpanded = new Set(expandedChapters);
     if (newExpanded.has(id)) {
-      newExpanded.delete(id)
+      newExpanded.delete(id);
     } else {
-      newExpanded.add(id)
+      newExpanded.add(id);
     }
-    setExpandedChapters(newExpanded)
-  }
+    setExpandedChapters(newExpanded);
+  };
 
   // Chapter handlers
   const openNewChapterModal = () => {
-    setEditingChapter(null)
-    setChapterForm({ title: '' })
-    setShowChapterModal(true)
-  }
+    setEditingChapter(null);
+    setChapterForm({ title: "" });
+    setShowChapterModal(true);
+  };
 
   const openEditChapterModal = (chapter: Chapter) => {
-    setEditingChapter(chapter)
-    setChapterForm({ title: chapter.title })
-    setShowChapterModal(true)
-  }
+    setEditingChapter(chapter);
+    setChapterForm({ title: chapter.title });
+    setShowChapterModal(true);
+  };
 
   const handleChapterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       if (editingChapter) {
-        await adminApi.updateChapter(editingChapter.id, chapterForm)
+        await adminApi.updateChapter(editingChapter.id, chapterForm);
       } else {
-        await adminApi.createChapter(courseId, chapterForm)
+        await adminApi.createChapter(courseId, chapterForm);
       }
-      setShowChapterModal(false)
-      loadCourse()
+      setShowChapterModal(false);
+      loadCourse();
     } catch (error) {
-      console.error('Failed to save chapter:', error)
-      alert('Failed to save chapter')
+      console.error("Failed to save chapter:", error);
+      alert("Failed to save chapter");
     }
-  }
+  };
 
   const handleDeleteChapter = async (chapter: Chapter) => {
-    if (!confirm(`Delete "${chapter.title}" and all its lessons?`)) return
+    if (!confirm(`Delete "${chapter.title}" and all its lessons?`)) return;
     try {
-      await adminApi.deleteChapter(chapter.id)
-      loadCourse()
+      await adminApi.deleteChapter(chapter.id);
+      loadCourse();
     } catch (error) {
-      console.error('Failed to delete chapter:', error)
-      alert('Failed to delete chapter')
+      console.error("Failed to delete chapter:", error);
+      alert("Failed to delete chapter");
     }
-  }
+  };
 
   // Lesson handlers
   const openNewLessonModal = (chapterId: number) => {
-    setSelectedChapterId(chapterId)
-    setEditingLesson(null)
-    setLessonForm({ title: '', isFree: false, maxViews: 2 })
-    setShowLessonModal(true)
-  }
+    setSelectedChapterId(chapterId);
+    setEditingLesson(null);
+    setLessonForm({ title: "", isFree: false, maxViews: 2 });
+    setShowLessonModal(true);
+  };
 
   const openEditLessonModal = (lesson: Lesson) => {
-    setEditingLesson(lesson)
+    setEditingLesson(lesson);
     setLessonForm({
       title: lesson.title,
       isFree: lesson.isFree,
       maxViews: lesson.maxViews,
-    })
-    setShowLessonModal(true)
-  }
+    });
+    setShowLessonModal(true);
+  };
 
   const handleLessonSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       if (editingLesson) {
-        await adminApi.updateLesson(editingLesson.id, lessonForm)
+        await adminApi.updateLesson(editingLesson.id, lessonForm);
       } else if (selectedChapterId) {
-        await adminApi.createLesson(selectedChapterId, lessonForm)
+        await adminApi.createLesson(selectedChapterId, lessonForm);
       }
-      setShowLessonModal(false)
-      loadCourse()
+      setShowLessonModal(false);
+      loadCourse();
     } catch (error) {
-      console.error('Failed to save lesson:', error)
-      alert('Failed to save lesson')
+      console.error("Failed to save lesson:", error);
+      alert("Failed to save lesson");
     }
-  }
+  };
 
   const handleDeleteLesson = async (lesson: Lesson) => {
-    if (!confirm(`Delete "${lesson.title}"?`)) return
+    if (!confirm(`Delete "${lesson.title}"?`)) return;
     try {
-      await adminApi.deleteLesson(lesson.id)
-      loadCourse()
+      await adminApi.deleteLesson(lesson.id);
+      loadCourse();
     } catch (error) {
-      console.error('Failed to delete lesson:', error)
-      alert('Failed to delete lesson')
+      console.error("Failed to delete lesson:", error);
+      alert("Failed to delete lesson");
     }
-  }
+  };
 
   const handleUploadVideo = async (lessonId: number) => {
     try {
-      const { data } = await adminApi.getLessonUploadUrl(lessonId)
+      const { data } = await adminApi.getLessonUploadUrl(lessonId);
       // Open Mux uploader in new window or show upload UI
       // For now, just show the upload URL
-      alert(`Upload URL: ${data.uploadUrl}\n\nNote: Video upload UI will be implemented with Mux integration.`)
+      alert(
+        `Upload URL: ${data.uploadUrl}\n\nNote: Video upload UI will be implemented with Mux integration.`
+      );
     } catch (error) {
-      console.error('Failed to get upload URL:', error)
-      alert('Failed to get upload URL')
+      console.error("Failed to get upload URL:", error);
+      alert("Failed to get upload URL");
     }
-  }
+  };
 
   const formatDuration = (seconds: number | null) => {
-    if (!seconds) return '--:--'
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
+    if (!seconds) return "--:--";
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
-    )
+    );
   }
 
-  if (!course) return null
+  if (!course) return null;
 
   return (
     <div>
@@ -203,29 +209,33 @@ export default function CourseDetailPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <button
-            onClick={() => router.push('/admin/courses')}
+            onClick={() => router.push("/admin/courses")}
             className="text-sm text-gray-500 hover:text-gray-700 mb-2"
           >
             ← Back to Courses
           </button>
           <h1 className="text-3xl font-bold text-gray-900">{course.title}</h1>
-          <p className="text-gray-500 mt-1">{course.description || 'No description'}</p>
+          <p className="text-gray-500 mt-1">
+            {course.description || "No description"}
+          </p>
         </div>
         <span
           className={`px-3 py-1 rounded-full text-sm font-medium ${
             course.isPublished
-              ? 'bg-green-100 text-green-800'
-              : 'bg-gray-100 text-gray-600'
+              ? "bg-green-100 text-green-800"
+              : "bg-gray-100 text-gray-600"
           }`}
         >
-          {course.isPublished ? 'Published' : 'Draft'}
+          {course.isPublished ? "Published" : "Draft"}
         </span>
       </div>
 
       {/* Chapters */}
       <div className="bg-white rounded-xl shadow-sm">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Course Content</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Course Content
+          </h2>
           <button
             onClick={openNewChapterModal}
             className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
@@ -247,7 +257,7 @@ export default function CourseDetailPage() {
                   >
                     <div className="flex items-center">
                       <span className="mr-3 text-gray-400">
-                        {expandedChapters.has(chapter.id) ? '▼' : '▶'}
+                        {expandedChapters.has(chapter.id) ? "▼" : "▶"}
                       </span>
                       <span className="font-medium text-gray-900">
                         Chapter {chapterIndex + 1}: {chapter.title}
@@ -256,7 +266,10 @@ export default function CourseDetailPage() {
                         ({chapter.lessons.length} lessons)
                       </span>
                     </div>
-                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div
+                      className="flex items-center gap-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
                         onClick={() => openNewLessonModal(chapter.id)}
                         className="px-2 py-1 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100"
@@ -293,7 +306,9 @@ export default function CourseDetailPage() {
                                 <span className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs text-gray-500 mr-3">
                                   {lessonIndex + 1}
                                 </span>
-                                <span className="text-gray-900">{lesson.title}</span>
+                                <span className="text-gray-900">
+                                  {lesson.title}
+                                </span>
                                 {lesson.isFree && (
                                   <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded">
                                     Free
@@ -303,9 +318,13 @@ export default function CourseDetailPage() {
                                   {formatDuration(lesson.duration)}
                                 </span>
                                 {lesson.muxPlaybackId ? (
-                                  <span className="ml-2 text-green-500 text-xs">✓ Video</span>
+                                  <span className="ml-2 text-green-500 text-xs">
+                                    ✓ Video
+                                  </span>
                                 ) : (
-                                  <span className="ml-2 text-yellow-500 text-xs">⚠ No video</span>
+                                  <span className="ml-2 text-yellow-500 text-xs">
+                                    ⚠ No video
+                                  </span>
                                 )}
                               </div>
                               <div className="flex items-center gap-2">
@@ -313,7 +332,9 @@ export default function CourseDetailPage() {
                                   onClick={() => handleUploadVideo(lesson.id)}
                                   className="px-2 py-1 text-xs bg-purple-50 text-purple-600 rounded hover:bg-purple-100"
                                 >
-                                  {lesson.muxPlaybackId ? 'Replace Video' : 'Upload Video'}
+                                  {lesson.muxPlaybackId
+                                    ? "Replace Video"
+                                    : "Upload Video"}
                                 </button>
                                 <button
                                   onClick={() => openEditLessonModal(lesson)}
@@ -332,7 +353,7 @@ export default function CourseDetailPage() {
                           ))
                       ) : (
                         <div className="px-6 py-4 pl-14 text-gray-400 text-sm">
-                          No lessons yet.{' '}
+                          No lessons yet.{" "}
                           <button
                             onClick={() => openNewLessonModal(chapter.id)}
                             className="text-blue-600 hover:underline"
@@ -365,7 +386,7 @@ export default function CourseDetailPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6">
-              {editingChapter ? 'Edit Chapter' : 'New Chapter'}
+              {editingChapter ? "Edit Chapter" : "New Chapter"}
             </h2>
             <form onSubmit={handleChapterSubmit}>
               <div>
@@ -393,7 +414,7 @@ export default function CourseDetailPage() {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
-                  {editingChapter ? 'Save' : 'Create'}
+                  {editingChapter ? "Save" : "Create"}
                 </button>
               </div>
             </form>
@@ -406,7 +427,7 @@ export default function CourseDetailPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6">
-              {editingLesson ? 'Edit Lesson' : 'New Lesson'}
+              {editingLesson ? "Edit Lesson" : "New Lesson"}
             </h2>
             <form onSubmit={handleLessonSubmit}>
               <div className="space-y-4">
@@ -417,7 +438,9 @@ export default function CourseDetailPage() {
                   <input
                     type="text"
                     value={lessonForm.title}
-                    onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                    onChange={(e) =>
+                      setLessonForm({ ...lessonForm, title: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="e.g., Understanding Balance Sheets"
                     required
@@ -430,7 +453,12 @@ export default function CourseDetailPage() {
                   <input
                     type="number"
                     value={lessonForm.maxViews}
-                    onChange={(e) => setLessonForm({ ...lessonForm, maxViews: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setLessonForm({
+                        ...lessonForm,
+                        maxViews: Number(e.target.value),
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     min={1}
                   />
@@ -443,10 +471,15 @@ export default function CourseDetailPage() {
                     type="checkbox"
                     id="isFree"
                     checked={lessonForm.isFree}
-                    onChange={(e) => setLessonForm({ ...lessonForm, isFree: e.target.checked })}
+                    onChange={(e) =>
+                      setLessonForm({ ...lessonForm, isFree: e.target.checked })
+                    }
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
-                  <label htmlFor="isFree" className="ml-2 text-sm text-gray-700">
+                  <label
+                    htmlFor="isFree"
+                    className="ml-2 text-sm text-gray-700"
+                  >
                     Free preview (visible without enrollment)
                   </label>
                 </div>
@@ -463,7 +496,7 @@ export default function CourseDetailPage() {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
-                  {editingLesson ? 'Save' : 'Create'}
+                  {editingLesson ? "Save" : "Create"}
                 </button>
               </div>
             </form>
@@ -471,5 +504,5 @@ export default function CourseDetailPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

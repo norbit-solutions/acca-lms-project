@@ -1,80 +1,80 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { adminApi } from '@/lib/api'
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { adminApi } from "@/lib/api";
 
 interface User {
-  id: number
-  fullName: string
-  email: string
-  phone: string
-  role: string
-  createdAt: string
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  role: string;
+  createdAt: string;
   enrollments?: Array<{
-    id: number
-    course: { id: number; title: string }
-  }>
+    id: number;
+    course: { id: number; title: string };
+  }>;
 }
 
 interface PaginationMeta {
-  total: number
-  page: number
-  lastPage: number
-  perPage: number
+  total: number;
+  page: number;
+  lastPage: number;
+  perPage: number;
 }
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([])
-  const [meta, setMeta] = useState<PaginationMeta | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchMode, setSearchMode] = useState(false)
+  const [users, setUsers] = useState<User[]>([]);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchMode, setSearchMode] = useState(false);
 
   useEffect(() => {
     if (!searchMode) {
-      loadUsers()
+      loadUsers();
     }
-  }, [page])
+  }, [page]);
 
   const loadUsers = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const { data } = await adminApi.getUsers({ page, limit: 20 })
-      setUsers(data.data)
-      setMeta(data.meta)
+      const { data } = await adminApi.getUsers({ page, limit: 20 });
+      setUsers(data?.data || data?.users || data || []);
+      setMeta(data?.meta || null);
     } catch (error) {
-      console.error('Failed to load users:', error)
+      console.error("Failed to load users:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      setSearchMode(false)
-      loadUsers()
-      return
+      setSearchMode(false);
+      loadUsers();
+      return;
     }
-    setSearchMode(true)
-    setLoading(true)
+    setSearchMode(true);
+    setLoading(true);
     try {
-      const { data } = await adminApi.searchUsers(searchQuery)
-      setUsers(data)
-      setMeta(null)
+      const { data } = await adminApi.searchUsers(searchQuery);
+      setUsers(data?.users || data || []);
+      setMeta(null);
     } catch (error) {
-      console.error('Failed to search users:', error)
+      console.error("Failed to search users:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleClearSearch = () => {
-    setSearchQuery('')
-    setSearchMode(false)
-    loadUsers()
-  }
+    setSearchQuery("");
+    setSearchMode(false);
+    loadUsers();
+  };
 
   return (
     <div>
@@ -89,7 +89,7 @@ export default function UsersPage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Search by name, email, or phone..."
           />
@@ -116,7 +116,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
-        ) : users.length > 0 ? (
+        ) : users && users.length > 0 ? (
           <>
             <table className="min-w-full">
               <thead className="bg-gray-50">
@@ -139,19 +139,21 @@ export default function UsersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {users.map((user) => (
+                {(Array.isArray(users) ? users : []).map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
-                      <p className="font-medium text-gray-900">{user.fullName}</p>
+                      <p className="font-medium text-gray-900">
+                        {user.fullName}
+                      </p>
                       <p className="text-sm text-gray-500">{user.email}</p>
                     </td>
                     <td className="px-6 py-4 text-gray-500">{user.phone}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${
-                          user.role === 'admin'
-                            ? 'bg-purple-100 text-purple-800'
-                            : 'bg-gray-100 text-gray-600'
+                          user.role === "admin"
+                            ? "bg-purple-100 text-purple-800"
+                            : "bg-gray-100 text-gray-600"
                         }`}
                       >
                         {user.role}
@@ -177,8 +179,9 @@ export default function UsersPage() {
             {meta && meta.lastPage > 1 && (
               <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                 <p className="text-sm text-gray-500">
-                  Showing {(meta.page - 1) * meta.perPage + 1} to{' '}
-                  {Math.min(meta.page * meta.perPage, meta.total)} of {meta.total} users
+                  Showing {(meta.page - 1) * meta.perPage + 1} to{" "}
+                  {Math.min(meta.page * meta.perPage, meta.total)} of{" "}
+                  {meta.total} users
                 </p>
                 <div className="flex gap-2">
                   <button
@@ -207,5 +210,5 @@ export default function UsersPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

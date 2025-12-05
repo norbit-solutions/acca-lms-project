@@ -48,7 +48,7 @@ export default class CoursesController {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
-    
+
     // Check if slug exists, append uuid if needed
     const existingCourse = await Course.findBy('slug', baseSlug)
     const slug = existingCourse ? `${baseSlug}-${uuidv4().slice(0, 8)}` : baseSlug
