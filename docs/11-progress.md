@@ -48,9 +48,27 @@
 - [x] Built courses listing page
 - [x] Auth flow tested and working ✅
 
+#### 6. Admin API (✅ COMPLETE)
+- [x] Dashboard stats endpoint (`GET /admin/stats`)
+- [x] Courses CRUD (`GET/POST /admin/courses`, `GET/PUT/DELETE /admin/courses/:id`)
+- [x] Chapters CRUD (`POST /admin/courses/:courseId/chapters`, `PUT/DELETE /admin/chapters/:id`)
+- [x] Lessons CRUD with Mux upload URL (`POST /admin/chapters/:chapterId/lessons`, `PUT/DELETE /admin/lessons/:id`)
+- [x] Enrollments management (`GET/POST /admin/enrollments`, `DELETE /admin/enrollments/:id`)
+- [x] Users listing & search (`GET /admin/users`, `GET /admin/users/search`, `GET /admin/users/:id`)
+- [x] Mux webhook endpoint (`POST /webhooks/mux`)
+
+#### 7. Admin Panel Frontend (✅ COMPLETE)
+- [x] Admin layout with sidebar navigation
+- [x] Dashboard page with stats cards and recent enrollments
+- [x] Courses list page with create/edit/delete modals
+- [x] Course detail page with chapters and lessons management
+- [x] Enrollments page with user search and course filter
+- [x] Users list page with search and pagination
+- [x] User detail page with enrollments and video views
+
 ### In Progress
-- [ ] Admin API endpoints (courses, chapters, lessons CRUD)
-- [ ] Admin panel frontend
+- [ ] Public API endpoints (CMS, courses list from DB)
+- [ ] Student API endpoints (my courses, video playback)
 
 ### Not Started
 - [ ] Public API endpoints (CMS, courses list from DB)
@@ -68,6 +86,26 @@
 | POST | /auth/login | No | Login (kills previous session) |
 | POST | /auth/logout | Yes | Logout current session |
 | GET | /auth/me | Yes | Get current user profile |
+| GET | /admin/stats | Admin | Dashboard statistics |
+| GET | /admin/courses | Admin | List all courses |
+| POST | /admin/courses | Admin | Create course |
+| GET | /admin/courses/:id | Admin | Get course with chapters/lessons |
+| PUT | /admin/courses/:id | Admin | Update course |
+| DELETE | /admin/courses/:id | Admin | Delete course |
+| POST | /admin/courses/:courseId/chapters | Admin | Create chapter |
+| PUT | /admin/chapters/:id | Admin | Update chapter |
+| DELETE | /admin/chapters/:id | Admin | Delete chapter |
+| POST | /admin/chapters/:chapterId/lessons | Admin | Create lesson |
+| PUT | /admin/lessons/:id | Admin | Update lesson |
+| DELETE | /admin/lessons/:id | Admin | Delete lesson |
+| POST | /admin/lessons/:id/upload-url | Admin | Get Mux upload URL |
+| GET | /admin/enrollments | Admin | List enrollments |
+| POST | /admin/enrollments | Admin | Create enrollment |
+| DELETE | /admin/enrollments/:id | Admin | Delete enrollment |
+| GET | /admin/users | Admin | List students |
+| GET | /admin/users/search | Admin | Search users |
+| GET | /admin/users/:id | Admin | Get user details |
+| POST | /webhooks/mux | None | Mux webhook |
 
 ## Frontend Pages Implemented
 
@@ -78,6 +116,12 @@
 | /register | Register | ✅ Done |
 | /dashboard | Student dashboard | ✅ Done |
 | /courses | Course listing | ✅ Done |
+| /admin | Admin dashboard | ✅ Done |
+| /admin/courses | Course management | ✅ Done |
+| /admin/courses/[id] | Course detail (chapters/lessons) | ✅ Done |
+| /admin/enrollments | Enrollment management | ✅ Done |
+| /admin/users | User listing | ✅ Done |
+| /admin/users/[id] | User detail | ✅ Done |
 
 ## Middleware Stack
 
