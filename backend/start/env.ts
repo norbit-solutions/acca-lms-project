@@ -27,5 +27,25 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_PORT: Env.schema.number(),
   DB_USER: Env.schema.string(),
   DB_PASSWORD: Env.schema.string.optional(),
-  DB_DATABASE: Env.schema.string()
+  DB_DATABASE: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Mux (video) configuration
+  |----------------------------------------------------------
+  */
+  MUX_TOKEN_ID: Env.schema.string.optional(),
+  MUX_TOKEN_SECRET: Env.schema.string.optional(),
+  MUX_SIGNING_KEY_ID: Env.schema.string.optional(),
+  MUX_SIGNING_PRIVATE_KEY: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | DigitalOcean Spaces (for images and PDFs)
+  |----------------------------------------------------------
+  */
+  DO_SPACES_KEY: Env.schema.string.optional(),
+  DO_SPACES_SECRET: Env.schema.string.optional(),
+  DO_SPACES_ENDPOINT: Env.schema.string.optional(),
+  DO_SPACES_BUCKET: Env.schema.string.optional(),
 })
