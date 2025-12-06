@@ -39,6 +39,9 @@ export default class Lesson extends BaseModel {
   declare viewLimit: number
 
   @column()
+  declare isFree: boolean
+
+  @column()
   declare sortOrder: number
 
   @column.dateTime({ autoCreate: true })
@@ -52,4 +55,9 @@ export default class Lesson extends BaseModel {
 
   @hasMany(() => VideoView)
   declare videoViews: HasMany<typeof VideoView>
+
+  // Alias for consistency
+  get maxViews(): number {
+    return this.viewLimit
+  }
 }

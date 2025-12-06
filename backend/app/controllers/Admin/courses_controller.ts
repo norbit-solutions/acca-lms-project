@@ -36,11 +36,14 @@ export default class CoursesController {
    * Create a new course
    */
   async store({ request, response }: HttpContext) {
-    const { title, description, thumbnail, isPublished } = request.only([
+    const { title, description, thumbnail, isPublished, price, currency, isFree } = request.only([
       'title',
       'description',
       'thumbnail',
       'isPublished',
+      'price',
+      'currency',
+      'isFree',
     ])
 
     // Generate slug from title
@@ -59,6 +62,9 @@ export default class CoursesController {
       description,
       thumbnail,
       isPublished: isPublished || false,
+      price: price ?? null,
+      currency: currency || 'INR',
+      isFree: isFree || false,
     })
 
     return response.created({ course })
@@ -70,11 +76,14 @@ export default class CoursesController {
   async update({ params, request, response }: HttpContext) {
     const course = await Course.findOrFail(params.id)
 
-    const { title, description, thumbnail, isPublished } = request.only([
+    const { title, description, thumbnail, isPublished, price, currency, isFree } = request.only([
       'title',
       'description',
       'thumbnail',
       'isPublished',
+      'price',
+      'currency',
+      'isFree',
     ])
 
     course.merge({
@@ -82,6 +91,9 @@ export default class CoursesController {
       description,
       thumbnail,
       isPublished,
+      price: price ?? course.price,
+      currency: currency ?? course.currency,
+      isFree: isFree ?? course.isFree,
     })
 
     await course.save()

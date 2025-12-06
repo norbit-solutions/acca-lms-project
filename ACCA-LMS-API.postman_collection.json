@@ -1,0 +1,1631 @@
+{
+  "info": {
+    "_postman_id": "acca-lms-api-collection",
+    "name": "ACCA LMS API",
+    "description": "Complete API collection for ACCA LMS (Learning Management System) backend.\n\n## Authentication\nThis API uses Bearer token authentication. After login or register, use the returned `token` in the Authorization header:\n```\nAuthorization: Bearer <your_token>\n```\n\n## Base URL\nDefault: `http://localhost:3333`\n\n## Route Groups\n- **Auth**: Registration, login, logout, and user info\n- **Public**: Publicly accessible courses, CMS content, testimonials, instructors\n- **Student**: Authenticated student routes for enrolled courses and lessons\n- **Admin**: Admin-only routes for managing all resources",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3333",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Authentication endpoints for user registration, login, logout, and profile.",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+1234567890\",\n  \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new student account.\n\n**Response:** Returns user object, access token, and session token."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with email and password. Invalidates any previous sessions (single session enforcement).\n\n**Response:** Returns user object, access token, and session token."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Logout current user and invalidate the access token.\n\n**Requires:** Authentication"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Get the currently authenticated user's profile.\n\n**Requires:** Authentication"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "description": "Publicly accessible endpoints (no authentication required).",
+      "item": [
+        {
+          "name": "List All Courses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses"]
+            },
+            "description": "Get all published courses with chapter and lesson counts."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Course by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "course-slug-here",
+                  "description": "Course slug (URL-friendly identifier)"
+                }
+              ]
+            },
+            "description": "Get a single published course with chapters and lesson previews."
+          },
+          "response": []
+        },
+        {
+          "name": "Get CMS Section",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cms/:section",
+              "host": ["{{baseUrl}}"],
+              "path": ["cms", ":section"],
+              "variable": [
+                {
+                  "key": "section",
+                  "value": "home",
+                  "description": "CMS section key (e.g., home, about, contact)"
+                }
+              ]
+            },
+            "description": "Get CMS content by section key."
+          },
+          "response": []
+        },
+        {
+          "name": "List Testimonials",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/testimonials",
+              "host": ["{{baseUrl}}"],
+              "path": ["testimonials"]
+            },
+            "description": "Get all active testimonials."
+          },
+          "response": []
+        },
+        {
+          "name": "List Instructors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/instructors",
+              "host": ["{{baseUrl}}"],
+              "path": ["instructors"]
+            },
+            "description": "Get all active instructors."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Student",
+      "description": "Student routes for enrolled courses and lessons. Requires authentication.",
+      "item": [
+        {
+          "name": "Get My Enrolled Courses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/my-courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["my-courses"]
+            },
+            "description": "Get all courses the current user is enrolled in, with progress tracking."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Enrolled Course by Slug",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/my-courses/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["my-courses", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "course-slug-here",
+                  "description": "Course slug"
+                }
+              ]
+            },
+            "description": "Get a single enrolled course with detailed progress per lesson."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Lesson for Playback",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Lesson ID"
+                }
+              ]
+            },
+            "description": "Get lesson details with signed video URL for playback. Includes watermark data."
+          },
+          "response": []
+        },
+        {
+          "name": "Start Lesson View",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/:id/view",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", ":id", "view"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Lesson ID"
+                }
+              ]
+            },
+            "description": "Start or increment a view for a lesson. Enforces view limits."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Lesson View Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/:id/view-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", ":id", "view-status"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Lesson ID"
+                }
+              ]
+            },
+            "description": "Get the current view status for a lesson (view count, max views, remaining views)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "description": "Admin-only routes for managing courses, users, enrollments, and content. Requires admin authentication.",
+      "item": [
+        {
+          "name": "Dashboard",
+          "item": [
+            {
+              "name": "Get Dashboard Stats",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/stats",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "stats"]
+                },
+                "description": "Get dashboard statistics including total courses, students, enrollments, and recent enrollments."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Courses",
+          "item": [
+            {
+              "name": "List All Courses",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/courses",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "courses"]
+                },
+                "description": "Get all courses with chapter and enrollment counts."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Course",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Course Title\",\n  \"description\": \"Course description here\",\n  \"thumbnail\": \"https://example.com/image.jpg\",\n  \"isPublished\": false,\n  \"price\": 99.99,\n  \"currency\": \"INR\",\n  \"isFree\": false\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/courses",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "courses"]
+                },
+                "description": "Create a new course. Slug is auto-generated from title."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Course by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/courses/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "courses", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Course ID"
+                    }
+                  ]
+                },
+                "description": "Get a single course with all chapters and lessons."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Course",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Updated Course Title\",\n  \"description\": \"Updated description\",\n  \"thumbnail\": \"https://example.com/new-image.jpg\",\n  \"isPublished\": true,\n  \"price\": 149.99,\n  \"currency\": \"INR\",\n  \"isFree\": false\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/courses/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "courses", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Course ID"
+                    }
+                  ]
+                },
+                "description": "Update an existing course."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Course",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/courses/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "courses", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Course ID"
+                    }
+                  ]
+                },
+                "description": "Delete a course and all its chapters/lessons."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Chapters",
+          "item": [
+            {
+              "name": "Create Chapter",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Chapter Title\",\n  \"sortOrder\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/courses/:courseId/chapters",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "courses", ":courseId", "chapters"],
+                  "variable": [
+                    {
+                      "key": "courseId",
+                      "value": "1",
+                      "description": "Course ID"
+                    }
+                  ]
+                },
+                "description": "Create a new chapter for a course. sortOrder is auto-assigned if not provided."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Chapter",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Updated Chapter Title\",\n  \"sortOrder\": 2\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/chapters/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "chapters", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Chapter ID"
+                    }
+                  ]
+                },
+                "description": "Update an existing chapter."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Chapter",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/chapters/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "chapters", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Chapter ID"
+                    }
+                  ]
+                },
+                "description": "Delete a chapter and all its lessons."
+              },
+              "response": []
+            },
+            {
+              "name": "Reorder Chapters",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"chapters\": [\n    { \"id\": 1, \"sortOrder\": 1 },\n    { \"id\": 2, \"sortOrder\": 2 },\n    { \"id\": 3, \"sortOrder\": 3 }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/courses/:courseId/chapters/reorder",
+                  "host": ["{{baseUrl}}"],
+                  "path": [
+                    "admin",
+                    "courses",
+                    ":courseId",
+                    "chapters",
+                    "reorder"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId",
+                      "value": "1",
+                      "description": "Course ID"
+                    }
+                  ]
+                },
+                "description": "Reorder chapters within a course."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Lessons",
+          "item": [
+            {
+              "name": "Create Lesson",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Lesson Title\",\n  \"type\": \"video\",\n  \"content\": null,\n  \"pdfUrl\": null,\n  \"viewLimit\": 2,\n  \"sortOrder\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/chapters/:chapterId/lessons",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "chapters", ":chapterId", "lessons"],
+                  "variable": [
+                    {
+                      "key": "chapterId",
+                      "value": "1",
+                      "description": "Chapter ID"
+                    }
+                  ]
+                },
+                "description": "Create a new lesson for a chapter.\n\n**Types:** `video`, `text`, `pdf`\n- For `text` type: provide `content`\n- For `pdf` type: provide `pdfUrl`\n- For `video` type: use the upload URL endpoint after creation"
+              },
+              "response": []
+            },
+            {
+              "name": "Update Lesson",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Updated Lesson Title\",\n  \"type\": \"video\",\n  \"content\": null,\n  \"pdfUrl\": null,\n  \"viewLimit\": 3,\n  \"sortOrder\": 2\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/lessons/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "lessons", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Lesson ID"
+                    }
+                  ]
+                },
+                "description": "Update an existing lesson."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Lesson",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/lessons/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "lessons", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Lesson ID"
+                    }
+                  ]
+                },
+                "description": "Delete a lesson."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Video Upload URL",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/lessons/:id/upload-url",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "lessons", ":id", "upload-url"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Lesson ID (must be video type)"
+                    }
+                  ]
+                },
+                "description": "Get a Mux direct upload URL for uploading video to a lesson. Only works for video-type lessons."
+              },
+              "response": []
+            },
+            {
+              "name": "Reorder Lessons",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"lessons\": [\n    { \"id\": 1, \"sortOrder\": 1 },\n    { \"id\": 2, \"sortOrder\": 2 },\n    { \"id\": 3, \"sortOrder\": 3 }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/chapters/:chapterId/lessons/reorder",
+                  "host": ["{{baseUrl}}"],
+                  "path": [
+                    "admin",
+                    "chapters",
+                    ":chapterId",
+                    "lessons",
+                    "reorder"
+                  ],
+                  "variable": [
+                    {
+                      "key": "chapterId",
+                      "value": "1",
+                      "description": "Chapter ID"
+                    }
+                  ]
+                },
+                "description": "Reorder lessons within a chapter."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Enrollments",
+          "item": [
+            {
+              "name": "List Enrollments",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/enrollments?courseId=&userId=",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "enrollments"],
+                  "query": [
+                    {
+                      "key": "courseId",
+                      "value": "",
+                      "description": "Optional: Filter by course ID"
+                    },
+                    {
+                      "key": "userId",
+                      "value": "",
+                      "description": "Optional: Filter by user ID"
+                    }
+                  ]
+                },
+                "description": "Get all enrollments with optional filtering by course or user."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Enrollment",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"courseId\": 1,\n  \"userId\": 1,\n  \"email\": null,\n  \"phone\": null\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/enrollments",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "enrollments"]
+                },
+                "description": "Enroll a user in a course. User can be identified by `userId`, `email`, or `phone`."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Enrollment",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/enrollments/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "enrollments", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Enrollment ID"
+                    }
+                  ]
+                },
+                "description": "Remove an enrollment."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Users",
+          "item": [
+            {
+              "name": "List Users",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users?search=&role=student",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "users"],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "",
+                      "description": "Search by name, email, or phone"
+                    },
+                    {
+                      "key": "role",
+                      "value": "student",
+                      "description": "Filter by role (default: student)"
+                    }
+                  ]
+                },
+                "description": "Get all users with optional search and role filtering."
+              },
+              "response": []
+            },
+            {
+              "name": "Search Users",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users/search?q=john",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "users", "search"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "john",
+                      "description": "Search query (min 2 characters)"
+                    }
+                  ]
+                },
+                "description": "Quick search for users (for enrollment form autocomplete). Returns max 10 results."
+              },
+              "response": []
+            },
+            {
+              "name": "Get User by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "users", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "User ID"
+                    }
+                  ]
+                },
+                "description": "Get a single user with enrollments and video views."
+              },
+              "response": []
+            },
+            {
+              "name": "Get User Video Views",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/users/:id/views",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "users", ":id", "views"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "User ID"
+                    }
+                  ]
+                },
+                "description": "Get a user's video view history."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "CMS Content",
+          "item": [
+            {
+              "name": "List All CMS Sections",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/cms",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "cms"]
+                },
+                "description": "Get all CMS content sections."
+              },
+              "response": []
+            },
+            {
+              "name": "Get CMS Section",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/cms/:key",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "cms", ":key"],
+                  "variable": [
+                    {
+                      "key": "key",
+                      "value": "home",
+                      "description": "CMS section key"
+                    }
+                  ]
+                },
+                "description": "Get a single CMS section by key."
+              },
+              "response": []
+            },
+            {
+              "name": "Create/Update CMS Section",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sectionKey\": \"home\",\n  \"content\": {\n    \"heroTitle\": \"Welcome to ACCA LMS\",\n    \"heroSubtitle\": \"Learn at your own pace\",\n    \"features\": []\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/cms",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "cms"]
+                },
+                "description": "Create or update a CMS section (upsert). If section exists, content is updated."
+              },
+              "response": []
+            },
+            {
+              "name": "Update CMS Section",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"content\": {\n    \"heroTitle\": \"Updated Title\",\n    \"heroSubtitle\": \"Updated subtitle\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/cms/:key",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "cms", ":key"],
+                  "variable": [
+                    {
+                      "key": "key",
+                      "value": "home",
+                      "description": "CMS section key"
+                    }
+                  ]
+                },
+                "description": "Update an existing CMS section's content."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete CMS Section",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/cms/:key",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "cms", ":key"],
+                  "variable": [
+                    {
+                      "key": "key",
+                      "value": "home",
+                      "description": "CMS section key"
+                    }
+                  ]
+                },
+                "description": "Delete a CMS section."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Testimonials",
+          "item": [
+            {
+              "name": "List Testimonials",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/testimonials?page=1&limit=20&activeOnly=false",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "testimonials"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20",
+                      "description": "Items per page"
+                    },
+                    {
+                      "key": "activeOnly",
+                      "value": "false",
+                      "description": "Filter active testimonials only"
+                    }
+                  ]
+                },
+                "description": "Get all testimonials with pagination."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Testimonial by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/testimonials/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "testimonials", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Testimonial ID"
+                    }
+                  ]
+                },
+                "description": "Get a single testimonial."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Testimonial",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Student Name\",\n  \"content\": \"This is an amazing course!\",\n  \"image\": \"https://example.com/avatar.jpg\",\n  \"courseId\": 1,\n  \"sortOrder\": 1,\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/testimonials",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "testimonials"]
+                },
+                "description": "Create a new testimonial."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Testimonial",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Name\",\n  \"content\": \"Updated testimonial content\",\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/testimonials/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "testimonials", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Testimonial ID"
+                    }
+                  ]
+                },
+                "description": "Update an existing testimonial."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Testimonial",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/testimonials/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "testimonials", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Testimonial ID"
+                    }
+                  ]
+                },
+                "description": "Delete a testimonial."
+              },
+              "response": []
+            },
+            {
+              "name": "Reorder Testimonials",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    { \"id\": 1, \"sortOrder\": 1 },\n    { \"id\": 2, \"sortOrder\": 2 },\n    { \"id\": 3, \"sortOrder\": 3 }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/testimonials/reorder",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "testimonials", "reorder"]
+                },
+                "description": "Reorder testimonials."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Instructors",
+          "item": [
+            {
+              "name": "List Instructors",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/instructors?page=1&limit=20&activeOnly=false",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "instructors"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20",
+                      "description": "Items per page"
+                    },
+                    {
+                      "key": "activeOnly",
+                      "value": "false",
+                      "description": "Filter active instructors only"
+                    }
+                  ]
+                },
+                "description": "Get all instructors with pagination."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Instructor by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/instructors/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "instructors", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Instructor ID"
+                    }
+                  ]
+                },
+                "description": "Get a single instructor."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Instructor",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Instructor Name\",\n  \"image\": \"https://example.com/avatar.jpg\",\n  \"bio\": \"Instructor bio and qualifications\",\n  \"sortOrder\": 1,\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/instructors",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "instructors"]
+                },
+                "description": "Create a new instructor."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Instructor",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Name\",\n  \"bio\": \"Updated bio\",\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/instructors/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "instructors", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Instructor ID"
+                    }
+                  ]
+                },
+                "description": "Update an existing instructor."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Instructor",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/instructors/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "instructors", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Instructor ID"
+                    }
+                  ]
+                },
+                "description": "Delete an instructor."
+              },
+              "response": []
+            },
+            {
+              "name": "Reorder Instructors",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    { \"id\": 1, \"sortOrder\": 1 },\n    { \"id\": 2, \"sortOrder\": 2 },\n    { \"id\": 3, \"sortOrder\": 3 }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/instructors/reorder",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "instructors", "reorder"]
+                },
+                "description": "Reorder instructors."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "File Uploads",
+          "item": [
+            {
+              "name": "Upload Image",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "",
+                      "description": "Image file (jpg, jpeg, png, webp, gif - max 5MB)"
+                    },
+                    {
+                      "key": "folder",
+                      "value": "images",
+                      "type": "text",
+                      "description": "Target folder: thumbnails, avatars, or images"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/upload/image",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "upload", "image"]
+                },
+                "description": "Upload an image to DO Spaces.\n\n**Accepts:** jpg, jpeg, png, webp, gif (max 5MB)\n**Folders:** thumbnails, avatars, images"
+              },
+              "response": []
+            },
+            {
+              "name": "Upload PDF",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "",
+                      "description": "PDF file (max 20MB)"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/upload/pdf",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "upload", "pdf"]
+                },
+                "description": "Upload a PDF to DO Spaces (max 20MB)."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete File",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key\": \"images/filename.jpg\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/admin/upload",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "upload"]
+                },
+                "description": "Delete a file from DO Spaces by its key."
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "description": "Webhook endpoints for external services.",
+      "item": [
+        {
+          "name": "Mux Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"video.asset.ready\",\n  \"data\": {\n    \"id\": \"asset_id\",\n    \"upload_id\": \"upload_id\",\n    \"playback_ids\": [\n      { \"id\": \"playback_id\" }\n    ],\n    \"duration\": 120\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhooks/mux",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhooks", "mux"]
+            },
+            "description": "Mux webhook handler for video processing events. No authentication required (verified by Mux signature).\n\n**Events:**\n- `video.asset.ready`: Video processing complete\n- `video.asset.errored`: Video processing failed"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

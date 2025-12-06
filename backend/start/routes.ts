@@ -11,12 +11,18 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth_controller')
+const PublicController = () => import('#controllers/public_controller')
+const StudentController = () => import('#controllers/student_controller')
 const AdminDashboardController = () => import('#controllers/Admin/dashboard_controller')
 const AdminCoursesController = () => import('#controllers/Admin/courses_controller')
 const AdminChaptersController = () => import('#controllers/Admin/chapters_controller')
 const AdminLessonsController = () => import('#controllers/Admin/lessons_controller')
 const AdminEnrollmentsController = () => import('#controllers/Admin/enrollments_controller')
 const AdminUsersController = () => import('#controllers/Admin/users_controller')
+const AdminCmsController = () => import('#controllers/Admin/cms_controller')
+const AdminTestimonialsController = () => import('#controllers/Admin/testimonials_controller')
+const AdminInstructorsController = () => import('#controllers/Admin/instructors_controller')
+const AdminUploadsController = () => import('#controllers/Admin/uploads_controller')
 
 router.get('/', async () => {
   return {
@@ -43,6 +49,32 @@ router
       .use(middleware.auth())
   })
   .prefix('/auth')
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes (no auth required)
+|--------------------------------------------------------------------------
+*/
+router.get('/courses', [PublicController, 'courses'])
+router.get('/courses/:slug', [PublicController, 'course'])
+router.get('/cms/:section', [PublicController, 'cms'])
+router.get('/testimonials', [PublicController, 'testimonials'])
+router.get('/instructors', [PublicController, 'instructors'])
+
+/*
+|--------------------------------------------------------------------------
+| Student Routes (auth required)
+|--------------------------------------------------------------------------
+*/
+router
+  .group(() => {
+    router.get('/my-courses', [StudentController, 'myCourses'])
+    router.get('/my-courses/:slug', [StudentController, 'myCourse'])
+    router.get('/lessons/:id', [StudentController, 'lesson'])
+    router.post('/lessons/:id/view', [StudentController, 'startView'])
+    router.get('/lessons/:id/view-status', [StudentController, 'viewStatus'])
+  })
+  .use(middleware.auth())
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +115,35 @@ router
     router.get('/users', [AdminUsersController, 'index'])
     router.get('/users/search', [AdminUsersController, 'search'])
     router.get('/users/:id', [AdminUsersController, 'show'])
+    router.get('/users/:id/views', [AdminUsersController, 'views'])
+
+    // CMS Content
+    router.get('/cms', [AdminCmsController, 'index'])
+    router.get('/cms/:key', [AdminCmsController, 'show'])
+    router.post('/cms', [AdminCmsController, 'store'])
+    router.put('/cms/:key', [AdminCmsController, 'update'])
+    router.delete('/cms/:key', [AdminCmsController, 'destroy'])
+
+    // Testimonials
+    router.get('/testimonials', [AdminTestimonialsController, 'index'])
+    router.get('/testimonials/:id', [AdminTestimonialsController, 'show'])
+    router.post('/testimonials', [AdminTestimonialsController, 'store'])
+    router.put('/testimonials/:id', [AdminTestimonialsController, 'update'])
+    router.delete('/testimonials/:id', [AdminTestimonialsController, 'destroy'])
+    router.put('/testimonials/reorder', [AdminTestimonialsController, 'reorder'])
+
+    // Instructors
+    router.get('/instructors', [AdminInstructorsController, 'index'])
+    router.get('/instructors/:id', [AdminInstructorsController, 'show'])
+    router.post('/instructors', [AdminInstructorsController, 'store'])
+    router.put('/instructors/:id', [AdminInstructorsController, 'update'])
+    router.delete('/instructors/:id', [AdminInstructorsController, 'destroy'])
+    router.put('/instructors/reorder', [AdminInstructorsController, 'reorder'])
+
+    // File Uploads (DO Spaces)
+    router.post('/upload/image', [AdminUploadsController, 'uploadImage'])
+    router.post('/upload/pdf', [AdminUploadsController, 'uploadPdf'])
+    router.delete('/upload', [AdminUploadsController, 'deleteFile'])
   })
   .prefix('/admin')
   .use([middleware.auth(), middleware.admin()])

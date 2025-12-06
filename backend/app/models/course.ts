@@ -20,6 +20,26 @@ export default class Course extends BaseModel {
   @column()
   declare thumbnail: string | null
 
+  /**
+   * Price is for display purposes only.
+   * Payments are handled manually via WhatsApp contact.
+   * null means price not set/TBD
+   */
+  @column()
+  declare price: number | null
+
+  /**
+   * Currency code for price display (e.g., 'INR', 'USD')
+   */
+  @column()
+  declare currency: string
+
+  /**
+   * If true, course is free. If false, check price field.
+   */
+  @column()
+  declare isFree: boolean
+
   @column()
   declare isPublished: boolean
 
