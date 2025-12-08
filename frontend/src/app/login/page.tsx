@@ -1,107 +1,77 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuthStore } from "@/lib/store";
-import Navbar from "@/components/Navbar";
+import Image from "next/image";
+import { LoginForm } from "@/components/auth";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const { login, user } = useAuthStore();
-  const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      await login(email, password);
-      // Get fresh user state after login
-      const currentUser = useAuthStore.getState().user;
-      // Redirect based on role
-      if (currentUser?.role === "admin") {
-        router.push("/admin");
-      } else {
-        router.push("/dashboard");
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid email or password");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <div className="min-h-screen flex font-display! bg-white">
+      {/* Left Side - Form */}
+      <div className="flex-1 flex flex-col bg-white">
+        {/* Header */}
+        <header className="p-6 md:p-8">
+          <Link
+            href="/"
+            className="text-2xl font-display font-medium tracking-tight"
+          >
+            ACCA LMS
+          </Link>
+        </header>
 
-      <div className="flex items-center justify-center py-12 px-4">
-        <div className="max-w-md w-full">
-          <div className="bg-white rounded-xl shadow-md p-8">
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
-              <p className="text-gray-600 mt-2">Sign in to continue learning</p>
+        {/* Form Container */}
+        <main className="flex-1 flex items-center justify-center px-6 md:px-12 pb-12">
+          <div className="w-full max-w-md">
+            {/* Title */}
+            <div className="mb-6">
+              <h1 className="text-xl md:text-3xl font-display mb-2">
+                Welcome back
+              </h1>
+              <p className="text-black text-md font-display font-thin!">
+                Sign in to continue your learning journey
+              </p>
             </div>
 
-            {error && (
-              <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-6">
-                {error}
-              </div>
-            )}
+            {/* Login Form Component */}
+            <LoginForm />
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="you@example.com"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "Signing in..." : "Sign In"}
-              </button>
-            </form>
-
-            <p className="text-center mt-6 text-gray-600">
-              Don't have an account?{" "}
+            {/* Footer */}
+            <p className="mt-4 text-center text-gray-400 text-sm">
+              Need help?{" "}
               <Link
-                href="/register"
-                className="text-blue-600 font-medium hover:text-blue-700"
+                href="https://wa.me/94XXXXXXXXX"
+                target="_blank"
+                className="text-gray-600 hover:text-black transition-colors"
               >
-                Register
+                Contact support
               </Link>
             </p>
+          </div>
+        </main>
+      </div>
+
+      {/* Right Side - Image (Hidden on mobile) */}
+      <div className="hidden lg:block lg:w-1/2 relative bg-black rounded-l-4xl">
+        <Image
+          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=2000&q=80"
+          alt="Students studying"
+          fill
+          className="object-cover opacity-60 rounded-l-4xl"
+          priority
+        />
+        {/* Overlay Content */}
+        <div className="absolute inset-0 flex flex-col justify-end p-12">
+          <div className="max-w-md">
+            <blockquote className="text-white text-2xl font-display mb-6">
+              &ldquo;The best investment you can make is in yourself.&rdquo;
+            </blockquote>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur" />
+              <div>
+                <p className="text-white font-medium">2,000+ Students</p>
+                <p className="text-gray-300 text-sm">
+                  Trust ACCA LMS for their success
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

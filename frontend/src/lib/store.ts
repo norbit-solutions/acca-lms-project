@@ -1,86 +1,49 @@
 import { create } from "zustand";
-import { authApi } from "./api";
+import { authService } from "@/services";
+import { TokenManager } from "@/lib/fetchConfig";
+import type { User, RegisterRequest, AuthStore } from "@/types";
 
-interface User {
-  id: number;
-  fullName: string;
-  email: string;
-  phone: string;
-  role: "student" | "admin";
-}
-
-interface AuthState {
-  user: User | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-
-  login: (email: string, password: string) => Promise<void>;
-  register: (data: {
-    fullName: string;
-    email: string;
-    phone: string;
-    password: string;
-  }) => Promise<void>;
-  logout: () => Promise<void>;
-  checkAuth: () => Promise<void>;
-  setUser: (user: User | null) => void;
-}
-
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   isLoading: true,
   isAuthenticated: false,
 
-  setUser: (user) => set({ user, isAuthenticated: !!user }),
+  setUser: (user: User | null) => set({ user, isAuthenticated: !!user }),
 
-  login: async (email, password) => {
-    const response = await authApi.login({ email, password });
-    const { user, token, sessionToken } = response.data;
-
-    localStorage.setItem("token", token);
-    localStorage.setItem("sessionToken", sessionToken);
-
-    set({ user, isAuthenticated: true });
+  login: async (email: string, password: string) => {
+    const response = await authService.login({ email, password });
+    set({ user: response.user, isAuthenticated: true });
   },
 
-  register: async (data) => {
-    const response = await authApi.register(data);
-    const { user, token, sessionToken } = response.data;
-
-    localStorage.setItem("token", token);
-    localStorage.setItem("sessionToken", sessionToken);
-
-    set({ user, isAuthenticated: true });
+  register: async (data: RegisterRequest) => {
+    const response = await authService.register(data);
+    set({ user: response.user, isAuthenticated: true });
   },
 
   logout: async () => {
     try {
-      await authApi.logout();
-    } catch (e) {
-      // Ignore errors on logout
+      await authService.logout();
+    } catch {
+      // Ignore errors on logout - tokens are cleared in the service
     }
-    localStorage.removeItem("token");
-    localStorage.removeItem("sessionToken");
     set({ user: null, isAuthenticated: false });
   },
 
   checkAuth: async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!TokenManager.hasToken()) {
       set({ isLoading: false, isAuthenticated: false });
       return;
     }
 
     try {
-      const response = await authApi.me();
+      const response = await authService.me();
       set({
-        user: response.data.user,
+        user: response.user,
         isAuthenticated: true,
         isLoading: false,
       });
-    } catch (e) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("sessionToken");
+    } catch {
+      TokenManager.clearTokens();
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },

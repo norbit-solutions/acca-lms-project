@@ -2,83 +2,229 @@
 
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout } = useAuthStore();
-  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const handleLogout = async () => {
-    await logout();
-    router.push("/");
+  const openMobileMenu = () => {
+    setIsMobileMenuOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+    document.body.style.overflow = "";
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-blue-600">
-              ACCA LMS
+    <>
+      {/* Floating Navbar */}
+      <nav className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+        <div className="bg-white/90 backdrop-blur-md border border-gray-100 rounded-full px-6 md:px-10 py-4 flex items-center justify-between w-full max-w-6xl shadow-sm">
+          <Link
+            href="/"
+            className="text-2xl font-display font-medium tracking-tight"
+          >
+            ACCA LMS
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8 text-base font-medium text-gray-600">
+            <Link href="#" className="hover:text-black transition-colors">
+              Home
             </Link>
-            <div className="hidden md:flex ml-10 space-x-8">
-              <Link
-                href="/courses"
-                className="text-gray-600 hover:text-gray-900"
-              >
-                Courses
-              </Link>
-              <Link
-                href="/#features"
-                className="text-gray-600 hover:text-gray-900"
-              >
-                Features
-              </Link>
-              <Link
-                href="/#about"
-                className="text-gray-600 hover:text-gray-900"
-              >
-                About
-              </Link>
-            </div>
+            <Link
+              href="#all-courses"
+              className="hover:text-black transition-colors"
+            >
+              Courses
+            </Link>
+            <Link
+              href="#mentors"
+              className="hover:text-black transition-colors"
+            >
+              Mentor
+            </Link>
+            <Link
+              href="#benefits"
+              className="hover:text-black transition-colors"
+            >
+              Benefits
+            </Link>
+            <Link
+              href="#testimonials"
+              className="hover:text-black transition-colors"
+            >
+              Testimonials
+            </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
+          {/* Desktop Auth Buttons */}
+          <div className="hidden md:flex items-center gap-4">
             {isAuthenticated ? (
-              <>
-                <Link
-                  href="/dashboard"
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  Dashboard
-                </Link>
-                <span className="text-gray-500 text-sm">{user?.fullName}</span>
-                <button
-                  onClick={handleLogout}
-                  className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200"
-                >
-                  Logout
-                </button>
-              </>
+              <Link
+                href="/dashboard"
+                className="bg-black text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors"
+              >
+                My Dashboard
+              </Link>
             ) : (
               <>
                 <Link
                   href="/login"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-sm font-medium hover:text-gray-600"
                 >
-                  Login
+                  Log In
                 </Link>
                 <Link
-                  href="/register"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  href="https://wa.me/94XXXXXXXXX?text=Hello, I would like to know more about ACCA LMS"
+                  target="_blank"
+                  className="bg-black text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors"
                 >
-                  Register
+                  Contact Us
                 </Link>
               </>
             )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={openMobileMenu}
+            className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Navigation Drawer */}
+      <div className={`fixed inset-0 z-40 ${isMobileMenuOpen ? "" : "hidden"}`}>
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          onClick={closeMobileMenu}
+        />
+
+        {/* Drawer */}
+        <div
+          className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 ${
+            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <div className="p-6">
+            {/* Close Button */}
+            <button
+              onClick={closeMobileMenu}
+              className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {/* Logo */}
+            <div className="mb-8">
+              <Link
+                href="/"
+                className="text-2xl font-display font-medium tracking-tight"
+              >
+                ACCA LMS
+              </Link>
+            </div>
+
+            {/* Navigation Links */}
+            <nav className="space-y-4">
+              <Link
+                href="#"
+                onClick={closeMobileMenu}
+                className="block text-lg font-medium text-gray-900 hover:text-gray-600 transition-colors"
+              >
+                Home
+              </Link>
+              <Link
+                href="#all-courses"
+                onClick={closeMobileMenu}
+                className="block text-lg font-medium text-gray-900 hover:text-gray-600 transition-colors"
+              >
+                Courses
+              </Link>
+              <Link
+                href="#mentors"
+                onClick={closeMobileMenu}
+                className="block text-lg font-medium text-gray-900 hover:text-gray-600 transition-colors"
+              >
+                Mentor
+              </Link>
+              <Link
+                href="#benefits"
+                onClick={closeMobileMenu}
+                className="block text-lg font-medium text-gray-900 hover:text-gray-600 transition-colors"
+              >
+                Benefits
+              </Link>
+              <Link
+                href="#testimonials"
+                onClick={closeMobileMenu}
+                className="block text-lg font-medium text-gray-900 hover:text-gray-600 transition-colors"
+              >
+                Testimonials
+              </Link>
+            </nav>
+
+            {/* Auth Buttons */}
+            <div className="mt-8 space-y-3">
+              {isAuthenticated ? (
+                <Link
+                  href="/dashboard"
+                  className="block text-center bg-black text-white text-sm font-medium py-3 rounded-full hover:bg-gray-800 transition-colors"
+                >
+                  My Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="block text-center text-sm font-medium py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    href="https://wa.me/94XXXXXXXXX?text=Hello, I would like to know more about ACCA LMS"
+                    target="_blank"
+                    className="block text-center bg-black text-white text-sm font-medium py-3 rounded-full hover:bg-gray-800 transition-colors"
+                  >
+                    Contact Us
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 }

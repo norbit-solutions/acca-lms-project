@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
 
 const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-poppins",
 });
 
 export const metadata: Metadata = {
-  title: "ACCA LMS - Learn ACCA Online",
+  title: "ACCA LMS - Master ACCA with Confidence",
   description:
-    "Your trusted platform for ACCA exam preparation with quality video lessons",
+    "The ACCA LMS is a premium learning platform that lets you master your exams with secure video streaming, mentor support, and tracked progress.",
 };
 
 export default function RootLayout({
@@ -20,7 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
+      <body
+        className={`${inter.variable} ${poppins.variable} font-sans antialiased`}
+      >
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

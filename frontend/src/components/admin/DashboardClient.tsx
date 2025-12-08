@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { adminService } from "@/services";
 import type { DashboardStats } from "@/types";
 
-// Simple Icons
 const CoursesIcon = () => (
   <svg
     className="w-6 h-6"
@@ -53,7 +52,7 @@ const EnrollmentsIcon = () => (
   </svg>
 );
 
-export default function AdminDashboard() {
+export default function DashboardClient() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -112,7 +111,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div>
         <h1 className="text-2xl font-display font-bold text-slate-900">
           Dashboard
@@ -120,7 +118,6 @@ export default function AdminDashboard() {
         <p className="text-slate-500 mt-1">Overview of your platform</p>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
@@ -147,7 +144,6 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      {/* Recent Enrollments */}
       <div className="bg-white rounded-xl border border-slate-200">
         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
           <div>
@@ -187,10 +183,7 @@ export default function AdminDashboard() {
                     <p className="text-sm text-slate-500">
                       {new Date(enrollment.createdAt).toLocaleDateString(
                         "en-US",
-                        {
-                          month: "short",
-                          day: "numeric",
-                        }
+                        { month: "short", day: "numeric" }
                       )}
                     </p>
                   </div>
