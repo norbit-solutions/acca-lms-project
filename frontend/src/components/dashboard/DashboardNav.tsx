@@ -5,26 +5,20 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const MenuIcon = () => (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
     </svg>
 );
 
 const UserIcon = () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
     </svg>
 );
 
 const LogoutIcon = () => (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-    </svg>
-);
-
-const ChevronDownIcon = () => (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
     </svg>
 );
 
@@ -56,65 +50,60 @@ export default function DashboardNav({ onMenuClick }: DashboardNavProps) {
     };
 
     return (
-        <nav className="h-20 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30">
+        <nav className="h-14 bg-white px-6 lg:px-12 flex items-center justify-between sticky top-0 z-30 border-b border-neutral-100">
             {/* Left: Mobile Menu Button */}
             <button
                 onClick={onMenuClick}
-                className="lg:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                className="lg:hidden p-2 text-neutral-400 hover:text-neutral-600 transition-colors -ml-2"
             >
                 <MenuIcon />
             </button>
 
-            {/* Center: Page Title (visible on mobile) */}
-            <div className="lg:hidden">
-                <h2 className="font-display font-bold text-slate-900">Dashboard</h2>
-            </div>
+            {/* Spacer for desktop */}
+            <div className="hidden lg:block" />
 
             {/* Right: User Menu */}
             <div className="ml-auto relative" ref={dropdownRef}>
                 <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center gap-3 px-4 py-2 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors group"
+                    className="flex items-center gap-2 py-1.5 text-neutral-500 hover:text-neutral-700 transition-colors"
                 >
-                    <div className="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center text-white">
+                    <div className="w-7 h-7 bg-neutral-100 rounded-full flex items-center justify-center text-neutral-500">
                         <UserIcon />
                     </div>
-                    <div className="hidden md:block text-left">
-                        <p className="text-sm font-medium text-slate-900">{user?.fullName || "Student"}</p>
-                        <p className="text-xs text-slate-500">{user?.email}</p>
-                    </div>
-                    <ChevronDownIcon />
+                    <span className="hidden md:inline text-sm font-normal">{user?.fullName || "Account"}</span>
+                    <svg className="w-3.5 h-3.5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                    </svg>
                 </button>
 
                 {/* Dropdown Menu */}
                 {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-slate-200 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-100 py-1">
                         {/* User Info (mobile) */}
-                        <div className="md:hidden px-4 py-3 border-b border-slate-100">
-                            <p className="text-sm font-medium text-slate-900">{user?.fullName}</p>
-                            <p className="text-xs text-slate-500">{user?.email}</p>
+                        <div className="md:hidden px-4 py-2 border-b border-neutral-100">
+                            <p className="text-sm text-neutral-700">{user?.fullName}</p>
+                            <p className="text-xs text-neutral-400">{user?.email}</p>
                         </div>
 
                         {/* Menu Items */}
-                        <div className="px-2 py-1">
-                            <button
-                                onClick={() => {
-                                    router.push("/dashboard/profile");
-                                    setIsDropdownOpen(false);
-                                }}
-                                className="w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors text-sm"
-                            >
-                                <UserIcon />
-                                <span>My Profile</span>
-                            </button>
-                            <button
-                                onClick={handleLogout}
-                                className="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm"
-                            >
-                                <LogoutIcon />
-                                <span>Logout</span>
-                            </button>
-                        </div>
+                        <button
+                            onClick={() => {
+                                router.push("/dashboard/profile");
+                                setIsDropdownOpen(false);
+                            }}
+                            className="w-full flex items-center gap-2.5 px-4 py-2 text-neutral-600 hover:bg-neutral-50 transition-colors text-sm font-normal"
+                        >
+                            <UserIcon />
+                            Profile
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center gap-2.5 px-4 py-2 text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 transition-colors text-sm font-normal"
+                        >
+                            <LogoutIcon />
+                            Sign out
+                        </button>
                     </div>
                 )}
             </div>

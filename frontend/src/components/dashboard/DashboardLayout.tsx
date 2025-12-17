@@ -25,11 +25,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     // Show loading spinner while checking auth
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-slate-600 font-medium">Loading...</p>
-                </div>
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <div className="w-5 h-5 border-2 border-neutral-200 border-t-neutral-600 rounded-full animate-spin" />
             </div>
         );
     }
@@ -40,7 +37,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-white">
             {/* Sidebar */}
             <DashboardSidebar
                 isMobileOpen={isMobileSidebarOpen}
@@ -48,12 +45,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             />
 
             {/* Main Content */}
-            <div className="lg:pl-72">
+            <div className="lg:pl-64">
                 {/* Top Navbar */}
                 <DashboardNav onMenuClick={() => setIsMobileSidebarOpen(true)} />
 
                 {/* Page Content */}
-                <main className="p-6 lg:p-8">
+                <main className="px-6 py-8 lg:px-12 lg:py-10">
                     {children}
                 </main>
             </div>

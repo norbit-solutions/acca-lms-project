@@ -5,48 +5,23 @@ import Link from "next/link";
 import { studentService } from "@/services";
 import type { EnrolledCourse, RecentLesson } from "@/types";
 
-// Icons
+// Minimal icons with thin strokes
 const BookIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-  </svg>
-);
-
-const ClockIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-const CheckCircleIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
   </svg>
 );
 
 const PlayIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M8 5v14l11-7z" />
   </svg>
 );
 
-const ArrowRightIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+const ArrowIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
   </svg>
-);
-
-// Skeleton Loader Component
-const LessonSkeleton = () => (
-  <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden animate-pulse">
-    <div className="h-40 bg-slate-200" />
-    <div className="p-5 space-y-3">
-      <div className="h-5 bg-slate-200 rounded w-3/4" />
-      <div className="h-4 bg-slate-200 rounded w-1/2" />
-      <div className="h-3 bg-slate-200 rounded w-2/3" />
-    </div>
-  </div>
 );
 
 // Format date helper
@@ -72,12 +47,10 @@ export default function DashboardPage() {
   const [recentLessons, setRecentLessons] = useState<RecentLesson[]>([]);
   const [isLoadingCourses, setIsLoadingCourses] = useState(true);
   const [isLoadingLessons, setIsLoadingLessons] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch courses for stats
         setIsLoadingCourses(true);
         const coursesData = await studentService.getMyCourses();
         setCourses(coursesData);
@@ -88,13 +61,11 @@ export default function DashboardPage() {
       }
 
       try {
-        // Fetch recent lessons
         setIsLoadingLessons(true);
         const lessonsData = await studentService.getRecentLessons();
         setRecentLessons(lessonsData);
       } catch (err) {
         console.error("Failed to fetch recent lessons:", err);
-        setError("Failed to load recent lessons");
       } finally {
         setIsLoadingLessons(false);
       }
@@ -103,161 +74,172 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
+  const totalLessons = courses.reduce((acc, c) => acc + c.lessonsCount, 0);
+  const completedLessons = courses.reduce((acc, c) => acc + c.completedLessons, 0);
+  const avgProgress = courses.length > 0
+    ? Math.round(courses.reduce((acc, c) => acc + c.progress, 0) / courses.length)
+    : 0;
+
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
-      {/* Welcome Header */}
-      <div>
-        <h1 className="text-3xl lg:text-4xl font-display font-bold text-slate-900 mb-2">
-          Welcome back! 👋
+    <div className="max-w-5xl mx-auto">
+      {/* Header */}
+      <div className="mb-10">
+        <h1 className="text-2xl font-normal text-neutral-800 mb-1">
+          Welcome back
         </h1>
-        <p className="text-slate-600 text-lg">
-          Continue your learning journey where you left off.
+        <p className="text-neutral-400 text-sm font-light">
+          Continue where you left off
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl p-6 border border-slate-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
-              <BookIcon />
-            </div>
-          </div>
-          <p className="text-slate-500 text-sm font-medium mb-1">Enrolled Courses</p>
-          <p className="text-3xl font-bold text-slate-900">
-            {isLoadingCourses ? "..." : courses.length}
+      {/* Stats - Minimal inline */}
+      <div className="flex flex-wrap gap-8 mb-12 pb-8 border-b border-neutral-100">
+        <div>
+          <p className="text-3xl font-light text-neutral-800">
+            {isLoadingCourses ? "–" : courses.length}
           </p>
+          <p className="text-xs text-neutral-400 mt-1">Courses</p>
         </div>
-
-        <div className="bg-white rounded-2xl p-6 border border-slate-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
-              <CheckCircleIcon />
-            </div>
-          </div>
-          <p className="text-slate-500 text-sm font-medium mb-1">Completed Lessons</p>
-          <p className="text-3xl font-bold text-slate-900">
-            {isLoadingCourses
-              ? "..."
-              : courses.reduce((acc, course) => acc + course.completedLessons, 0)}
+        <div>
+          <p className="text-3xl font-light text-neutral-800">
+            {isLoadingCourses ? "–" : `${completedLessons}/${totalLessons}`}
           </p>
+          <p className="text-xs text-neutral-400 mt-1">Lessons completed</p>
         </div>
-
-        <div className="bg-white rounded-2xl p-6 border border-slate-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
-              <ClockIcon />
-            </div>
-          </div>
-          <p className="text-slate-500 text-sm font-medium mb-1">Avg. Progress</p>
-          <p className="text-3xl font-bold text-slate-900">
-            {isLoadingCourses
-              ? "..."
-              : courses.length > 0
-                ? Math.round(courses.reduce((acc, course) => acc + course.progress, 0) / courses.length)
-                : 0}
-            %
+        <div>
+          <p className="text-3xl font-light text-neutral-800">
+            {isLoadingCourses ? "–" : `${avgProgress}%`}
           </p>
+          <p className="text-xs text-neutral-400 mt-1">Average progress</p>
         </div>
       </div>
 
-      {/* Recently Watched Lessons Section */}
+      {/* Recently Watched */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-display font-bold text-slate-900">Recently Watched</h2>
+          <h2 className="text-sm font-normal text-neutral-500 uppercase tracking-wide">
+            Recently watched
+          </h2>
           <Link
             href="/dashboard/my-courses"
-            className="text-sm text-slate-600 hover:text-slate-900 font-medium transition-colors"
+            className="text-sm text-neutral-400 hover:text-neutral-600 transition-colors flex items-center gap-1"
           >
-            View all courses →
+            All courses
+            <ArrowIcon />
           </Link>
         </div>
 
         {isLoadingLessons ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <LessonSkeleton />
-            <LessonSkeleton />
-            <LessonSkeleton />
-          </div>
-        ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
-            <p className="text-red-600 font-medium">{error}</p>
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse flex items-center gap-4 py-4">
+                <div className="w-20 h-14 bg-neutral-100 rounded-lg" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-neutral-100 rounded w-48" />
+                  <div className="h-3 bg-neutral-100 rounded w-32" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : recentLessons.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center">
-            <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <PlayIcon />
+          <div className="py-16 text-center">
+            <div className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <BookIcon />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">No Recently Watched Lessons</h3>
-            <p className="text-slate-600 mb-6 max-w-md mx-auto">
-              Start watching lessons to see your recent activity here.
-            </p>
+            <p className="text-neutral-400 text-sm mb-4">No lessons watched yet</p>
             <Link
               href="/dashboard/my-courses"
-              className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-slate-800 transition-colors"
+              className="text-sm text-neutral-600 hover:text-neutral-800 underline underline-offset-4"
             >
-              Browse My Courses
+              Browse courses
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-1">
             {recentLessons.map((lesson) => (
               <Link
                 key={`${lesson.lessonId}-${lesson.lastViewedAt}`}
                 href={`/dashboard/courses/${lesson.courseSlug}`}
-                className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-slate-300 transition-all duration-300"
+                className="group flex items-center gap-4 py-3 px-3 -mx-3 rounded-lg hover:bg-neutral-50 transition-colors"
               >
-                {/* Course Thumbnail Background */}
-                <div className="h-40 bg-slate-100 relative overflow-hidden">
+                {/* Thumbnail */}
+                <div className="w-20 h-14 bg-neutral-100 rounded-lg overflow-hidden flex-shrink-0 relative">
                   {lesson.courseThumbnail ? (
                     <img
                       src={lesson.courseThumbnail}
-                      alt={lesson.courseTitle}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      alt=""
+                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-400">
+                    <div className="w-full h-full flex items-center justify-center text-neutral-300">
                       <BookIcon />
                     </div>
                   )}
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-
-                  {/* Course Title on Image */}
-                  <div className="absolute bottom-3 left-3 right-3">
-                    <p className="text-white text-sm font-medium line-clamp-1">
-                      {lesson.courseTitle}
-                    </p>
+                  {/* Play overlay */}
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                      <PlayIcon />
+                    </div>
                   </div>
                 </div>
 
-                {/* Lesson Info */}
-                <div className="p-5">
-                  <h3 className="font-bold text-base text-slate-900 mb-2 line-clamp-2 group-hover:text-slate-700 transition-colors">
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-normal text-neutral-700 truncate group-hover:text-neutral-900 transition-colors">
                     {lesson.lessonTitle}
                   </h3>
-
-                  <p className="text-sm text-slate-600 mb-3">
-                    {lesson.chapterTitle}
+                  <p className="text-xs text-neutral-400 mt-0.5 truncate">
+                    {lesson.courseTitle} · {lesson.chapterTitle}
                   </p>
-
-                  {/* Watch Info */}
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                    <span className="flex items-center gap-1.5 text-xs text-slate-500">
-                      <ClockIcon />
-                      {formatDate(lesson.lastViewedAt)}
-                    </span>
-                    <span className="flex items-center gap-1 text-sm text-slate-600">
-                      <PlayIcon />
-                      Continue
-                    </span>
-                  </div>
                 </div>
+
+                {/* Time */}
+                <span className="text-xs text-neutral-300 flex-shrink-0">
+                  {formatDate(lesson.lastViewedAt)}
+                </span>
               </Link>
             ))}
           </div>
         )}
       </div>
+
+      {/* Quick Access - Courses */}
+      {courses.length > 0 && (
+        <div className="mt-12 pt-8 border-t border-neutral-100">
+          <h2 className="text-sm font-normal text-neutral-500 uppercase tracking-wide mb-6">
+            Your courses
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {courses.slice(0, 4).map((course) => (
+              <Link
+                key={course.id}
+                href={`/dashboard/courses/${course.slug}`}
+                className="group flex items-center gap-4 p-4 rounded-xl bg-neutral-50 hover:bg-neutral-100 transition-colors"
+              >
+                <div className="w-12 h-12 bg-white rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
+                  {course.thumbnail ? (
+                    <img src={course.thumbnail} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <BookIcon />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-normal text-neutral-700 truncate">{course.title}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="flex-1 h-1 bg-neutral-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-neutral-400 rounded-full transition-all"
+                        style={{ width: `${course.progress}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-neutral-400">{course.progress}%</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
