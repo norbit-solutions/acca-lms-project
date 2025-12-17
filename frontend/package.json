@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@mux/mux-player-react": "^3.10.0",
+    "@mux/mux-player-react": "^3.10.1",
     "axios": "^1.13.2",
     "next": "16.0.7",
     "react": "19.2.0",

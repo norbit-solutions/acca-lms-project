@@ -55,11 +55,29 @@ export default class UsersController {
         query.preload('course')
       })
       .preload('videoViews', (query) => {
-        query.preload('lesson')
+        query.preload('lesson', (lessonQuery) => {
+          lessonQuery.preload('chapter', (chapterQuery) => {
+            chapterQuery.preload('course')
+          })
+        })
       })
       .firstOrFail()
 
-    return response.ok({ user })
+    // Serialize user data with properly formatted video views
+    const userData = user.serialize()
+
+    // Transform video views to include lessonTitle and courseTitle
+    userData.videoViews = user.videoViews.map((v) => ({
+      id: v.id,
+      lessonId: v.lessonId,
+      lessonTitle: v.lesson?.title ?? 'Unknown Lesson',
+      courseTitle: v.lesson?.chapter?.course?.title ?? 'Unknown Course',
+      viewCount: v.viewCount,
+      customViewLimit: v.customViewLimit,
+      lastViewedAt: v.lastViewedAt?.toISO() ?? '',
+    }))
+
+    return response.ok({ user: userData })
   }
 
   /**
@@ -119,5 +137,64 @@ export default class UsersController {
     }
 
     response.ok(viewsResponse)
+  }
+
+  /**
+   * Set custom view limit for a user's lesson
+   */
+  async setCustomViewLimit({ params, request, response }: HttpContext) {
+    const userId = Number(params.userId)
+    const lessonId = Number(params.lessonId)
+    const { customLimit } = request.only(['customLimit'])
+
+    if (customLimit === undefined || customLimit < 0) {
+      return response.badRequest({ message: 'Invalid custom limit' })
+    }
+
+    // Verify user exists
+    await User.findOrFail(userId)
+
+    // Get or create video view record
+    let videoView = await VideoView.query()
+      .where('user_id', userId)
+      .where('lesson_id', lessonId)
+      .first()
+
+    if (!videoView) {
+      videoView = await VideoView.create({
+        userId,
+        lessonId,
+        viewCount: 0,
+        customViewLimit: customLimit,
+      })
+    } else {
+      videoView.customViewLimit = customLimit
+      await videoView.save()
+    }
+
+    return response.ok({
+      message: 'Custom view limit set successfully',
+      videoView
+    })
+  }
+
+  /**
+   * Remove custom view limit (use default)
+   */
+  async removeCustomViewLimit({ params, response }: HttpContext) {
+    const userId = Number(params.userId)
+    const lessonId = Number(params.lessonId)
+
+    const videoView = await VideoView.query()
+      .where('user_id', userId)
+      .where('lesson_id', lessonId)
+      .first()
+
+    if (videoView) {
+      videoView.customViewLimit = null
+      await videoView.save()
+    }
+
+    return response.ok({ message: 'Custom view limit removed' })
   }
 }

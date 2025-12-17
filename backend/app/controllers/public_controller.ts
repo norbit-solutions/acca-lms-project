@@ -16,6 +16,8 @@ interface CourseListItem {
   price: number | null
   currency: string
   isFree: boolean
+  isPublished: boolean
+  isUpcoming: boolean
 }
 
 interface CourseDetail {
@@ -73,8 +75,11 @@ export default class PublicController {
    * List all published courses
    */
   async courses({ response }: HttpContext) {
+    // Include published courses OR unpublished courses marked as upcoming
     const courses = await Course.query()
-      .where('is_published', true)
+      .where((query) => {
+        query.where('is_published', true).orWhere('is_upcoming', true)
+      })
       .withCount('chapters')
       .orderBy('created_at', 'desc')
 
@@ -100,6 +105,8 @@ export default class PublicController {
           price: course.price,
           currency: course.currency,
           isFree: course.isFree,
+          isPublished: course.isPublished,
+          isUpcoming: course.isUpcoming,
         }
       })
     )

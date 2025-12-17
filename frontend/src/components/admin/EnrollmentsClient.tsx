@@ -1,28 +1,9 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { adminApi } from "@/lib/api";
-
-interface User {
-  id: number;
-  fullName: string;
-  email: string;
-  phone: string;
-}
-
-interface Course {
-  id: number;
-  title: string;
-}
-
-interface Enrollment {
-  id: number;
-  userId: number;
-  courseId: number;
-  user: User;
-  course: Course;
-  createdAt: string;
-}
+import { useState } from "react";
+import type { Enrollment, AdminCourse, User } from "@/types";
+import { adminService } from "@/services";
+import { useModal } from "./ModalProvider";
+import { useRouter } from "next/navigation";
 
 // Icons
 const PlusIcon = () => (
@@ -121,97 +102,51 @@ const TrashIcon = () => (
   </svg>
 );
 
+const EditIcon = () => (
+  <svg
+    className="w-4 h-4"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+    />
+  </svg>
+);
+
 export default function EnrollmentsClient({
   initialEnrollments = [],
   initialCourses = [],
 }: {
   initialEnrollments?: Enrollment[];
-  initialCourses?: Course[];
+  initialCourses?: AdminCourse[];
 }) {
-  const [enrollments, setEnrollments] = useState<Enrollment[]>(
-    initialEnrollments || []
-  );
-  const [courses, setCourses] = useState<Course[]>(initialCourses || []);
-  const [loading, setLoading] = useState(false);
+  const { showError, showConfirm } = useModal();
+
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [searching, setSearching] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
   const [filterCourse, setFilterCourse] = useState<number | null>(null);
+  const [editingEnrollment, setEditingEnrollment] = useState<Enrollment | null>(null);
+  const router = useRouter();
 
-  // If filterCourse changes, reload enrollments
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setLoading(true);
-      try {
-        const { data } = await adminApi.getEnrollments(
-          filterCourse ? { courseId: filterCourse } : undefined
-        );
-        if (mounted) setEnrollments(data?.enrollments || data || []);
-      } catch (error) {
-        console.error("Failed to load enrollments:", error);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [filterCourse]);
 
-  // If initial props were empty, fetch enrollments and courses on mount
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        // Only fetch enrollments if we don't already have any (and no filter is active)
-        if (
-          (Array.isArray(enrollments) ? enrollments.length : 0) === 0 &&
-          !filterCourse
-        ) {
-          setLoading(true);
-          const { data } = await adminApi.getEnrollments();
-          if (mounted) setEnrollments(data?.enrollments || data || []);
-        }
 
-        // Ensure we have courses for the select lists
-        if ((Array.isArray(courses) ? courses.length : 0) === 0) {
-          const { data: coursesData } = await adminApi.getCourses();
-          if (mounted) setCourses(coursesData?.courses || []);
-        }
-      } catch (error) {
-        console.error("Failed to load initial enrollments/courses:", error);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  // loadData removed — initial data is provided from server via props
-
-  const loadEnrollments = async () => {
-    try {
-      const { data } = await adminApi.getEnrollments(
-        filterCourse ? { courseId: filterCourse } : undefined
-      );
-      setEnrollments(data?.enrollments || data || []);
-    } catch (error) {
-      console.error("Failed to load enrollments:", error);
-    }
-  };
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     setSearching(true);
     try {
-      const { data } = await adminApi.searchUsers(searchQuery);
+      const data = await adminService.searchUsers(searchQuery);
       setSearchResults(data);
     } catch (error) {
       console.error("Failed to search users:", error);
@@ -228,57 +163,85 @@ export default function EnrollmentsClient({
 
   const handleEnroll = async () => {
     if (!selectedUser || !selectedCourse) {
-      alert("Please select both a user and a course");
+      showError("Please select both a user and a course");
       return;
     }
     try {
-      await adminApi.createEnrollment({
+      await adminService.createEnrollment({
         userId: selectedUser.id,
         courseId: selectedCourse,
       });
+
+
       setShowModal(false);
       setSelectedUser(null);
       setSelectedCourse(null);
       setSearchQuery("");
-      loadEnrollments();
+      router.refresh();
     } catch (error: unknown) {
       console.error("Failed to enroll:", error);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      alert((error as any)?.response?.data?.message || "Failed to enroll user");
+      showError((error as any)?.response?.data?.message || "Failed to enroll user");
     }
   };
 
   const handleDelete = async (enrollment: Enrollment) => {
-    if (
-      !confirm(
-        `Remove ${enrollment.user.fullName} from ${enrollment.course.title}?`
-      )
-    )
-      return;
+    const confirmed = await showConfirm({
+      title: "Remove Enrollment",
+      message: `Remove ${enrollment.user?.fullName} from ${enrollment.course?.title}?`,
+      confirmText: "Remove",
+      variant: "danger",
+    });
+    if (!confirmed) return;
     try {
-      await adminApi.deleteEnrollment(enrollment.id);
-      loadEnrollments();
+      await adminService.deleteEnrollment(enrollment.id);
+      router.refresh();
     } catch (error) {
       console.error("Failed to delete enrollment:", error);
-      alert("Failed to remove enrollment");
+      showError("Failed to remove enrollment");
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="relative">
-          <div className="w-12 h-12 border-4 border-blue-500/30 rounded-full"></div>
-          <div className="w-12 h-12 border-4 border-t-blue-500 rounded-full animate-spin absolute top-0 left-0"></div>
-        </div>
-      </div>
+  const handleEdit = (enrollment: Enrollment) => {
+    setEditingEnrollment(enrollment);
+    setSelectedCourse(null);
+    setShowEditModal(true);
+  };
+
+  const handleEnrollAdditional = async () => {
+    if (!editingEnrollment || !selectedCourse) {
+      showError("Please select a course");
+      return;
+    }
+    try {
+      await adminService.createEnrollment({
+        userId: editingEnrollment.user!.id,
+        courseId: selectedCourse,
+      });
+      setShowEditModal(false);
+      setEditingEnrollment(null);
+      setSelectedCourse(null);
+      router.refresh();
+    } catch (error: unknown) {
+      console.error("Failed to enroll:", error);
+      showError((error as any)?.response?.data?.message || "Failed to enroll in course");
+    }
+  };
+
+  // Get courses the student is NOT enrolled in
+  const getAvailableCourses = () => {
+    if (!editingEnrollment) return [];
+    const enrolledCourseIds = initialEnrollments
+      .filter(e => e.user?.id === editingEnrollment.user?.id)
+      .map(e => e.course?.id);
+    return (Array.isArray(initialCourses) ? initialCourses : []).filter(
+      course => !enrolledCourseIds.includes(course.id)
     );
-  }
+  };
 
   return (
     <div className="space-y-8">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
         <div>
           <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900">
             Enrollments
@@ -289,7 +252,7 @@ export default function EnrollmentsClient({
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold shadow hover:shadow-md transition-all duration-200"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-lg font-medium shadow-sm hover:bg-slate-800 transition-all duration-200"
         >
           <PlusIcon />
           New Enrollment
@@ -308,10 +271,10 @@ export default function EnrollmentsClient({
             onChange={(e) =>
               setFilterCourse(e.target.value ? Number(e.target.value) : null)
             }
-            className="flex-1 sm:flex-initial sm:min-w-[250px] px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 hover:bg-white transition-colors"
+            className="flex-1 sm:flex-initial sm:min-w-[250px] px-0 py-2.5 border-b border-slate-300 focus:border-slate-800 outline-none bg-transparent transition-colors rounded-none placeholder:text-slate-400"
           >
             <option value="">All Courses</option>
-            {(Array.isArray(courses) ? courses : []).map((course) => (
+            {(Array.isArray(initialCourses) ? initialCourses : []).map((course) => (
               <option key={course.id} value={course.id}>
                 {course.title}
               </option>
@@ -331,7 +294,7 @@ export default function EnrollmentsClient({
 
       {/* Enrollments Table */}
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-        {enrollments.length > 0 ? (
+        {initialEnrollments.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -354,7 +317,7 @@ export default function EnrollmentsClient({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {enrollments.map((enrollment) => (
+                {initialEnrollments.map((enrollment) => (
                   <tr
                     key={enrollment.id}
                     className="group hover:bg-slate-50/50 transition-colors"
@@ -362,21 +325,21 @@ export default function EnrollmentsClient({
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-semibold text-sm shadow-sm shrink-0">
-                          {enrollment.user.fullName.charAt(0)}
+                          {enrollment.user?.fullName.charAt(0) || "?"}
                         </div>
                         <div className="min-w-0">
                           <p className="font-semibold text-slate-900 truncate">
-                            {enrollment.user.fullName}
+                            {enrollment.user?.fullName || "Unknown User"}
                           </p>
                           <p className="text-sm text-slate-500 truncate">
-                            {enrollment.user.email}
+                            {enrollment.user?.email || "No email"}
                           </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="font-medium text-slate-700">
-                        {enrollment.course.title}
+                        {enrollment.course?.title || "Unknown Course"}
                       </span>
                     </td>
                     <td className="px-6 py-4 hidden md:table-cell">
@@ -393,13 +356,22 @@ export default function EnrollmentsClient({
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => handleDelete(enrollment)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-sm font-medium transition-colors"
-                      >
-                        <TrashIcon />
-                        <span className="hidden sm:inline">Remove</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleEdit(enrollment)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 text-sm font-medium transition-colors"
+                        >
+                          <EditIcon />
+                          <span className="hidden sm:inline">Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(enrollment)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-sm font-medium transition-colors"
+                        >
+                          <TrashIcon />
+                          <span className="hidden sm:inline">Remove</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -419,7 +391,7 @@ export default function EnrollmentsClient({
             </p>
             <button
               onClick={() => setShowModal(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow hover:shadow-md transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-lg font-medium shadow-sm hover:bg-slate-800 transition-all"
             >
               <PlusIcon />
               Enroll a Student
@@ -431,7 +403,7 @@ export default function EnrollmentsClient({
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <h2 className="text-xl font-display font-bold text-slate-900">
@@ -465,24 +437,14 @@ export default function EnrollmentsClient({
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                      className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400"
+                      className="w-full pl-10 pr-4 py-2 border-b border-slate-300 focus:border-slate-800 outline-none bg-transparent transition-colors rounded-none placeholder:text-slate-400"
                       placeholder="Search by email or phone..."
                     />
-                    <SearchIcon />
-                    <svg
-                      className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-500">
+                      <SearchIcon />
+                    </div>
                   </div>
+
                   <button
                     onClick={handleSearch}
                     disabled={searching}
@@ -491,55 +453,55 @@ export default function EnrollmentsClient({
                     {searching ? "..." : "Search"}
                   </button>
                 </div>
-
-                {/* Search Results */}
-                {searchResults.length > 0 && (
-                  <div className="mt-3 border border-slate-200 rounded-xl divide-y divide-slate-100 overflow-hidden shadow-sm">
-                    {searchResults.map((user) => (
-                      <button
-                        key={user.id}
-                        onClick={() => handleSelectUser(user)}
-                        className="w-full px-4 py-3 text-left hover:bg-slate-50 transition-colors"
-                      >
-                        <p className="font-semibold text-slate-900">
-                          {user.fullName}
-                        </p>
-                        <p className="text-sm text-slate-500">
-                          {user.email} • {user.phone}
-                        </p>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Selected User */}
-                {selectedUser && (
-                  <div className="mt-3 p-4 bg-blue-50 rounded-xl flex items-center justify-between border border-blue-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-semibold text-sm">
-                        {selectedUser.fullName.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-blue-900">
-                          {selectedUser.fullName}
-                        </p>
-                        <p className="text-sm text-blue-700">
-                          {selectedUser.email}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setSelectedUser(null);
-                        setSearchQuery("");
-                      }}
-                      className="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-colors"
-                    >
-                      <CloseIcon />
-                    </button>
-                  </div>
-                )}
               </div>
+
+              {/* Search Results */}
+              {searchResults.length > 0 && (
+                <div className="mt-3 border border-slate-200 rounded-xl divide-y divide-slate-100 overflow-hidden shadow-sm">
+                  {searchResults.map((user) => (
+                    <button
+                      key={user.id}
+                      onClick={() => handleSelectUser(user)}
+                      className="w-full px-4 py-3 text-left hover:bg-slate-50 transition-colors"
+                    >
+                      <p className="font-semibold text-slate-900">
+                        {user.fullName}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {user.email} • {user.phone}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Selected User */}
+              {selectedUser && (
+                <div className="mt-3 p-4 bg-slate-50 rounded-xl flex items-center justify-between border border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center text-white font-semibold text-sm">
+                      {selectedUser.fullName.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900">
+                        {selectedUser.fullName}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {selectedUser.email}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSelectedUser(null);
+                      setSearchQuery("");
+                    }}
+                    className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+              )}
 
               {/* Course Selection */}
               <div>
@@ -549,10 +511,10 @@ export default function EnrollmentsClient({
                 <select
                   value={selectedCourse || ""}
                   onChange={(e) => setSelectedCourse(Number(e.target.value))}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all"
+                  className="w-full px-0 py-2 border-b border-slate-300 focus:border-slate-800 outline-none bg-transparent transition-colors rounded-none placeholder:text-slate-400"
                 >
                   <option value="">Choose a course...</option>
-                  {courses.map((course) => (
+                  {(Array.isArray(initialCourses) ? initialCourses : []).map((course) => (
                     <option key={course.id} value={course.id}>
                       {course.title}
                     </option>
@@ -571,16 +533,125 @@ export default function EnrollmentsClient({
                   setSearchQuery("");
                   setSearchResults([]);
                 }}
-                className="px-5 py-2.5 text-slate-700 font-semibold hover:bg-slate-200 rounded-xl transition-colors"
+                className="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleEnroll}
                 disabled={!selectedUser || !selectedCourse}
-                className="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl shadow hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                className="px-5 py-2.5 bg-slate-900 text-white font-medium rounded-lg shadow-sm hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
               >
                 Enroll Student
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Enrollment Modal */}
+      {showEditModal && editingEnrollment && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <h2 className="text-xl font-display font-bold text-slate-900">
+                Enroll in Additional Course
+              </h2>
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditingEnrollment(null);
+                  setSelectedCourse(null);
+                }}
+                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-5">
+              {/* Student Info */}
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+                    {editingEnrollment.user?.fullName.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900">
+                      {editingEnrollment.user?.fullName}
+                    </p>
+                    <p className="text-sm text-slate-500">
+                      {editingEnrollment.user?.email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Current Enrollments */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Currently Enrolled In
+                </label>
+                <div className="space-y-2">
+                  {initialEnrollments
+                    .filter(e => e.user?.id === editingEnrollment.user?.id)
+                    .map((enrollment) => (
+                      <div
+                        key={enrollment.id}
+                        className="px-3 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium"
+                      >
+                        {enrollment.course?.title}
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              {/* Available Courses */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Enroll in New Course
+                </label>
+                {getAvailableCourses().length > 0 ? (
+                  <select
+                    value={selectedCourse || ""}
+                    onChange={(e) => setSelectedCourse(Number(e.target.value))}
+                    className="w-full px-0 py-2 border-b border-slate-300 focus:border-slate-800 outline-none bg-transparent transition-colors rounded-none placeholder:text-slate-400"
+                  >
+                    <option value="">Choose a course...</option>
+                    {getAvailableCourses().map((course) => (
+                      <option key={course.id} value={course.id}>
+                        {course.title}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="text-sm text-slate-500 italic">
+                    This student is already enrolled in all available courses.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 border-t border-slate-100">
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditingEnrollment(null);
+                  setSelectedCourse(null);
+                }}
+                className="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEnrollAdditional}
+                disabled={!selectedCourse}
+                className="px-5 py-2.5 bg-slate-900 text-white font-medium rounded-lg shadow-sm hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+              >
+                Enroll in Course
               </button>
             </div>
           </div>

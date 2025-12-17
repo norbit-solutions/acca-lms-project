@@ -43,6 +43,12 @@ export default class Course extends BaseModel {
   @column()
   declare isPublished: boolean
 
+  /**
+   * If true, course appears in "Upcoming Courses" section
+   */
+  @column()
+  declare isUpcoming: boolean
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

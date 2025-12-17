@@ -9,15 +9,18 @@ import type {
   MyCourseResponse,
   LessonResponse,
   ViewStatusResponse,
+  RecentLessonsResponse,
   EnrolledCourse,
   CourseWithProgress,
   LessonDetail,
   ViewStatus,
+  RecentLesson,
 } from "@/types";
 
 const STUDENT_ENDPOINTS = {
   MY_COURSES: "/my-courses",
   MY_COURSE: (slug: string) => `/my-courses/${slug}`,
+  RECENT_LESSONS: "/recent-lessons",
   LESSON: (id: number) => `/lessons/${id}`,
   START_VIEW: (id: number) => `/lessons/${id}/view`,
   VIEW_STATUS: (id: number) => `/lessons/${id}/view-status`,
@@ -45,6 +48,16 @@ export const studentService = {
   },
 
   /**
+   * Get recently watched lessons
+   */
+  async getRecentLessons(): Promise<RecentLesson[]> {
+    const response = await api.get<RecentLessonsResponse>(
+      STUDENT_ENDPOINTS.RECENT_LESSONS
+    );
+    return response.lessons;
+  },
+
+  /**
    * Get lesson details with video access
    */
   async getLesson(id: number): Promise<LessonDetail> {
@@ -57,8 +70,10 @@ export const studentService = {
   /**
    * Start watching a lesson (increment view count)
    */
-  async startView(id: number): Promise<ViewStatus> {
-    return api.post<ViewStatusResponse>(STUDENT_ENDPOINTS.START_VIEW(id));
+  async startView(id: number, watchPercentage: number = 0): Promise<ViewStatus> {
+    return api.post<ViewStatusResponse>(STUDENT_ENDPOINTS.START_VIEW(id), {
+      watchPercentage,
+    });
   },
 
   /**

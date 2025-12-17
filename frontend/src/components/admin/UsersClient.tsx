@@ -2,27 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { adminApi } from "@/lib/api";
-
-interface User {
-  id: number;
-  fullName: string;
-  email: string;
-  phone: string;
-  role: string;
-  createdAt: string;
-  enrollments?: Array<{
-    id: number;
-    course: { id: number; title: string };
-  }>;
-}
-
-interface PaginationMeta {
-  total: number;
-  page: number;
-  lastPage: number;
-  perPage: number;
-}
+import { adminService } from "@/services";
+import type { AdminUser, PaginatedResponse } from "@/types";
 
 // Icons
 const UsersIcon = () => (
@@ -115,12 +96,13 @@ export default function UsersClient({
   initialUsers = [],
   initialMeta = null,
 }: {
-  initialUsers?: User[];
-  initialMeta?: PaginationMeta | null;
+  initialUsers?: AdminUser[];
+  initialMeta?: PaginatedResponse<AdminUser>["meta"] | null;
 }) {
-  const [users, setUsers] = useState<User[]>(initialUsers || []);
-  const [meta, setMeta] = useState<PaginationMeta | null>(initialMeta || null);
-  const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState<AdminUser[]>(initialUsers || []);
+  const [meta, setMeta] = useState<PaginatedResponse<AdminUser>["meta"] | null>(
+    initialMeta || null
+  );
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState(false);
@@ -129,30 +111,24 @@ export default function UsersClient({
     if (!searchMode) {
       // reload page when page changes
       (async () => {
-        setLoading(true);
         try {
-          const { data } = await adminApi.getUsers({ page, limit: 20 });
-          setUsers(data?.data || data?.users || data || []);
-          setMeta(data?.meta || null);
+          const result = await adminService.getUsers({ page, limit: 20 });
+          setUsers(result.users || []);
+          setMeta(result.meta || null);
         } catch (error) {
           console.error("Failed to load users:", error);
-        } finally {
-          setLoading(false);
         }
       })();
     }
   }, [page, searchMode]);
 
   const loadUsers = async () => {
-    setLoading(true);
     try {
-      const { data } = await adminApi.getUsers({ page, limit: 20 });
-      setUsers(data?.data || data?.users || data || []);
-      setMeta(data?.meta || null);
+      const result = await adminService.getUsers({ page, limit: 20 });
+      setUsers(result.users || []);
+      setMeta(result.meta || null);
     } catch (error) {
       console.error("Failed to load users:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -163,15 +139,12 @@ export default function UsersClient({
       return;
     }
     setSearchMode(true);
-    setLoading(true);
     try {
-      const { data } = await adminApi.searchUsers(searchQuery);
-      setUsers(data?.users || data || []);
+      const users = await adminService.searchUsers(searchQuery);
+      setUsers(users || []);
       setMeta(null);
     } catch (error) {
       console.error("Failed to search users:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -184,7 +157,7 @@ export default function UsersClient({
   return (
     <div className="space-y-8">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
         <div>
           <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900">
             Users
@@ -224,14 +197,14 @@ export default function UsersClient({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400"
+              className="w-full pl-12 pr-4 py-2 border-b border-slate-300 focus:border-slate-800 outline-none bg-transparent transition-colors rounded-none placeholder:text-slate-400"
               placeholder="Search by name, email, or phone..."
             />
           </div>
           <div className="flex gap-2">
             <button
               onClick={handleSearch}
-              className="px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow hover:shadow-md transition-all"
+              className="px-5 py-3 bg-slate-900 text-white rounded-lg font-medium shadow-sm hover:bg-slate-800 transition-all"
             >
               Search
             </button>
@@ -257,14 +230,7 @@ export default function UsersClient({
 
       {/* Users Table */}
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="relative">
-              <div className="w-12 h-12 border-4 border-blue-500/30 rounded-full"></div>
-              <div className="w-12 h-12 border-4 border-t-blue-500 rounded-full animate-spin absolute top-0 left-0"></div>
-            </div>
-          </div>
-        ) : users && users.length > 0 ? (
+        {users && users.length > 0 ? (
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -296,11 +262,10 @@ export default function UsersClient({
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div
-                            className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-semibold text-sm shadow-sm shrink-0 ${
-                              user.role === "admin"
-                                ? "bg-purple-600"
-                                : "bg-blue-600"
-                            }`}
+                            className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-semibold text-sm shadow-sm shrink-0 ${user.role === "admin"
+                              ? "bg-purple-600"
+                              : "bg-slate-900"
+                              }`}
                           >
                             {user.fullName.charAt(0)}
                           </div>
@@ -319,11 +284,10 @@ export default function UsersClient({
                       </td>
                       <td className="px-6 py-4 hidden sm:table-cell">
                         <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-                            user.role === "admin"
-                              ? "bg-purple-50 text-purple-700"
-                              : "bg-slate-100 text-slate-600"
-                          }`}
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${user.role === "admin"
+                            ? "bg-purple-50 text-purple-700"
+                            : "bg-slate-100 text-slate-600"
+                            }`}
                         >
                           {user.role}
                         </span>
@@ -338,7 +302,7 @@ export default function UsersClient({
                       <td className="px-6 py-4 text-right">
                         <Link
                           href={`/admin/users/${user.id}`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 text-sm font-medium transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100/50 text-slate-700 rounded-lg hover:bg-slate-100 text-sm font-medium transition-colors"
                         >
                           <EyeIcon />
                           <span className="hidden sm:inline">View Details</span>
@@ -351,16 +315,16 @@ export default function UsersClient({
             </div>
 
             {/* Pagination */}
-            {meta && meta.lastPage > 1 && (
+            {meta && meta.totalPages > 1 && (
               <div className="px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50/50">
                 <p className="text-sm text-slate-500">
                   Showing{" "}
                   <span className="font-semibold text-slate-700">
-                    {(meta.page - 1) * meta.perPage + 1}
+                    {(meta.page - 1) * meta.limit + 1}
                   </span>{" "}
                   to{" "}
                   <span className="font-semibold text-slate-700">
-                    {Math.min(meta.page * meta.perPage, meta.total)}
+                    {Math.min(meta.page * meta.limit, meta.total)}
                   </span>{" "}
                   of{" "}
                   <span className="font-semibold text-slate-700">
@@ -372,22 +336,22 @@ export default function UsersClient({
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-white hover:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                    className="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-white hover:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                   >
                     <ChevronLeftIcon />
                     <span className="hidden sm:inline">Previous</span>
                   </button>
                   <div className="flex items-center gap-1">
                     {Array.from(
-                      { length: Math.min(5, meta.lastPage) },
+                      { length: Math.min(5, meta.totalPages) },
                       (_, i) => {
                         let pageNum;
-                        if (meta.lastPage <= 5) {
+                        if (meta.totalPages <= 5) {
                           pageNum = i + 1;
                         } else if (page <= 3) {
                           pageNum = i + 1;
-                        } else if (page >= meta.lastPage - 2) {
-                          pageNum = meta.lastPage - 4 + i;
+                        } else if (page >= meta.totalPages - 2) {
+                          pageNum = meta.totalPages - 4 + i;
                         } else {
                           pageNum = page - 2 + i;
                         }
@@ -395,11 +359,10 @@ export default function UsersClient({
                           <button
                             key={pageNum}
                             onClick={() => setPage(pageNum)}
-                            className={`w-10 h-10 rounded-xl text-sm font-semibold transition-all ${
-                              page === pageNum
-                                ? "bg-blue-600 text-white shadow"
-                                : "text-slate-600 hover:bg-slate-100"
-                            }`}
+                            className={`w-10 h-10 rounded-lg text-sm font-semibold transition-all ${page === pageNum
+                              ? "bg-slate-900 text-white shadow"
+                              : "text-slate-600 hover:bg-slate-100"
+                              }`}
                           >
                             {pageNum}
                           </button>
@@ -409,8 +372,8 @@ export default function UsersClient({
                   </div>
                   <button
                     onClick={() => setPage(page + 1)}
-                    disabled={page === meta.lastPage}
-                    className="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-white hover:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                    disabled={page === meta.totalPages}
+                    className="inline-flex items-center gap-1 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-white hover:border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                   >
                     <span className="hidden sm:inline">Next</span>
                     <ChevronRightIcon />

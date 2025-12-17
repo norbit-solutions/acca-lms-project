@@ -7,7 +7,19 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3333",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "3333",
+      },
     ],
+    // Allow unoptimized images for local development
+    unoptimized: process.env.NODE_ENV === "development",
   },
 };
 

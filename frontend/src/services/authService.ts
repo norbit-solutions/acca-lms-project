@@ -75,7 +75,7 @@ export const authService = {
   /**
    * Check if user is authenticated
    */
-  isAuthenticated(): boolean {
+  async isAuthenticated(): Promise<boolean> {
     return TokenManager.hasToken();
   },
 };

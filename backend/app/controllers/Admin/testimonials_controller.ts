@@ -76,6 +76,7 @@ export default class TestimonialsController {
       updatedAt: t.updatedAt.toISO() ?? '',
     }))
 
+
     const responseData: TestimonialListResponse = {
       testimonials: result,
       total: testimonials.total,
@@ -152,6 +153,9 @@ export default class TestimonialsController {
 
     // Load course relation
     await testimonial.load('course')
+
+    console.log(testimonial.image);
+
 
     const result: TestimonialData = {
       id: testimonial.id,

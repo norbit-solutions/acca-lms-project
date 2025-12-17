@@ -33,6 +33,7 @@ export interface AdminCourse {
   description: string | null;
   thumbnail: string | null;
   isPublished: boolean;
+  isUpcoming: boolean;
   price: number | null;
   currency: string;
   chaptersCount: number;
@@ -59,12 +60,20 @@ export interface AdminChapter {
 export interface AdminLesson {
   id: number;
   title: string;
+  type: 'video' | 'text' | 'pdf';
   sortOrder: number;
   duration: number | null;
   isFree: boolean;
   maxViews: number;
-  playbackId: string | null;
-  assetId: string | null;
+  muxPlaybackId: string | null;
+  muxAssetId: string | null;
+  muxUploadId: string | null;
+  muxStatus: 'pending' | 'ready' | 'error' | null;
+  thumbnailUrl: string | null;
+  description: string | null;
+  content: string | null;
+  pdfUrl: string | null;
+  attachments: Array<{ url: string; name: string; type: string }> | null;
 }
 
 // Enrollment
@@ -73,6 +82,7 @@ export interface Enrollment {
   userId: number;
   courseId: number;
   enrolledAt: string;
+  createdAt: string;
   user?: User;
   course?: {
     id: number;
@@ -85,6 +95,30 @@ export interface Enrollment {
 export interface AdminUser extends User {
   enrollmentsCount?: number;
   createdAt: string;
+  enrollments?: UserEnrollment[];
+  videoViews?: UserVideoView[];
+}
+
+// User enrollment for detail view
+export interface UserEnrollment {
+  id: number;
+  course: { id: number; title: string };
+  createdAt: string;
+}
+
+// User video view for detail view
+export interface UserVideoView {
+  id: number;
+  viewCount: number;
+  updatedAt: string;
+  lesson: {
+    id: number;
+    title: string;
+    maxViews: number;
+    chapter: {
+      course: { title: string };
+    };
+  };
 }
 
 // Video view
@@ -114,6 +148,7 @@ export interface CreateCourseRequest {
   description?: string;
   thumbnail?: string;
   isPublished?: boolean;
+  isUpcoming?: boolean;
   price?: number;
   currency?: string;
 }
@@ -124,6 +159,7 @@ export interface UpdateCourseRequest {
   description?: string;
   thumbnail?: string;
   isPublished?: boolean;
+  isUpcoming?: boolean;
   price?: number;
   currency?: string;
 }
@@ -143,6 +179,7 @@ export interface UpdateChapterRequest {
 // Create lesson request
 export interface CreateLessonRequest {
   title: string;
+  type?: 'video' | 'text' | 'pdf';
   sortOrder?: number;
   isFree?: boolean;
   maxViews?: number;
@@ -167,7 +204,7 @@ export interface CreateEnrollmentRequest {
 // Upload URL response
 export interface UploadUrlResponse {
   uploadUrl: string;
-  assetId: string;
+  uploadId: string;
 }
 
 // File upload response

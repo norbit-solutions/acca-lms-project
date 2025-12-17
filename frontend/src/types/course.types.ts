@@ -14,6 +14,8 @@ export interface CourseListItem {
   price: number | null;
   currency: string;
   isFree: boolean;
+  isPublished: boolean;
+  isUpcoming: boolean;
 }
 
 // Course detail for public view
@@ -162,3 +164,23 @@ export interface LessonResponse {
 
 // View status response
 export type ViewStatusResponse = ViewStatus;
+
+// Recent lesson
+export interface RecentLesson {
+  lessonId: number;
+  lessonTitle: string;
+  chapterId: number;
+  chapterTitle: string;
+  courseId: number;
+  courseTitle: string;
+  courseSlug: string;
+  courseThumbnail: string | null;
+  viewCount: number;
+  maxViews: number;
+  lastViewedAt: string;
+}
+
+// Recent lessons response
+export interface RecentLessonsResponse {
+  lessons: RecentLesson[];
+}

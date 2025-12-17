@@ -5,6 +5,7 @@ import Instructor from '#models/instructor'
 interface InstructorData {
   id: number
   name: string
+  title: string | null
   image: string | null
   bio: string | null
   sortOrder: number
@@ -15,6 +16,7 @@ interface InstructorData {
 
 interface CreateInstructorRequest {
   name: string
+  title?: string | null
   image?: string | null
   bio?: string | null
   sortOrder?: number
@@ -23,6 +25,7 @@ interface CreateInstructorRequest {
 
 interface UpdateInstructorRequest {
   name?: string
+  title?: string | null
   image?: string | null
   bio?: string | null
   sortOrder?: number
@@ -58,6 +61,7 @@ export default class InstructorsController {
     const result: InstructorData[] = instructors.all().map((i) => ({
       id: i.id,
       name: i.name,
+      title: i.title,
       image: i.image,
       bio: i.bio,
       sortOrder: i.sortOrder,
@@ -88,6 +92,7 @@ export default class InstructorsController {
     const result: InstructorData = {
       id: instructor.id,
       name: instructor.name,
+      title: instructor.title,
       image: instructor.image,
       bio: instructor.bio,
       sortOrder: instructor.sortOrder,
@@ -105,7 +110,7 @@ export default class InstructorsController {
    */
   async store({ request, response }: HttpContext): Promise<void> {
     const body = request.body() as CreateInstructorRequest
-    const { name, image, bio, sortOrder, isActive } = body
+    const { name, title, image, bio, sortOrder, isActive } = body
 
     if (!name) {
       response.badRequest({ error: 'name is required' })
@@ -122,6 +127,7 @@ export default class InstructorsController {
 
     const instructor = await Instructor.create({
       name,
+      title: title ?? null,
       image: image ?? null,
       bio: bio ?? null,
       sortOrder: order,
@@ -131,6 +137,7 @@ export default class InstructorsController {
     const result: InstructorData = {
       id: instructor.id,
       name: instructor.name,
+      title: instructor.title,
       image: instructor.image,
       bio: instructor.bio,
       sortOrder: instructor.sortOrder,
@@ -156,10 +163,11 @@ export default class InstructorsController {
     }
 
     const body = request.body() as UpdateInstructorRequest
-    const { name, image, bio, sortOrder, isActive } = body
+    const { name, title, image, bio, sortOrder, isActive } = body
 
     // Update fields
     if (name !== undefined) instructor.name = name
+    if (title !== undefined) instructor.title = title
     if (image !== undefined) instructor.image = image
     if (bio !== undefined) instructor.bio = bio
     if (sortOrder !== undefined) instructor.sortOrder = sortOrder
@@ -170,6 +178,7 @@ export default class InstructorsController {
     const result: InstructorData = {
       id: instructor.id,
       name: instructor.name,
+      title: instructor.title,
       image: instructor.image,
       bio: instructor.bio,
       sortOrder: instructor.sortOrder,

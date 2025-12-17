@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Suspense } from "react";
 import { LoginForm } from "@/components/auth";
 
 export default function LoginPage() {
@@ -31,7 +32,15 @@ export default function LoginPage() {
             </div>
 
             {/* Login Form Component */}
-            <LoginForm />
+            <Suspense
+              fallback={
+                <div className="h-64 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                </div>
+              }
+            >
+              <LoginForm />
+            </Suspense>
 
             {/* Footer */}
             <p className="mt-4 text-center text-gray-400 text-sm">

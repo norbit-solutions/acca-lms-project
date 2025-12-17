@@ -23,6 +23,9 @@ export default class Instructor extends BaseModel {
   declare name: string
 
   @column()
+  declare title: string | null
+
+  @column()
   declare image: string | null
 
   @column()

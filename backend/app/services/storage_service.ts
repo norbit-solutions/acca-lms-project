@@ -1,9 +1,17 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import env from '#start/env'
 import { v4 as uuidv4 } from 'uuid'
+import { writeFile, mkdir, unlink } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
+import app from '@adonisjs/core/services/app'
 
 /**
- * Storage Service for DigitalOcean Spaces (S3-compatible)
+ * Storage Service
+ *
+ * Supports two storage backends:
+ * 1. DigitalOcean Spaces (production) - when DO_SPACES_* env vars are set
+ * 2. Local file storage (development) - fallback when DO Spaces not configured
  *
  * Used for uploading images and PDFs for:
  * - Course thumbnails
@@ -28,23 +36,43 @@ class StorageService {
   private client: S3Client | null = null
   private bucket: string = ''
   private endpoint: string = ''
+  private useLocal: boolean = false
+  private localBasePath: string = ''
+  private localBaseUrl: string = ''
 
-  private getClient(): S3Client {
-    if (!this.client) {
-      const key = env.get('DO_SPACES_KEY')
-      const secret = env.get('DO_SPACES_SECRET')
-      const endpoint = env.get('DO_SPACES_ENDPOINT')
-      const bucket = env.get('DO_SPACES_BUCKET')
+  constructor() {
+    // Check if DO Spaces is configured
+    const key = env.get('DO_SPACES_KEY')
+    const secret = env.get('DO_SPACES_SECRET')
+    const endpoint = env.get('DO_SPACES_ENDPOINT')
+    const bucket = env.get('DO_SPACES_BUCKET')
 
-      if (!key || !secret || !endpoint || !bucket) {
-        throw new Error('DigitalOcean Spaces credentials not configured')
-      }
-
+    if (!key || !secret || !endpoint || !bucket) {
+      // Fall back to local storage
+      this.useLocal = true
+      this.localBasePath = join(app.makePath('public'), 'uploads')
+      const host = env.get('HOST', 'localhost')
+      const port = env.get('PORT', '3333')
+      this.localBaseUrl = `http://${host}:${port}/uploads`
+      console.log('📁 Storage: Using local file storage (DO Spaces not configured)')
+    } else {
       this.endpoint = endpoint
       this.bucket = bucket
+      console.log('☁️  Storage: Using DigitalOcean Spaces')
+    }
+  }
+
+  private getClient(): S3Client {
+    if (this.useLocal) {
+      throw new Error('Cannot get S3 client when using local storage')
+    }
+
+    if (!this.client) {
+      const key = env.get('DO_SPACES_KEY')!
+      const secret = env.get('DO_SPACES_SECRET')!
 
       this.client = new S3Client({
-        endpoint: `https://${endpoint}`,
+        endpoint: `https://${this.endpoint}`,
         region: 'us-east-1', // DO Spaces ignores this but SDK requires it
         credentials: {
           accessKeyId: key,
@@ -57,15 +85,62 @@ class StorageService {
   }
 
   /**
-   * Upload a file to DO Spaces
+   * Ensure the upload directory exists for local storage
+   */
+  private async ensureLocalDir(folder: string): Promise<string> {
+    const dirPath = join(this.localBasePath, folder)
+    if (!existsSync(dirPath)) {
+      await mkdir(dirPath, { recursive: true })
+    }
+    return dirPath
+  }
+
+  /**
+   * Upload a file (automatically chooses local or S3 based on config)
    */
   async upload(buffer: Buffer, options: UploadOptions): Promise<UploadResult> {
-    const client = this.getClient()
-
-    // Generate unique filename if not provided
     const ext = this.getExtension(options.contentType)
     const filename = options.filename || `${uuidv4()}${ext}`
     const key = `${options.folder}/${filename}`
+
+    if (this.useLocal) {
+      return this.uploadLocal(buffer, options.folder, filename, key)
+    }
+    return this.uploadS3(buffer, options, key)
+  }
+
+  /**
+   * Upload to local file system
+   */
+  private async uploadLocal(
+    buffer: Buffer,
+    folder: string,
+    filename: string,
+    key: string
+  ): Promise<UploadResult> {
+    const dirPath = await this.ensureLocalDir(folder)
+    const filePath = join(dirPath, filename)
+
+    await writeFile(filePath, buffer)
+
+    const url = `${this.localBaseUrl}/${key}`
+
+    return {
+      key,
+      url,
+      bucket: 'local',
+    }
+  }
+
+  /**
+   * Upload to DO Spaces (S3)
+   */
+  private async uploadS3(
+    buffer: Buffer,
+    options: UploadOptions,
+    key: string
+  ): Promise<UploadResult> {
+    const client = this.getClient()
 
     const command = new PutObjectCommand({
       Bucket: this.bucket,
@@ -77,7 +152,6 @@ class StorageService {
 
     await client.send(command)
 
-    // Construct public URL
     const url = `https://${this.bucket}.${this.endpoint}/${key}`
 
     return {
@@ -111,9 +185,34 @@ class StorageService {
   }
 
   /**
-   * Delete a file from DO Spaces
+   * Delete a file (from local or S3 based on config)
    */
   async delete(key: string): Promise<void> {
+    if (this.useLocal) {
+      return this.deleteLocal(key)
+    }
+    return this.deleteS3(key)
+  }
+
+  /**
+   * Delete from local file system
+   */
+  private async deleteLocal(key: string): Promise<void> {
+    const filePath = join(this.localBasePath, key)
+    try {
+      await unlink(filePath)
+    } catch (error) {
+      // Ignore if file doesn't exist
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        throw error
+      }
+    }
+  }
+
+  /**
+   * Delete from DO Spaces (S3)
+   */
+  private async deleteS3(key: string): Promise<void> {
     const client = this.getClient()
 
     const command = new DeleteObjectCommand({
@@ -136,6 +235,13 @@ class StorageService {
       'application/pdf': '.pdf',
     }
     return map[contentType] || ''
+  }
+
+  /**
+   * Check if using local storage
+   */
+  isLocalStorage(): boolean {
+    return this.useLocal
   }
 }
 

@@ -9,6 +9,10 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import app from '@adonisjs/core/services/app'
+import { createReadStream, existsSync } from 'node:fs'
+import { join } from 'node:path'
+import { lookup } from 'mime-types'
 
 const AuthController = () => import('#controllers/auth_controller')
 const PublicController = () => import('#controllers/public_controller')
@@ -23,11 +27,31 @@ const AdminCmsController = () => import('#controllers/Admin/cms_controller')
 const AdminTestimonialsController = () => import('#controllers/Admin/testimonials_controller')
 const AdminInstructorsController = () => import('#controllers/Admin/instructors_controller')
 const AdminUploadsController = () => import('#controllers/Admin/uploads_controller')
+const SseController = () => import('#controllers/sse_controller')
 
 router.get('/', async () => {
   return {
     hello: 'world',
   }
+})
+
+/*
+|--------------------------------------------------------------------------
+| Static File Uploads Route (for local development)
+|--------------------------------------------------------------------------
+*/
+router.get('/uploads/*', async ({ params, response }) => {
+  const filePath = join(app.makePath('public'), 'uploads', params['*'].join('/'))
+
+  if (!existsSync(filePath)) {
+    return response.notFound({ error: 'File not found' })
+  }
+
+  const mimeType = lookup(filePath) || 'application/octet-stream'
+  response.header('Content-Type', mimeType)
+  response.header('Cache-Control', 'public, max-age=31536000')
+
+  return response.stream(createReadStream(filePath))
 })
 
 /*
@@ -70,6 +94,7 @@ router
   .group(() => {
     router.get('/my-courses', [StudentController, 'myCourses'])
     router.get('/my-courses/:slug', [StudentController, 'myCourse'])
+    router.get('/recent-lessons', [StudentController, 'recentLessons'])
     router.get('/lessons/:id', [StudentController, 'lesson'])
     router.post('/lessons/:id/view', [StudentController, 'startView'])
     router.get('/lessons/:id/view-status', [StudentController, 'viewStatus'])
@@ -105,6 +130,7 @@ router
     router.put('/lessons/:id', [AdminLessonsController, 'update'])
     router.delete('/lessons/:id', [AdminLessonsController, 'destroy'])
     router.post('/lessons/:id/upload-url', [AdminLessonsController, 'getUploadUrl'])
+    router.get('/lessons/:id/signed-urls', [AdminLessonsController, 'getSignedUrls'])
 
     // Enrollments
     router.get('/enrollments', [AdminEnrollmentsController, 'index'])
@@ -116,6 +142,8 @@ router
     router.get('/users/search', [AdminUsersController, 'search'])
     router.get('/users/:id', [AdminUsersController, 'show'])
     router.get('/users/:id/views', [AdminUsersController, 'views'])
+    router.post('/users/:userId/lessons/:lessonId/view-limit', [AdminUsersController, 'setCustomViewLimit'])
+    router.delete('/users/:userId/lessons/:lessonId/view-limit', [AdminUsersController, 'removeCustomViewLimit'])
 
     // CMS Content
     router.get('/cms', [AdminCmsController, 'index'])
@@ -150,3 +178,10 @@ router
 
 // Mux webhook (no auth needed, verified by Mux signature)
 router.post('/webhooks/mux', [AdminLessonsController, 'muxWebhook'])
+
+// SSE for real-time updates (no auth - read-only, EventSource doesn't support headers)
+router.get('/sse/course/:courseId', [SseController, 'courseUpdates'])
+
+// Lesson status endpoint (for quick refresh after upload)
+router.get('/admin/lessons/:id/status', [SseController, 'lessonStatus']).use([middleware.auth(), middleware.admin()])
+

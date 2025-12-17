@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { DateTime } from 'luxon'
 import Course from '#models/course'
 import Enrollment from '#models/enrollment'
 import Lesson from '#models/lesson'
@@ -88,6 +89,20 @@ interface ViewStatus {
   remainingViews: number
 }
 
+interface RecentLesson {
+  lessonId: number
+  lessonTitle: string
+  chapterId: number
+  chapterTitle: string
+  courseId: number
+  courseTitle: string
+  courseSlug: string
+  courseThumbnail: string | null
+  viewCount: number
+  maxViews: number
+  lastViewedAt: string
+}
+
 export default class StudentController {
   /**
    * Get all enrolled courses for current user
@@ -173,10 +188,16 @@ export default class StudentController {
       return response.forbidden({ message: 'You are not enrolled in this course' })
     }
 
-    // Get video views for this user
+
+    // Get video views for this user (including custom limits)
     const videoViews = await VideoView.query().where('user_id', user.id)
-    const viewsByLesson = new Map<number, number>()
-    videoViews.forEach((v) => viewsByLesson.set(v.lessonId, v.viewCount))
+    const viewsByLesson = new Map<number, { viewCount: number; customViewLimit: number | null }>()
+    videoViews.forEach((v) => viewsByLesson.set(v.lessonId, {
+      viewCount: v.viewCount,
+      customViewLimit: v.customViewLimit
+    }))
+
+    const isAdmin = user.role === 'admin'
 
     let totalLessons = 0
     let completedLessons = 0
@@ -187,9 +208,13 @@ export default class StudentController {
       sortOrder: chapter.sortOrder,
       lessons: chapter.lessons.map((lesson) => {
         totalLessons++
-        const viewCount = viewsByLesson.get(lesson.id) || 0
+        const viewData = viewsByLesson.get(lesson.id)
+        const viewCount = viewData?.viewCount || 0
         const isCompleted = viewCount > 0
         if (isCompleted) completedLessons++
+
+        // Determine max views: custom limit > default limit, admin has unlimited
+        const maxViews = isAdmin ? 999 : (viewData?.customViewLimit ?? lesson.viewLimit)
 
         return {
           id: lesson.id,
@@ -198,9 +223,9 @@ export default class StudentController {
           duration: lesson.duration,
           isFree: lesson.isFree,
           viewCount,
-          maxViews: lesson.viewLimit,
+          maxViews,
           isCompleted,
-          canWatch: viewCount < lesson.viewLimit,
+          canWatch: isAdmin || viewCount < maxViews,
         }
       }),
     }))
@@ -254,14 +279,18 @@ export default class StudentController {
       }
     }
 
-    // Get or create video view record
-    let videoView = await VideoView.query()
+    // Get video view record
+    const videoView = await VideoView.query()
       .where('user_id', user.id)
       .where('lesson_id', lessonId)
       .first()
 
     const viewCount = videoView?.viewCount || 0
-    const canWatch = viewCount < lesson.viewLimit
+
+    // Determine max views: custom limit > default limit, admin has unlimited
+    const isAdmin = user.role === 'admin'
+    const maxViews = isAdmin ? Infinity : (videoView?.customViewLimit ?? lesson.viewLimit)
+    const canWatch = isAdmin || viewCount < maxViews
 
     // Generate signed URL if user can watch and video exists
     let signedUrl: string | null = null
@@ -282,7 +311,7 @@ export default class StudentController {
       title: lesson.title,
       duration: lesson.duration,
       isFree: lesson.isFree,
-      maxViews: lesson.viewLimit,
+      maxViews: isAdmin ? 999 : maxViews,
       viewCount,
       canWatch,
       playbackId: canWatch ? lesson.muxPlaybackId : null,
@@ -304,10 +333,12 @@ export default class StudentController {
 
   /**
    * Start or increment a view for a lesson
+   * Only increments view count when watchPercentage >= 99
    */
-  async startView({ auth, params, response }: HttpContext) {
+  async startView({ auth, params, request, response }: HttpContext) {
     const user = auth.user as User
     const lessonId = Number(params.id)
+    const { watchPercentage = 0 } = request.only(['watchPercentage'])
 
     const lesson = await Lesson.query()
       .where('id', lessonId)
@@ -339,29 +370,39 @@ export default class StudentController {
       .first()
 
     if (!videoView) {
-      videoView = await VideoView.create({
-        userId: user.id,
-        lessonId,
-        viewCount: 1,
-      })
-    } else {
-      if (videoView.viewCount >= lesson.viewLimit) {
+      videoView = new VideoView()
+      videoView.userId = user.id
+      videoView.lessonId = lessonId
+      videoView.viewCount = 0
+    }
+
+    // Determine max views: custom limit > default limit, admin has unlimited
+    const isAdmin = user.role === 'admin'
+    const maxViews = isAdmin ? Infinity : (videoView.customViewLimit ?? lesson.viewLimit)
+
+    // Only increment view count if watched >= 99%
+    if (watchPercentage >= 99) {
+      // Check limit before incrementing (admin bypass)
+      if (!isAdmin && videoView.viewCount >= maxViews) {
         return response.forbidden({
           message: 'View limit reached for this lesson',
           viewCount: videoView.viewCount,
-          maxViews: lesson.viewLimit,
+          maxViews: maxViews,
         })
       }
       videoView.viewCount++
-      await videoView.save()
     }
+
+    // Always update last viewed timestamp
+    videoView.lastViewedAt = DateTime.now()
+    await videoView.save()
 
     const result: ViewStatus = {
       lessonId,
       viewCount: videoView.viewCount,
-      maxViews: lesson.viewLimit,
-      canWatch: videoView.viewCount < lesson.viewLimit,
-      remainingViews: Math.max(0, lesson.viewLimit - videoView.viewCount),
+      maxViews: isAdmin ? 999 : maxViews, // Show large number for admin
+      canWatch: isAdmin || videoView.viewCount < maxViews,
+      remainingViews: isAdmin ? 999 : Math.max(0, maxViews - videoView.viewCount),
     }
 
     return response.ok(result)
@@ -386,14 +427,64 @@ export default class StudentController {
 
     const viewCount = videoView?.viewCount || 0
 
+    // Determine max views: custom limit > default limit, admin has unlimited
+    const isAdmin = user.role === 'admin'
+    const maxViews = isAdmin ? Infinity : (videoView?.customViewLimit ?? lesson.viewLimit)
+
     const result: ViewStatus = {
       lessonId,
       viewCount,
-      maxViews: lesson.viewLimit,
-      canWatch: viewCount < lesson.viewLimit,
-      remainingViews: Math.max(0, lesson.viewLimit - viewCount),
+      maxViews: isAdmin ? 999 : maxViews,
+      canWatch: isAdmin || viewCount < maxViews,
+      remainingViews: isAdmin ? 999 : Math.max(0, maxViews - viewCount),
     }
 
     return response.ok(result)
+  }
+
+
+  /**
+   * Get recently watched lessons for current user
+   */
+  async recentLessons({ auth, response }: HttpContext) {
+    const user = auth.user as User
+    const isAdmin = user.role === 'admin'
+
+    // Get recent video views with lesson, chapter, and course details
+    const videoViews = await VideoView.query()
+      .where('user_id', user.id)
+      .whereNotNull('last_viewed_at')
+      .preload('lesson', (lessonQuery) => {
+        lessonQuery.preload('chapter', (chapterQuery) => {
+          chapterQuery.preload('course')
+        })
+      })
+      .orderBy('last_viewed_at', 'desc')
+      .limit(10)
+
+    const recentLessons: RecentLesson[] = videoViews.map((view) => {
+      const lesson = view.lesson
+      const chapter = lesson.chapter
+      const course = chapter.course
+
+      // Determine max views: custom limit > default limit, admin has unlimited
+      const maxViews = isAdmin ? 999 : (view.customViewLimit ?? lesson.viewLimit)
+
+      return {
+        lessonId: lesson.id,
+        lessonTitle: lesson.title,
+        chapterId: chapter.id,
+        chapterTitle: chapter.title,
+        courseId: course.id,
+        courseTitle: course.title,
+        courseSlug: course.slug,
+        courseThumbnail: course.thumbnail,
+        viewCount: view.viewCount,
+        maxViews,
+        lastViewedAt: view.lastViewedAt?.toISO() || '',
+      }
+    })
+
+    return response.ok({ lessons: recentLessons })
   }
 }

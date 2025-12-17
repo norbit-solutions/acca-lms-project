@@ -1,7 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { adminService } from "@/services";
 import type { DashboardStats } from "@/types";
 
 const CoursesIcon = () => (
@@ -52,57 +48,30 @@ const EnrollmentsIcon = () => (
   </svg>
 );
 
-export default function DashboardClient() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  const loadStats = async () => {
-    try {
-      const data = await adminService.getStats();
-      setStats(data);
-    } catch (error) {
-      console.error("Failed to load stats:", error);
-      setStats({
-        totalCourses: 0,
-        totalStudents: 0,
-        totalEnrollments: 0,
-        recentEnrollments: [],
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
+export default function DashboardClient({
+  initialStats = null,
+}: {
+  initialStats?: DashboardStats | null;
+}) {
 
   const statCards = [
     {
       title: "Total Courses",
-      value: stats?.totalCourses || 0,
+      value: initialStats?.totalCourses || 0,
       icon: CoursesIcon,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
     },
     {
       title: "Total Students",
-      value: stats?.totalStudents || 0,
+      value: initialStats?.totalStudents || 0,
       icon: UsersIcon,
       color: "text-emerald-600",
       bgColor: "bg-emerald-50",
     },
     {
       title: "Total Enrollments",
-      value: stats?.totalEnrollments || 0,
+      value: initialStats?.totalEnrollments || 0,
       icon: EnrollmentsIcon,
       color: "text-violet-600",
       bgColor: "bg-violet-50",
@@ -161,9 +130,9 @@ export default function DashboardClient() {
         </div>
 
         <div className="p-5">
-          {stats?.recentEnrollments && stats.recentEnrollments.length > 0 ? (
+          {initialStats?.recentEnrollments && initialStats.recentEnrollments.length > 0 ? (
             <div className="space-y-3">
-              {stats.recentEnrollments.map((enrollment) => (
+              {initialStats.recentEnrollments.map((enrollment) => (
                 <div
                   key={enrollment.id}
                   className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-50 transition-colors"

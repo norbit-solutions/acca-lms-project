@@ -17,6 +17,9 @@ export default class VideoView extends BaseModel {
   @column()
   declare viewCount: number
 
+  @column()
+  declare customViewLimit: number | null
+
   @column.dateTime()
   declare lastViewedAt: DateTime | null
 

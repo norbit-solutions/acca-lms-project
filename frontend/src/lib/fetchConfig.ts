@@ -35,30 +35,55 @@ export class SessionExpiredError extends Error {
 
 // Token management utilities
 export const TokenManager = {
-  getToken: (): string | null => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("token");
+  getToken: async (): Promise<string | null> => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("token");
+    }
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      return cookieStore.get("token")?.value || null;
+    } catch {
+      return null;
+    }
   },
 
-  getSessionToken: (): string | null => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("sessionToken");
+  getSessionToken: async (): Promise<string | null> => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("sessionToken");
+    }
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      return cookieStore.get("sessionToken")?.value || null;
+    } catch {
+      return null;
+    }
   },
 
   setTokens: (token: string, sessionToken: string): void => {
     if (typeof window === "undefined") return;
     localStorage.setItem("token", token);
     localStorage.setItem("sessionToken", sessionToken);
+
+    // Set cookies for server-side access
+    document.cookie = `token=${token}; path=/; max-age=604800; SameSite=Lax`;
+    document.cookie = `sessionToken=${sessionToken}; path=/; max-age=604800; SameSite=Lax`;
   },
 
   clearTokens: (): void => {
     if (typeof window === "undefined") return;
     localStorage.removeItem("token");
     localStorage.removeItem("sessionToken");
+
+    // Clear cookies
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie = "sessionToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   },
 
-  hasToken: (): boolean => {
-    return !!TokenManager.getToken();
+  hasToken: async (): Promise<boolean> => {
+    const token = await TokenManager.getToken();
+    return !!token;
   },
 };
 
@@ -87,13 +112,13 @@ function buildUrl(
 }
 
 // Get default headers
-function getDefaultHeaders(): HeadersInit {
-  const headers: HeadersInit = {
+async function getDefaultHeaders(): Promise<HeadersInit> {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
 
-  const token = TokenManager.getToken();
-  const sessionToken = TokenManager.getSessionToken();
+  const token = await TokenManager.getToken();
+  const sessionToken = await TokenManager.getSessionToken();
 
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
@@ -160,7 +185,7 @@ async function fetchApi<T = unknown>(
   const config: RequestInit = {
     ...fetchOptions,
     headers: {
-      ...getDefaultHeaders(),
+      ...(await getDefaultHeaders()),
       ...customHeaders,
     },
   };

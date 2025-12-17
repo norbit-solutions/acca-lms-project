@@ -34,7 +34,7 @@ class MuxService {
     const tokenId = env.get('MUX_TOKEN_ID')
     const tokenSecret = env.get('MUX_TOKEN_SECRET')
     this.signingKeyId = env.get('MUX_SIGNING_KEY_ID') || ''
-    this.signingKeySecret = env.get('MUX_SIGNING_KEY_SECRET') || ''
+    this.signingKeySecret = env.get('MUX_SIGNING_PRIVATE_KEY') || ''
 
     if (tokenId && tokenSecret) {
       this.client = new Mux({

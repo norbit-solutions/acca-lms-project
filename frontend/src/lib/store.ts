@@ -30,7 +30,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   checkAuth: async () => {
-    if (!TokenManager.hasToken()) {
+    if (!(await TokenManager.hasToken())) {
       set({ isLoading: false, isAuthenticated: false });
       return;
     }

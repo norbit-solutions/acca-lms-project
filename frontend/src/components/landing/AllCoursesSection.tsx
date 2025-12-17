@@ -1,89 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { CourseListItem } from "@/types";
 
-interface Course {
-  id: number;
-  name: string;
-  title: string;
-  image: string;
-  shortIntroduction: string;
-  courseFee?: number;
-  feeCurrency?: string;
-  enableManualPayment?: boolean;
+interface AllCoursesSectionProps {
+  courses: CourseListItem[];
 }
 
-// Sample all courses data
-const allCourses: Course[] = [
-  {
-    id: 1,
-    name: "fa-financial-accounting",
-    title: "FA - Financial Accounting",
-    image:
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80",
-    shortIntroduction: "Foundation level financial accounting fundamentals",
-    courseFee: 149,
-    feeCurrency: "USD",
-    enableManualPayment: true,
-  },
-  {
-    id: 2,
-    name: "ma-management-accounting",
-    title: "MA - Management Accounting",
-    image:
-      "https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=800&q=80",
-    shortIntroduction: "Master cost and management accounting principles",
-    courseFee: 149,
-    feeCurrency: "USD",
-    enableManualPayment: true,
-  },
-  {
-    id: 3,
-    name: "fr-financial-reporting",
-    title: "FR - Financial Reporting",
-    image:
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80",
-    shortIntroduction: "Advanced financial reporting standards and practices",
-    courseFee: 199,
-    feeCurrency: "USD",
-    enableManualPayment: true,
-  },
-  {
-    id: 4,
-    name: "aa-audit-assurance",
-    title: "AA - Audit and Assurance",
-    image:
-      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
-    shortIntroduction: "Comprehensive audit procedures and professional ethics",
-    courseFee: 199,
-    feeCurrency: "USD",
-    enableManualPayment: true,
-  },
-  {
-    id: 5,
-    name: "pm-performance-management",
-    title: "PM - Performance Management",
-    image:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
-    shortIntroduction: "Strategic performance analysis and decision making",
-    courseFee: 199,
-    feeCurrency: "USD",
-    enableManualPayment: true,
-  },
-  {
-    id: 6,
-    name: "tx-taxation",
-    title: "TX - Taxation",
-    image:
-      "https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=800&q=80",
-    shortIntroduction: "Tax principles, computation and planning strategies",
-    courseFee: 199,
-    feeCurrency: "USD",
-    enableManualPayment: true,
-  },
-];
-
-export default function AllCoursesSection() {
-  if (allCourses.length === 0) return null;
+export default function AllCoursesSection({ courses }: AllCoursesSectionProps) {
+  if (!courses || courses.length === 0) return null;
 
   return (
     <section className="py-32 px-4 bg-white" id="all-courses">
@@ -100,24 +24,38 @@ export default function AllCoursesSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {allCourses.map((course) => (
+          {courses.map((course) => (
             <Link
               key={course.id}
-              href={`/courses/${course.name}`}
+              href={`/courses/${course.slug}`}
               className="group cursor-pointer"
             >
               <div className="aspect-video rounded-2xl overflow-hidden bg-gray-100 mb-4 relative">
-                <Image
-                  src={course.image}
-                  alt={course.title}
-                  fill
-                  className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
-                />
+                {course.thumbnail ? (
+                  <Image
+                    src={course.thumbnail}
+                    alt={course.title}
+                    fill
+                    className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+                    <span className="text-4xl font-display text-gray-400">
+                      {course.title.charAt(0)}
+                    </span>
+                  </div>
+                )}
 
                 {/* Price Badge */}
-                {course.enableManualPayment && (
+                {!course.isFree && course.price && (
                   <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold shadow-sm z-10">
-                    {course.feeCurrency} {course.courseFee}
+                    {course.currency} {course.price}
+                  </div>
+                )}
+
+                {course.isFree && (
+                  <div className="absolute top-4 right-4 bg-green-500/90 text-white backdrop-blur px-3 py-1 rounded-full text-sm font-bold shadow-sm z-10">
+                    Free
                   </div>
                 )}
 
@@ -132,8 +70,12 @@ export default function AllCoursesSection() {
               {/* Course Details */}
               <div className="space-y-2 text-sm text-gray-600">
                 <p className="text-gray-600 line-clamp-2">
-                  {course.shortIntroduction}
+                  {course.description || "Professional ACCA course content"}
                 </p>
+                <div className="flex items-center gap-4 text-xs text-gray-500">
+                  <span>{course.chaptersCount} chapters</span>
+                  <span>{course.lessonsCount} lessons</span>
+                </div>
               </div>
             </Link>
           ))}

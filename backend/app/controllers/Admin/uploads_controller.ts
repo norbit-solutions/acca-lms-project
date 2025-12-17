@@ -17,10 +17,11 @@ export default class UploadsController {
    * Accepts multipart/form-data with 'file' field
    */
   async uploadImage({ request, response }: HttpContext): Promise<void> {
-    const file = request.file('file', {
-      size: '5mb',
+    const file = request.file('image', {
+      // size: '5mb',
       extnames: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
     })
+
 
     if (!file) {
       const errorRes: ErrorResponse = { error: 'No file provided' }

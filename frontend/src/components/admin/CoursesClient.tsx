@@ -1,23 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { adminApi } from "@/lib/api";
-
-interface Course {
-  id: number;
-  title: string;
-  slug: string;
-  description: string;
-  thumbnail: string | null;
-  isPublished: boolean;
-  createdAt: string;
-  chapters?: Array<{
-    id: number;
-    title: string;
-    lessons?: Array<{ id: number }>;
-  }>;
-}
+import type { AdminCourse } from "@/types";
+import { adminService } from "@/services";
+import { useRouter } from "next/navigation";
+import { useModal } from "./ModalProvider";
 
 // Icons
 const PlusIcon = () => (
@@ -109,98 +97,125 @@ const CloseIcon = () => (
 export default function CoursesClient({
   initialCourses = [],
 }: {
-  initialCourses?: Course[];
+  initialCourses?: AdminCourse[];
 }) {
-  const [courses, setCourses] = useState<Course[]>(initialCourses || []);
-  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+  const [editingCourse, setEditingCourse] = useState<AdminCourse | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    thumbnail: "",
     isPublished: false,
+    isUpcoming: false,
   });
 
-  const loadCourses = async () => {
-    setLoading(true);
+  const router = useRouter();
+  const { showError, showConfirm } = useModal();
+
+
+
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!validTypes.includes(file.type)) {
+      showError("Please select a valid image file (JPG, PNG, WebP, or GIF)");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showError("Image must be less than 5MB");
+      return;
+    }
+
+    setUploading(true);
     try {
-      const { data } = await adminApi.getCourses();
-      setCourses(data?.courses || []);
+      const result = await adminService.uploadImage(file, "thumbnails");
+      setFormData({ ...formData, thumbnail: result.url });
     } catch (error) {
-      console.error("Failed to load courses:", error);
+      console.error("Failed to upload thumbnail:", error);
+      showError("Failed to upload thumbnail. Please try again.");
     } finally {
-      setLoading(false);
+      setUploading(false);
     }
   };
 
-  // If no initial courses were provided from the server, fetch them on mount
-  useEffect(() => {
-    if (!Array.isArray(courses) || courses.length === 0) {
-      loadCourses();
+  const removeThumbnail = () => {
+    setFormData({ ...formData, thumbnail: "" });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (editingCourse) {
-        await adminApi.updateCourse(editingCourse.id, formData);
+        await adminService.updateCourse(editingCourse.id, {
+          ...formData,
+          thumbnail: formData.thumbnail || undefined,
+        });
       } else {
-        await adminApi.createCourse(formData);
+        await adminService.createCourse({
+          ...formData,
+          thumbnail: formData.thumbnail || undefined,
+        });
       }
       setShowModal(false);
       setEditingCourse(null);
-      setFormData({ title: "", description: "", isPublished: false });
-      loadCourses();
+      setFormData({ title: "", description: "", thumbnail: "", isPublished: false, isUpcoming: false });
+      router.refresh();
     } catch (error) {
       console.error("Failed to save course:", error);
-      alert("Failed to save course");
+      showError("Failed to save course");
     }
   };
 
-  const handleEdit = (course: Course) => {
+  const handleEdit = (course: AdminCourse) => {
     setEditingCourse(course);
     setFormData({
       title: course.title,
       description: course.description || "",
+      thumbnail: course.thumbnail || "",
       isPublished: course.isPublished,
+      isUpcoming: course.isUpcoming || false,
     });
     setShowModal(true);
+    router.refresh();
   };
 
-  const handleDelete = async (course: Course) => {
-    if (!confirm(`Are you sure you want to delete "${course.title}"?`)) return;
+  const handleDelete = async (course: AdminCourse) => {
+    const confirmed = await showConfirm({
+      title: "Delete Course",
+      message: `Are you sure you want to delete "${course.title}"?`,
+      confirmText: "Delete",
+      variant: "danger",
+    });
+    if (!confirmed) return;
     try {
-      await adminApi.deleteCourse(course.id);
-      loadCourses();
+      await adminService.deleteCourse(course.id);
+      router.refresh();
     } catch (error) {
       console.error("Failed to delete course:", error);
-      alert("Failed to delete course");
+      showError("Failed to delete course");
     }
   };
 
   const openNewModal = () => {
     setEditingCourse(null);
-    setFormData({ title: "", description: "", isPublished: false });
+    setFormData({ title: "", description: "", thumbnail: "", isPublished: false, isUpcoming: false });
     setShowModal(true);
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="relative">
-          <div className="w-12 h-12 border-4 border-blue-500/30 rounded-full"></div>
-          <div className="w-12 h-12 border-4 border-t-blue-500 rounded-full animate-spin absolute top-0 left-0"></div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
         <div>
           <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-900">
             Courses
@@ -211,7 +226,7 @@ export default function CoursesClient({
         </div>
         <button
           onClick={openNewModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold shadow hover:shadow-md transition-all duration-200"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-lg font-medium shadow-sm hover:bg-slate-800 transition-all duration-200"
         >
           <PlusIcon />
           New Course
@@ -219,9 +234,9 @@ export default function CoursesClient({
       </div>
 
       {/* Courses Grid */}
-      {courses.length > 0 ? (
+      {initialCourses.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {courses.map((course) => (
+          {initialCourses.map((course) => (
             <div
               key={course.id}
               className="group bg-white rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
@@ -245,11 +260,10 @@ export default function CoursesClient({
                 {/* Status badge */}
                 <div className="absolute top-4 right-4">
                   <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
-                      course.isPublished
-                        ? "bg-emerald-500/90 text-white"
-                        : "bg-slate-900/70 text-slate-200"
-                    }`}
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${course.isPublished
+                      ? "bg-emerald-500/90 text-white"
+                      : "bg-slate-900/70 text-slate-200"
+                      }`}
                   >
                     {course.isPublished ? "Published" : "Draft"}
                   </span>
@@ -270,17 +284,14 @@ export default function CoursesClient({
                   <div className="flex items-center gap-1.5 text-sm text-slate-600">
                     <ChapterIcon />
                     <span className="font-semibold">
-                      {course.chapters?.length || 0}
+                      {course.chaptersCount || 0}
                     </span>
                     <span className="text-slate-400">chapters</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-sm text-slate-600">
                     <LessonIcon />
                     <span className="font-semibold">
-                      {course.chapters?.reduce(
-                        (acc, ch) => acc + (ch.lessons?.length || 0),
-                        0
-                      ) || 0}
+                      {course.lessonsCount || 0}
                     </span>
                     <span className="text-slate-400">lessons</span>
                   </div>
@@ -290,13 +301,13 @@ export default function CoursesClient({
                 <div className="flex gap-2">
                   <Link
                     href={`/admin/courses/${course.id}`}
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-600 rounded-xl text-sm font-semibold hover:bg-blue-100 transition-colors"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors"
                   >
                     Manage Content
                   </Link>
                   <button
                     onClick={() => handleEdit(course)}
-                    className="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
+                    className="p-2.5 bg-slate-50 text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
                     title="Edit"
                   >
                     <svg
@@ -315,7 +326,7 @@ export default function CoursesClient({
                   </button>
                   <button
                     onClick={() => handleDelete(course)}
-                    className="p-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"
+                    className="p-2.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
                     title="Delete"
                   >
                     <svg
@@ -351,7 +362,7 @@ export default function CoursesClient({
           </p>
           <button
             onClick={openNewModal}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold shadow hover:shadow-md transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-lg font-medium shadow-sm hover:bg-slate-800 transition-all"
           >
             <PlusIcon />
             Create Your First Course
@@ -362,9 +373,9 @@ export default function CoursesClient({
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-xl max-w-lg w-full shadow-xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
               <h2 className="text-xl font-display font-bold text-slate-900">
                 {editingCourse ? "Edit Course" : "Create New Course"}
               </h2>
@@ -389,7 +400,7 @@ export default function CoursesClient({
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400"
+                    className="w-full px-0 py-2 border-b border-slate-300 focus:border-slate-800 outline-none bg-transparent transition-colors rounded-none placeholder:text-slate-400"
                     placeholder="Enter course title..."
                     required
                   />
@@ -403,10 +414,68 @@ export default function CoursesClient({
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none placeholder:text-slate-400"
+                    className="w-full px-0 py-2 border-b border-slate-300 focus:border-slate-800 outline-none bg-transparent transition-colors rounded-none placeholder:text-slate-400 resize-none"
                     rows={4}
                     placeholder="Describe what students will learn..."
                   />
+                </div>
+
+                {/* Thumbnail Upload */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Thumbnail (optional)
+                  </label>
+
+                  {formData.thumbnail ? (
+                    <div className="relative group">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={formData.thumbnail}
+                        alt="Thumbnail preview"
+                        className="w-full h-40 object-cover rounded-xl border border-slate-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={removeThumbnail}
+                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-blue-400 transition-colors">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        onChange={handleThumbnailUpload}
+                        className="hidden"
+                        id="thumbnail-upload"
+                        disabled={uploading}
+                      />
+                      <label
+                        htmlFor="thumbnail-upload"
+                        className={`cursor-pointer ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {uploading ? (
+                          <div className="flex flex-col items-center">
+                            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
+                            <span className="text-sm text-slate-500">Uploading...</span>
+                          </div>
+                        ) : (
+                          <>
+                            <svg className="w-10 h-10 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-sm text-slate-600 font-medium">Click to upload thumbnail</span>
+                            <span className="text-xs text-slate-400 block mt-1">JPG, PNG, WebP, GIF (max 5MB)</span>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
                   <input
@@ -419,7 +488,7 @@ export default function CoursesClient({
                         isPublished: e.target.checked,
                       })
                     }
-                    className="w-5 h-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
+                    className="w-5 h-5 text-slate-900 border-slate-300 rounded focus:ring-slate-900 cursor-pointer"
                   />
                   <label
                     htmlFor="isPublished"
@@ -433,6 +502,31 @@ export default function CoursesClient({
                     </span>
                   </label>
                 </div>
+                <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-xl">
+                  <input
+                    type="checkbox"
+                    id="isUpcoming"
+                    checked={formData.isUpcoming}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        isUpcoming: e.target.checked,
+                      })
+                    }
+                    className="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="isUpcoming"
+                    className="flex-1 cursor-pointer"
+                  >
+                    <span className="block font-semibold text-slate-700">
+                      Show as Upcoming
+                    </span>
+                    <span className="text-sm text-slate-500">
+                      Feature this course in the Upcoming Courses section
+                    </span>
+                  </label>
+                </div>
               </div>
 
               {/* Modal Footer */}
@@ -440,13 +534,14 @@ export default function CoursesClient({
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-5 py-2.5 text-slate-700 font-semibold hover:bg-slate-200 rounded-xl transition-colors"
+                  className="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl shadow hover:shadow-md transition-all"
+                  disabled={uploading}
+                  className="px-5 py-2.5 bg-slate-900 text-white font-medium rounded-lg shadow-sm hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {editingCourse ? "Save Changes" : "Create Course"}
                 </button>

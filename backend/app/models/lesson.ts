@@ -27,6 +27,9 @@ export default class Lesson extends BaseModel {
   declare muxAssetId: string | null
 
   @column()
+  declare muxUploadId: string | null
+
+  @column()
   declare muxPlaybackId: string | null
 
   @column()
@@ -43,6 +46,12 @@ export default class Lesson extends BaseModel {
 
   @column()
   declare sortOrder: number
+
+  @column()
+  declare description: string | null
+
+  @column()
+  declare attachments: Array<{ url: string; name: string; type: string }> | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
