@@ -25,7 +25,7 @@ const defaultContent: WhyContent = {
 const iconOptions = ["📚", "🎓", "💡", "🏆", "⚡", "🔒", "📱", "🌍", "👨‍🏫", "✅"];
 
 export default function WhyAccaClient() {
-    const { showError, showConfirm } = useModal();
+    const { showError, showSuccess, showConfirm } = useModal();
     const [content, setContent] = useState<WhyContent>(defaultContent);
     const [saving, setSaving] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -63,6 +63,7 @@ export default function WhyAccaClient() {
     const handleHeadlineSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         await saveContent(content);
+        showSuccess("Headlines updated successfully!");
     };
 
     const handleItemSubmit = async (e: React.FormEvent) => {

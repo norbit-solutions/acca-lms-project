@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store";
 
 // Minimal line icons with thin stroke
 const DashboardIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
@@ -34,13 +35,28 @@ const LogoutIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
     </svg>
 );
 
+const CollapseIcon = ({ className = "w-5 h-5", isCollapsed }: { className?: string; isCollapsed: boolean }) => (
+    <svg className={`${className} transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+    </svg>
+);
+
 interface DashboardSidebarProps {
     isMobileOpen: boolean;
     onClose: () => void;
+    isCollapsed: boolean;
+    onToggleCollapse: () => void;
 }
 
-export default function DashboardSidebar({ isMobileOpen, onClose }: DashboardSidebarProps) {
+export default function DashboardSidebar({ isMobileOpen, onClose, isCollapsed, onToggleCollapse }: DashboardSidebarProps) {
     const pathname = usePathname();
+    const router = useRouter();
+    const { logout } = useAuthStore();
+
+    const handleLogout = async () => {
+        await logout();
+        router.push("/login");
+    };
 
     const navItems = [
         {
@@ -68,7 +84,7 @@ export default function DashboardSidebar({ isMobileOpen, onClose }: DashboardSid
             {/* Mobile Backdrop */}
             {isMobileOpen && (
                 <div
-                    className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+                    className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
                     onClick={onClose}
                 />
             )}
@@ -76,19 +92,22 @@ export default function DashboardSidebar({ isMobileOpen, onClose }: DashboardSid
             {/* Sidebar */}
             <aside
                 className={`
-                    fixed top-0 left-0 h-full w-64 bg-neutral-50 z-50
-                    transition-transform duration-300 ease-out
+                    fixed top-0 left-0 h-full z-50
+                    bg-white border-r border-slate-200
+                    shadow-sm
+                    transition-all duration-300 ease-in-out
                     lg:translate-x-0
                     ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
+                    ${isCollapsed ? "w-[72px]" : "w-64"}
                 `}
             >
                 {/* Header */}
-                <div className="h-16 px-5 flex items-center justify-between">
-                    <Link href="/dashboard" className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-md bg-neutral-900 flex items-center justify-center">
-                            <span className="text-white font-medium text-sm">A</span>
+                <div className={`h-16 flex items-center justify-between border-b border-slate-100 ${isCollapsed ? 'px-4' : 'px-5'}`}>
+                    <Link href="/dashboard" className="flex items-center gap-3 group">
+                        <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow duration-300">
+                            <span className="text-white font-semibold text-sm">A</span>
                         </div>
-                        <span className="text-neutral-800 font-normal text-[15px] tracking-tight">
+                        <span className={`text-slate-800 font-semibold text-[15px] tracking-tight transition-opacity duration-200 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
                             ACCA LMS
                         </span>
                     </Link>
@@ -96,15 +115,15 @@ export default function DashboardSidebar({ isMobileOpen, onClose }: DashboardSid
                     {/* Mobile Close Button */}
                     <button
                         onClick={onClose}
-                        className="lg:hidden p-1.5 text-neutral-400 hover:text-neutral-600 transition-colors"
+                        className="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all duration-200"
                     >
-                        <CloseIcon />
+                        <CloseIcon className="w-5 h-5" />
                     </button>
                 </div>
 
                 {/* Navigation */}
-                <nav className="px-3 mt-4">
-                    <div className="space-y-0.5">
+                <nav className={`mt-6 ${isCollapsed ? 'px-2' : 'px-3'}`}>
+                    <div className="space-y-1">
                         {navItems.map((item) => {
                             const Icon = item.icon;
                             return (
@@ -112,17 +131,35 @@ export default function DashboardSidebar({ isMobileOpen, onClose }: DashboardSid
                                     key={item.name}
                                     href={item.href}
                                     onClick={onClose}
+                                    title={isCollapsed ? item.name : undefined}
                                     className={`
-                                        flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-normal
-                                        transition-colors duration-150
+                                        group relative flex items-center gap-3 rounded-xl text-[13px] font-medium
+                                        transition-all duration-200
+                                        ${isCollapsed ? 'px-0 py-3 justify-center' : 'px-4 py-3'}
                                         ${item.active
-                                            ? "bg-white text-neutral-900 shadow-sm"
-                                            : "text-neutral-500 hover:text-neutral-700 hover:bg-white/50"
+                                            ? "bg-slate-100 text-slate-900"
+                                            : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
                                         }
                                     `}
                                 >
-                                    <Icon className={`w-[18px] h-[18px] ${item.active ? "text-neutral-700" : "text-neutral-400"}`} />
-                                    <span>{item.name}</span>
+                                    {/* Active indicator */}
+                                    {item.active && (
+                                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-slate-900 rounded-r-full" />
+                                    )}
+
+                                    <Icon className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${item.active ? 'text-slate-700' : 'text-slate-400 group-hover:text-slate-600'}`} />
+
+                                    <span className={`transition-opacity duration-200 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden absolute' : 'opacity-100'}`}>
+                                        {item.name}
+                                    </span>
+
+                                    {/* Tooltip for collapsed state */}
+                                    {isCollapsed && (
+                                        <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-800 text-white text-xs rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap shadow-lg z-50">
+                                            {item.name}
+                                            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full border-4 border-transparent border-r-slate-800" />
+                                        </div>
+                                    )}
                                 </Link>
                             );
                         })}
@@ -130,14 +167,31 @@ export default function DashboardSidebar({ isMobileOpen, onClose }: DashboardSid
                 </nav>
 
                 {/* Footer */}
-                <div className="absolute bottom-0 left-0 right-0 px-3 pb-4">
-                    <a
-                        href="/api/auth/logout"
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-normal text-neutral-400 hover:text-neutral-600 hover:bg-white/50 transition-colors"
+                <div className={`absolute bottom-0 left-0 right-0 border-t border-slate-100 ${isCollapsed ? 'px-2 py-3' : 'px-3 py-4'}`}>
+                    {/* Logout Button */}
+                    <button
+                        onClick={handleLogout}
+                        title={isCollapsed ? "Sign out" : undefined}
+                        className={`
+                            w-full group relative flex items-center gap-3 rounded-xl text-[13px] font-medium
+                            text-slate-400 hover:text-red-500 hover:bg-red-50
+                            transition-all duration-200
+                            ${isCollapsed ? 'px-0 py-3 justify-center' : 'px-4 py-3'}
+                        `}
                     >
-                        <LogoutIcon className="w-[18px] h-[18px]" />
-                        <span>Sign out</span>
-                    </a>
+                        <LogoutIcon className="w-5 h-5 transition-transform duration-200 group-hover:scale-105" />
+                        <span className={`transition-opacity duration-200 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden absolute' : 'opacity-100'}`}>
+                            Sign out
+                        </span>
+
+                        {/* Tooltip for collapsed state */}
+                        {isCollapsed && (
+                            <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-800 text-white text-xs rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap shadow-lg z-50">
+                                Sign out
+                                <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full border-4 border-transparent border-r-slate-800" />
+                            </div>
+                        )}
+                    </button>
                 </div>
             </aside>
         </>
