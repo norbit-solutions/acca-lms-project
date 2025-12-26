@@ -130,7 +130,7 @@ const contentNavigation = [
   { name: "Instructors", href: "/admin/instructors" },
   { name: "Testimonials", href: "/admin/testimonials" },
   { name: "FAQ", href: "/admin/faq" },
-  { name: "Why ACCA", href: "/admin/why-acca" },
+  { name: "Why Learn Spear", href: "/admin/why-acca" },
   { name: "Social Links", href: "/admin/social" },
 ];
 
@@ -201,10 +201,10 @@ export default function AdminLayoutClient({
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
             <Link href="/admin" className="flex items-center gap-3">
               <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">A</span>
+                <span className="text-white font-bold text-xs">LS</span>
               </div>
               <span className="font-display text-slate-900 font-semibold">
-                ACCA Admin
+                Learn Spear Admin
               </span>
             </Link>
             <button
@@ -311,7 +311,7 @@ export default function AdminLayoutClient({
             <MenuIcon />
           </button>
           <span className="font-display font-semibold text-slate-900">
-            ACCA Admin
+            Learn Spear Admin
           </span>
           <div className="w-10"></div>
         </div>

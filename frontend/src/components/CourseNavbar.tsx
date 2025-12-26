@@ -12,7 +12,7 @@ export default function CourseNavbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="text-2xl font-bold tracking-tight">
-              ACCA LMS
+              Learn Spear
             </Link>
           </div>
           <div className="flex items-center gap-4">

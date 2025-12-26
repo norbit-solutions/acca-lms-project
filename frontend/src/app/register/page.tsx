@@ -18,10 +18,10 @@ export default function RegisterPage() {
         <div className="absolute inset-0 flex flex-col justify-end p-12">
           <div className="max-w-md">
             <h2 className="text-white text-4xl font-display mb-4">
-              Start your ACCA journey today
+              Start your learning journey today
             </h2>
             <p className="text-gray-300 text-lg mb-8">
-              Join thousands of students mastering their ACCA exams with expert
+              Join thousands of students mastering their exams with expert
               video courses and personalized mentorship.
             </p>
             {/* Features */}
@@ -61,7 +61,7 @@ export default function RegisterPage() {
             href="/"
             className="text-2xl font-display font-medium tracking-tight"
           >
-            ACCA LMS
+            Learn Spear
           </Link>
           <Link
             href="/login"

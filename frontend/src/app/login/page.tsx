@@ -14,7 +14,7 @@ export default function LoginPage() {
             href="/"
             className="text-2xl font-display font-medium tracking-tight"
           >
-            ACCA LMS
+            Learn Spear
           </Link>
         </header>
 
@@ -77,7 +77,7 @@ export default function LoginPage() {
               <div>
                 <p className="text-white font-medium">2,000+ Students</p>
                 <p className="text-gray-300 text-sm">
-                  Trust ACCA LMS for their success
+                  Trust Learn Spear for their success
                 </p>
               </div>
             </div>

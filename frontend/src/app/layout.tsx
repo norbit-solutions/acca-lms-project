@@ -15,9 +15,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "ACCA LMS - Master ACCA with Confidence",
+  title: "Learn Spear - Master Your Learning Journey",
   description:
-    "The ACCA LMS is a premium learning platform that lets you master your exams with secure video streaming, mentor support, and tracked progress.",
+    "Learn Spear is a premium learning platform that lets you master your exams with secure video streaming, mentor support, and tracked progress.",
 };
 
 export default function RootLayout({

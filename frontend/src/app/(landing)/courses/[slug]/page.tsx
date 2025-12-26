@@ -14,9 +14,9 @@ const coursesData: Record<string, CourseData> = {
     slug: "fa-financial-accounting",
     title: "FA - Financial Accounting",
     shortIntroduction:
-      "Master the fundamentals of financial accounting including double entry bookkeeping, financial statements preparation, and core accounting principles essential for your ACCA journey.",
+      "Master the fundamentals of financial accounting including double entry bookkeeping, financial statements preparation, and core accounting principles essential for your learning journey.",
     description:
-      "This comprehensive course covers all aspects of Financial Accounting as per the ACCA syllabus. You will learn double entry bookkeeping, prepare financial statements, understand accounting concepts and principles, and develop skills needed to pass the FA exam with confidence. Our expert instructors guide you through each topic with clear explanations and practical examples.",
+      "This comprehensive course covers all aspects of Financial Accounting. You will learn double entry bookkeeping, prepare financial statements, understand accounting concepts and principles, and develop skills needed to pass the FA exam with confidence. Our expert instructors guide you through each topic with clear explanations and practical examples.",
     image:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80",
     courseFee: 149,
@@ -61,7 +61,7 @@ const coursesData: Record<string, CourseData> = {
     shortIntroduction:
       "Learn essential management accounting techniques including costing methods, budgeting, variance analysis, and performance measurement for business decision making.",
     description:
-      "This course provides a thorough understanding of Management Accounting principles. Topics include cost classification, costing methods, budgeting and forecasting, variance analysis, and performance measurement techniques. Perfect preparation for the ACCA MA exam.",
+      "This course provides a thorough understanding of Management Accounting principles. Topics include cost classification, costing methods, budgeting and forecasting, variance analysis, and performance measurement techniques. Perfect preparation for the MA exam.",
     image:
       "https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=1200&q=80",
     courseFee: 149,
@@ -96,7 +96,7 @@ const coursesData: Record<string, CourseData> = {
     shortIntroduction:
       "Advanced financial reporting covering IFRS standards, group accounts, complex transactions, and interpretation of financial statements for professional accountants.",
     description:
-      "This skills-level course covers advanced financial reporting topics including International Financial Reporting Standards (IFRS), preparation of group accounts, complex transactions, and financial statement analysis. Essential for ACCA students advancing to the professional level.",
+      "This skills-level course covers advanced financial reporting topics including International Financial Reporting Standards (IFRS), preparation of group accounts, complex transactions, and financial statement analysis. Essential for students advancing to the professional level.",
     image:
       "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=80",
     courseFee: 199,
@@ -207,12 +207,12 @@ export async function generateMetadata({
 
   if (!course) {
     return {
-      title: "Course Not Found - ACCA LMS",
+      title: "Course Not Found - Learn Spear",
     };
   }
 
   return {
-    title: `${course.title} - ACCA LMS`,
+    title: `${course.title} - Learn Spear`,
     description: course.shortIntroduction,
   };
 }

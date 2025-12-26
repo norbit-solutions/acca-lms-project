@@ -1,4 +1,4 @@
-# ACCA LMS - Project Overview
+# Learn Spear - Project Overview
 
 ## Tech Stack
 - **Frontend**: Next.js 14 (App Router) + Tailwind CSS

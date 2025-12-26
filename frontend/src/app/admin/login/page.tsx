@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
           href="/"
           className="text-2xl font-display font-medium tracking-tight text-white relative z-10"
         >
-          ACCA LMS
+          Learn Spear
         </Link>
 
         {/* Content */}
@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
 
         {/* Footer */}
         <p className="text-gray-500 text-sm relative z-10">
-          © 2025 ACCA LMS. All rights reserved.
+          © 2025 Learn Spear. All rights reserved.
         </p>
       </div>
 
@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
             href="/"
             className="text-2xl font-display font-medium tracking-tight"
           >
-            ACCA LMS
+            Learn Spear
           </Link>
         </header>
 

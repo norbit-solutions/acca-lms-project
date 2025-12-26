@@ -19,7 +19,7 @@ export default function WhyChooseSection({ headline, subheadline, items }: WhyCh
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-24">
           <h2 className="text-5xl md:text-6xl mb-4">
-            {headline || "Why ACCA LMS?"}
+            {headline || "Why Learn Spear?"}
           </h2>
           {subheadline && (
             <p className="text-xl text-gray-400">{subheadline}</p>

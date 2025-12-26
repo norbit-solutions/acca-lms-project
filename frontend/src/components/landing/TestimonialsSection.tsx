@@ -16,7 +16,7 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
             What our <span className="font-display">students</span> say
           </h2>
           <p className="text-gray-500 max-w-2xl mx-auto">
-            Real experiences from real people achieving their ACCA goals
+            Real experiences from real people achieving their learning goals
           </p>
         </div>
 

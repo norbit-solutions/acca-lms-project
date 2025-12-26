@@ -105,10 +105,10 @@ export default function DashboardSidebar({ isMobileOpen, onClose, isCollapsed, o
                 <div className={`h-16 flex items-center justify-between border-b border-slate-100 ${isCollapsed ? 'px-4' : 'px-5'}`}>
                     <Link href="/dashboard" className="flex items-center gap-3 group">
                         <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow duration-300">
-                            <span className="text-white font-semibold text-sm">A</span>
+                            <span className="text-white font-semibold text-sm">LS</span>
                         </div>
                         <span className={`text-slate-800 font-semibold text-[15px] tracking-tight transition-opacity duration-200 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
-                            ACCA LMS
+                            Learn Spear
                         </span>
                     </Link>
 

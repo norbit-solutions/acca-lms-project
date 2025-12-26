@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { studentService } from "@/services";
 import type { EnrolledCourse, RecentLesson } from "@/types";
@@ -42,37 +39,19 @@ function formatDate(dateString: string): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-export default function DashboardPage() {
-  const [courses, setCourses] = useState<EnrolledCourse[]>([]);
-  const [recentLessons, setRecentLessons] = useState<RecentLesson[]>([]);
-  const [isLoadingCourses, setIsLoadingCourses] = useState(true);
-  const [isLoadingLessons, setIsLoadingLessons] = useState(true);
+export default async function DashboardPage() {
+  // Fetch data server-side
+  let courses: EnrolledCourse[] = [];
+  let recentLessons: RecentLesson[] = [];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoadingCourses(true);
-        const coursesData = await studentService.getMyCourses();
-        setCourses(coursesData);
-      } catch (err) {
-        console.error("Failed to fetch courses:", err);
-      } finally {
-        setIsLoadingCourses(false);
-      }
-
-      try {
-        setIsLoadingLessons(true);
-        const lessonsData = await studentService.getRecentLessons();
-        setRecentLessons(lessonsData);
-      } catch (err) {
-        console.error("Failed to fetch recent lessons:", err);
-      } finally {
-        setIsLoadingLessons(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  try {
+    [courses, recentLessons] = await Promise.all([
+      studentService.getMyCourses().catch(() => []),
+      studentService.getRecentLessons().catch(() => []),
+    ]);
+  } catch (err) {
+    console.error("Failed to fetch dashboard data:", err);
+  }
 
   const totalLessons = courses.reduce((acc, c) => acc + c.lessonsCount, 0);
   const completedLessons = courses.reduce((acc, c) => acc + c.completedLessons, 0);
@@ -96,19 +75,19 @@ export default function DashboardPage() {
       <div className="flex flex-wrap gap-8 mb-12 pb-8 border-b border-neutral-100">
         <div>
           <p className="text-3xl font-light text-neutral-800">
-            {isLoadingCourses ? "–" : courses.length}
+            {courses.length}
           </p>
           <p className="text-xs text-neutral-400 mt-1">Courses</p>
         </div>
         <div>
           <p className="text-3xl font-light text-neutral-800">
-            {isLoadingCourses ? "–" : `${completedLessons}/${totalLessons}`}
+            {completedLessons}/{totalLessons}
           </p>
           <p className="text-xs text-neutral-400 mt-1">Lessons completed</p>
         </div>
         <div>
           <p className="text-3xl font-light text-neutral-800">
-            {isLoadingCourses ? "–" : `${avgProgress}%`}
+            {avgProgress}%
           </p>
           <p className="text-xs text-neutral-400 mt-1">Average progress</p>
         </div>
@@ -129,19 +108,7 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {isLoadingLessons ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse flex items-center gap-4 py-4">
-                <div className="w-20 h-14 bg-neutral-100 rounded-lg" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-neutral-100 rounded w-48" />
-                  <div className="h-3 bg-neutral-100 rounded w-32" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : recentLessons.length === 0 ? (
+        {recentLessons.length === 0 ? (
           <div className="py-16 text-center">
             <div className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <BookIcon />
@@ -165,6 +132,7 @@ export default function DashboardPage() {
                 {/* Thumbnail */}
                 <div className="w-20 h-14 bg-neutral-100 rounded-lg overflow-hidden flex-shrink-0 relative">
                   {lesson.courseThumbnail ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={lesson.courseThumbnail}
                       alt=""
@@ -218,6 +186,7 @@ export default function DashboardPage() {
               >
                 <div className="w-12 h-12 bg-white rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
                   {course.thumbnail ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={course.thumbnail} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <BookIcon />

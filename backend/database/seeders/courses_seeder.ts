@@ -13,9 +13,9 @@ export default class extends BaseSeeder {
 
     const demoCourses = [
       {
-        title: 'ACCA: Foundations of Accounting',
-        slug: 'acca-foundations-of-accounting',
-        description: 'Introductory course covering basics of accounting for ACCA students.',
+        title: 'Foundations of Accounting',
+        slug: 'foundations-of-accounting',
+        description: 'Introductory course covering the basics of accounting.',
         thumbnail: null,
         isPublished: true,
         price: 2500.0,
@@ -23,8 +23,8 @@ export default class extends BaseSeeder {
         isFree: false,
       },
       {
-        title: 'ACCA: Advanced Financial Reporting',
-        slug: 'acca-advanced-financial-reporting',
+        title: 'Advanced Financial Reporting',
+        slug: 'advanced-financial-reporting',
         description: 'Advanced topics for financial reporting and analysis.',
         thumbnail: null,
         isPublished: true,
@@ -33,8 +33,8 @@ export default class extends BaseSeeder {
         isFree: false,
       },
       {
-        title: 'ACCA: Free Sample Course',
-        slug: 'acca-free-sample-course',
+        title: 'Free Sample Course',
+        slug: 'free-sample-course',
         description: 'A free sample to try the platform.',
         thumbnail: null,
         isPublished: true,

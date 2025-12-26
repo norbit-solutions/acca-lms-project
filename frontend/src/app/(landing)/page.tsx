@@ -50,7 +50,7 @@ export default async function Home() {
   // Extract FAQ items (hide if empty)
   const faqs = faqData?.content?.items || [];
 
-  // Extract Why ACCA content (hide if empty)
+  // Extract Why Learn Spear content (hide if empty)
   const whyContent = whyData?.content || { items: [] };
   const whyItems = whyContent.items || [];
 

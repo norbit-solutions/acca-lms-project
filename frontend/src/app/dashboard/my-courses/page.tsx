@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { studentService } from "@/services";
 import type { EnrolledCourse } from "@/types";
@@ -25,43 +22,17 @@ const ArrowRightIcon = () => (
     </svg>
 );
 
-// Skeleton Loader Component
-const CourseSkeleton = () => (
-    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden animate-pulse">
-        <div className="h-48 bg-slate-200" />
-        <div className="p-6 space-y-4">
-            <div className="h-6 bg-slate-200 rounded w-3/4" />
-            <div className="h-4 bg-slate-200 rounded w-1/2" />
-            <div className="space-y-2">
-                <div className="h-3 bg-slate-200 rounded w-full" />
-                <div className="h-2 bg-slate-200 rounded-full" />
-            </div>
-            <div className="h-10 bg-slate-200 rounded-lg" />
-        </div>
-    </div>
-);
+export default async function MyCoursesPage() {
+    // Fetch courses server-side
+    let courses: EnrolledCourse[] = [];
+    let error: string | null = null;
 
-export default function MyCoursesPage() {
-    const [courses, setCourses] = useState<EnrolledCourse[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchCourses = async () => {
-            try {
-                setIsLoading(true);
-                const data = await studentService.getMyCourses();
-                setCourses(data);
-            } catch (err) {
-                console.error("Failed to fetch courses:", err);
-                setError("Failed to load courses");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchCourses();
-    }, []);
+    try {
+        courses = await studentService.getMyCourses();
+    } catch (err) {
+        console.error("Failed to fetch courses:", err);
+        error = "Failed to load courses";
+    }
 
     return (
         <div className="max-w-7xl mx-auto space-y-8">
@@ -76,13 +47,7 @@ export default function MyCoursesPage() {
             </div>
 
             {/* Courses Grid */}
-            {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <CourseSkeleton />
-                    <CourseSkeleton />
-                    <CourseSkeleton />
-                </div>
-            ) : error ? (
+            {error ? (
                 <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
                     <p className="text-red-600 font-medium">{error}</p>
                 </div>
@@ -93,7 +58,7 @@ export default function MyCoursesPage() {
                     </div>
                     <h3 className="text-xl font-bold text-slate-900 mb-2">No Courses Yet</h3>
                     <p className="text-slate-600 mb-6 max-w-md mx-auto">
-                        You haven't been enrolled in any courses yet. Contact us via WhatsApp to request enrollment.
+                        You haven&apos;t been enrolled in any courses yet. Contact us via WhatsApp to request enrollment.
                     </p>
                     <a
                         href="https://wa.me/94XXXXXXXXX"
@@ -115,6 +80,7 @@ export default function MyCoursesPage() {
                             {/* Course Thumbnail */}
                             <div className="h-48 bg-slate-100 relative overflow-hidden">
                                 {course.thumbnail ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
                                     <img
                                         src={course.thumbnail}
                                         alt={course.title}

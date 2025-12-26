@@ -17,7 +17,7 @@ interface WhyContent {
 }
 
 const defaultContent: WhyContent = {
-    headline: "Why Choose ACCA LMS?",
+    headline: "Why Choose Learn Spear?",
     subheadline: "The benefits of learning with us",
     items: [],
 };
@@ -101,7 +101,7 @@ export default function WhyAccaClient() {
     return (
         <div className="space-y-6 max-w-3xl">
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-slate-900">Why ACCA LMS</h1>
+                <h1 className="text-2xl font-bold text-slate-900">Why Learn Spear</h1>
                 <p className="text-slate-500">Manage the &quot;Why Choose Us&quot; section</p>
             </div>
 

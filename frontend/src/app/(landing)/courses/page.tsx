@@ -76,10 +76,10 @@ export default function CoursesPage() {
               All Courses
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Explore Our ACCA Courses
+              Explore Our Professional Courses
             </h1>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Comprehensive ACCA courses designed by experienced professionals
+              Comprehensive courses designed by experienced professionals
               to help you pass your exams with confidence.
             </p>
           </div>
@@ -108,13 +108,12 @@ export default function CoursesPage() {
                   {/* Level Badge */}
                   <div className="absolute top-4 left-4">
                     <span
-                      className={`text-xs px-3 py-1 rounded-full font-medium ${
-                        course.level === "Foundation"
+                      className={`text-xs px-3 py-1 rounded-full font-medium ${course.level === "Foundation"
                           ? "bg-green-500 text-white"
                           : course.level === "Skills"
-                          ? "bg-blue-500 text-white"
-                          : "bg-purple-500 text-white"
-                      }`}
+                            ? "bg-blue-500 text-white"
+                            : "bg-purple-500 text-white"
+                        }`}
                     >
                       {course.level}
                     </span>

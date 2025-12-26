@@ -18,7 +18,7 @@ export default function AllCoursesSection({ courses }: AllCoursesSectionProps) {
           </h2>
           <div className="flex flex-col items-end">
             <p className="text-gray-600 max-w-xs mt-6 md:mt-0 text-right mb-4">
-              Browse our complete catalog of ACCA courses.
+              Browse our complete catalog of professional courses.
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function AllCoursesSection({ courses }: AllCoursesSectionProps) {
               {/* Course Details */}
               <div className="space-y-2 text-sm text-gray-600">
                 <p className="text-gray-600 line-clamp-2">
-                  {course.description || "Professional ACCA course content"}
+                  {course.description || "Professional course content"}
                 </p>
                 <div className="flex items-center gap-4 text-xs text-gray-500">
                   <span>{course.chaptersCount} chapters</span>

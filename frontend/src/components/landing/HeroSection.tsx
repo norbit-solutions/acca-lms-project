@@ -32,13 +32,13 @@ export default function HeroSection() {
 
       {/* Headline */}
       <h1 className="text-4xl md:text-6xl leading-tight mb-6 max-w-4xl mx-auto">
-        Launch your ACCA <br />
+        Launch your Learning <br />
         Journey with <span className="font-display">Confidence</span>
       </h1>
 
       {/* Subtext */}
       <p className="text-lg text-gray-600 max-w-xl mx-auto mb-10 leading-relaxed">
-        The ACCA LMS is a premium learning platform that lets you master your
+        Learn Spear is a premium learning platform that lets you master your
         exams with secure video streaming, mentor support, and tracked progress.
       </p>
 
@@ -58,7 +58,7 @@ export default function HeroSection() {
           {/* Placeholder for high quality dashboard shot */}
           <Image
             src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=2000&q=80&sat=-100"
-            alt="ACCA Dashboard"
+            alt="Learn Spear Dashboard"
             fill
             className="w-full h-full object-cover opacity-90 hover:scale-105 transition-transform duration-700"
           />

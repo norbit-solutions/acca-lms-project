@@ -89,7 +89,7 @@ export default function UpcomingCoursesSection({ courses }: UpcomingCoursesSecti
                   <span>{course.lessonsCount} lessons</span>
                 </div>
                 <p className="text-gray-600 line-clamp-2">
-                  {course.description || "Professional ACCA course content"}
+                  {course.description || "Professional course content"}
                 </p>
               </div>
             </Link>

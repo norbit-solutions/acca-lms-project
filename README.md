@@ -1,10 +1,10 @@
-# ACCA LMS
+# Learn Spear
 
-A secure video-based Learning Management System for ACCA courses with anti-piracy measures.
+A secure video-based Learning Management System with anti-piracy measures.
 
 ## Overview
 
-This platform enables students to access ACCA course content (video lessons, text, PDFs) with built-in protection against content piracy. Enrollment is managed manually by administrators - no payment gateway integration.
+This platform enables students to access course content (video lessons, text, PDFs) with built-in protection against content piracy. Enrollment is managed manually by administrators - no payment gateway integration.
 
 ## Key Features
 
