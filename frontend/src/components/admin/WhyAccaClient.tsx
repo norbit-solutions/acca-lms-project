@@ -114,7 +114,7 @@ export default function WhyAccaClient() {
                         type="text"
                         value={content.headline}
                         onChange={(e) => setContent({ ...content, headline: e.target.value })}
-                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
                     />
                 </div>
                 <div>
@@ -123,13 +123,13 @@ export default function WhyAccaClient() {
                         type="text"
                         value={content.subheadline}
                         onChange={(e) => setContent({ ...content, subheadline: e.target.value })}
-                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
                     />
                 </div>
                 <button
                     type="submit"
                     disabled={saving}
-                    className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    className="px-4 py-2 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 disabled:opacity-50"
                 >
                     {saving ? "Saving..." : "Save Headlines"}
                 </button>
@@ -141,7 +141,7 @@ export default function WhyAccaClient() {
                     <h2 className="font-semibold text-slate-900">Benefits</h2>
                     <button
                         onClick={() => { setEditingIndex(null); setFormData({ title: "", description: "", icon: "📚" }); setShowModal(true); }}
-                        className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+                        className="px-3 py-1.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800"
                     >
                         Add Benefit
                     </button>
@@ -201,7 +201,7 @@ export default function WhyAccaClient() {
                                         type="text"
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
                                         required
                                     />
                                 </div>
@@ -210,7 +210,7 @@ export default function WhyAccaClient() {
                                     <textarea
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
+                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 resize-none"
                                         rows={3}
                                         required
                                     />
@@ -220,7 +220,7 @@ export default function WhyAccaClient() {
                                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-200 rounded-lg">
                                     Cancel
                                 </button>
-                                <button type="submit" disabled={saving} className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                                <button type="submit" disabled={saving} className="px-4 py-2 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 disabled:opacity-50">
                                     Save
                                 </button>
                             </div>

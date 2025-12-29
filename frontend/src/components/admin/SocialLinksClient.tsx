@@ -70,7 +70,7 @@ export default function SocialLinksClient() {
                         type="text"
                         value={links.whatsapp}
                         onChange={(e) => setLinks({ ...links, whatsapp: e.target.value })}
-                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
                         placeholder="+91 9876543210"
                     />
                     <p className="text-xs text-slate-500 mt-1">Include country code</p>
@@ -82,7 +82,7 @@ export default function SocialLinksClient() {
                         type="url"
                         value={links.facebook}
                         onChange={(e) => setLinks({ ...links, facebook: e.target.value })}
-                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
                         placeholder="https://facebook.com/yourpage"
                     />
                 </div>
@@ -93,7 +93,7 @@ export default function SocialLinksClient() {
                         type="url"
                         value={links.instagram}
                         onChange={(e) => setLinks({ ...links, instagram: e.target.value })}
-                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
                         placeholder="https://instagram.com/yourhandle"
                     />
                 </div>
@@ -104,7 +104,7 @@ export default function SocialLinksClient() {
                         type="url"
                         value={links.linkedin}
                         onChange={(e) => setLinks({ ...links, linkedin: e.target.value })}
-                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
                         placeholder="https://linkedin.com/company/yourcompany"
                     />
                 </div>
@@ -115,7 +115,7 @@ export default function SocialLinksClient() {
                         type="url"
                         value={links.twitter}
                         onChange={(e) => setLinks({ ...links, twitter: e.target.value })}
-                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
                         placeholder="https://twitter.com/yourhandle"
                     />
                 </div>
@@ -126,7 +126,7 @@ export default function SocialLinksClient() {
                         type="url"
                         value={links.youtube}
                         onChange={(e) => setLinks({ ...links, youtube: e.target.value })}
-                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
                         placeholder="https://youtube.com/@yourchannel"
                     />
                 </div>
@@ -135,7 +135,7 @@ export default function SocialLinksClient() {
                     <button
                         type="submit"
                         disabled={saving}
-                        className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                        className="px-6 py-2 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50"
                     >
                         {saving ? "Saving..." : "Save Changes"}
                     </button>

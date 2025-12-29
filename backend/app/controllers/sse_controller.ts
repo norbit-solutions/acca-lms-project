@@ -86,6 +86,7 @@ export function broadcastLessonUpdate(
     data: {
         muxStatus: string
         playbackId: string | null
+        thumbnailUrl: string | null
         duration: number | null
     }
 ) {

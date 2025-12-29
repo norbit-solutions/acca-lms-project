@@ -5,8 +5,11 @@ import { useAuthStore } from "@/lib/store";
 import { useState } from "react";
 
 export default function Navbar() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Admins go to admin dashboard, students go to user dashboard
+  const dashboardUrl = user?.role === "admin" ? "/admin" : "/dashboard";
 
   const openMobileMenu = () => {
     setIsMobileMenuOpen(true);
@@ -65,10 +68,10 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-4">
             {isAuthenticated ? (
               <Link
-                href="/dashboard"
+                href={dashboardUrl}
                 className="bg-black text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors"
               >
-                My Dashboard
+                {user?.role === "admin" ? "Admin Dashboard" : "My Dashboard"}
               </Link>
             ) : (
               <>
@@ -198,10 +201,10 @@ export default function Navbar() {
             <div className="mt-8 space-y-3">
               {isAuthenticated ? (
                 <Link
-                  href="/dashboard"
+                  href={dashboardUrl}
                   className="block text-center bg-black text-white text-sm font-medium py-3 rounded-full hover:bg-gray-800 transition-colors"
                 >
-                  My Dashboard
+                  {user?.role === "admin" ? "Admin Dashboard" : "My Dashboard"}
                 </Link>
               ) : (
                 <>

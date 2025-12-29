@@ -37,6 +37,7 @@ export default function InstructorsClient() {
             setInstructors(data);
         } catch (error) {
             console.error("Failed to load instructors:", error);
+            showError("Failed to load instructors");
         }
     };
 
@@ -146,7 +147,7 @@ export default function InstructorsClient() {
                 </div>
                 <button
                     onClick={openNewModal}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                    className="px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors"
                 >
                     Add Instructor
                 </button>
@@ -211,7 +212,7 @@ export default function InstructorsClient() {
                     <p className="text-slate-500 mb-4">Add your first instructor</p>
                     <button
                         onClick={openNewModal}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                        className="px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors"
                     >
                         Add Instructor
                     </button>
@@ -264,7 +265,7 @@ export default function InstructorsClient() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                                        <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center hover:border-slate-400 transition-colors">
                                             <input
                                                 ref={fileInputRef}
                                                 type="file"
@@ -280,7 +281,7 @@ export default function InstructorsClient() {
                                             >
                                                 {uploading ? (
                                                     <div className="flex flex-col items-center">
-                                                        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
+                                                        <div className="w-8 h-8 border-4 border-slate-600 border-t-transparent rounded-full animate-spin mb-2"></div>
                                                         <span className="text-sm text-slate-500">Uploading...</span>
                                                     </div>
                                                 ) : (
@@ -303,7 +304,7 @@ export default function InstructorsClient() {
                                         type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
                                         placeholder="Instructor name"
                                         required
                                     />
@@ -315,7 +316,7 @@ export default function InstructorsClient() {
                                         type="text"
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
                                         placeholder="e.g. Senior Instructor"
                                     />
                                 </div>
@@ -325,7 +326,7 @@ export default function InstructorsClient() {
                                     <textarea
                                         value={formData.bio}
                                         onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent resize-none"
                                         rows={3}
                                         placeholder="Brief bio about the instructor"
                                     />
@@ -343,7 +344,7 @@ export default function InstructorsClient() {
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-4 py-2 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {editing ? "Save Changes" : "Add Instructor"}
                                 </button>

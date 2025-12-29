@@ -4,6 +4,7 @@ import Chapter from '#models/chapter'
 import Mux from '@mux/mux-node'
 import env from '#start/env'
 import { broadcastLessonUpdate } from '#controllers/sse_controller'
+import muxService from '#services/mux_service'
 
 export default class LessonsController {
   /**
@@ -60,6 +61,18 @@ export default class LessonsController {
       'isFree',
     ])
 
+    // Handle attachments - convert empty array to null for MySQL
+    let processedAttachments = lesson.attachments
+    if (attachments !== undefined) {
+      if (Array.isArray(attachments) && attachments.length === 0) {
+        processedAttachments = null
+      } else if (attachments) {
+        processedAttachments = attachments
+      } else {
+        processedAttachments = null
+      }
+    }
+
     lesson.merge({
       title: title ?? lesson.title,
       type: type ?? lesson.type,
@@ -68,7 +81,7 @@ export default class LessonsController {
       viewLimit: viewLimit ?? lesson.viewLimit,
       sortOrder: sortOrder ?? lesson.sortOrder,
       description: description !== undefined ? description : lesson.description,
-      attachments: attachments !== undefined ? attachments : lesson.attachments,
+      attachments: processedAttachments,
       isFree: isFree !== undefined ? isFree : lesson.isFree,
     })
 
@@ -82,6 +95,26 @@ export default class LessonsController {
    */
   async destroy({ params, response }: HttpContext) {
     const lesson = await Lesson.findOrFail(params.id)
+
+    // Delete the video from Mux if it exists
+    if (lesson.muxAssetId) {
+      try {
+        const deleted = await muxService.deleteAsset(lesson.muxAssetId)
+        if (!deleted) {
+          console.error(`[Mux] ❌ Failed to delete asset ${lesson.muxAssetId}`)
+          return response.internalServerError({
+            message: 'Failed to delete video from Mux. Lesson was not deleted.'
+          })
+        }
+        console.log(`[Mux] ✅ Deleted asset ${lesson.muxAssetId} for lesson ${lesson.id}`)
+      } catch (error) {
+        console.error(`[Mux] ❌ Failed to delete asset ${lesson.muxAssetId}:`, error)
+        return response.internalServerError({
+          message: 'Failed to delete video from Mux. Lesson was not deleted.'
+        })
+      }
+    }
+
     await lesson.delete()
 
     return response.ok({ message: 'Lesson deleted successfully' })
@@ -165,6 +198,22 @@ export default class LessonsController {
       return response.internalServerError({ message: 'Mux credentials not configured' })
     }
 
+    // If lesson already has a video, delete the existing Mux asset first
+    if (lesson.muxAssetId) {
+      try {
+        await muxService.deleteAsset(lesson.muxAssetId)
+        console.log(`[Mux] ✅ Deleted existing asset ${lesson.muxAssetId} for lesson ${lesson.id} (replacing video)`)
+      } catch (error) {
+        console.error(`[Mux] ⚠️ Failed to delete existing asset ${lesson.muxAssetId}:`, error)
+        // Continue anyway - the new video will still be uploaded
+      }
+
+      // Clear old video data from database
+      lesson.muxAssetId = null
+      lesson.muxPlaybackId = null
+      lesson.duration = null
+    }
+
     const mux = new Mux({ tokenId, tokenSecret })
 
     const upload = await mux.video.uploads.create({
@@ -238,10 +287,12 @@ export default class LessonsController {
 
         // Broadcast SSE update to connected clients
         const courseId = lesson.chapter?.courseId
-        if (courseId) {
+        if (courseId && lesson.muxPlaybackId) {
+          const thumbnailUrl = muxService.generateThumbnailUrl(lesson.muxPlaybackId, { width: 80 })
           broadcastLessonUpdate(courseId, lesson.id, {
             muxStatus: lesson.muxStatus,
             playbackId: lesson.muxPlaybackId,
+            thumbnailUrl,
             duration: lesson.duration,
           })
         }

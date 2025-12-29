@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { adminService } from "@/services";
 import type { AdminUser, PaginatedResponse } from "@/types";
+import { useModal } from "./ModalProvider";
 
 // Icons
 const UsersIcon = () => (
@@ -99,6 +100,7 @@ export default function UsersClient({
   initialUsers?: AdminUser[];
   initialMeta?: PaginatedResponse<AdminUser>["meta"] | null;
 }) {
+  const { showError } = useModal();
   const [users, setUsers] = useState<AdminUser[]>(initialUsers || []);
   const [meta, setMeta] = useState<PaginatedResponse<AdminUser>["meta"] | null>(
     initialMeta || null
@@ -109,7 +111,6 @@ export default function UsersClient({
 
   useEffect(() => {
     if (!searchMode) {
-      // reload page when page changes
       (async () => {
         try {
           const result = await adminService.getUsers({ page, limit: 20 });
@@ -117,6 +118,7 @@ export default function UsersClient({
           setMeta(result.meta || null);
         } catch (error) {
           console.error("Failed to load users:", error);
+          showError("Failed to load users");
         }
       })();
     }
@@ -129,6 +131,7 @@ export default function UsersClient({
       setMeta(result.meta || null);
     } catch (error) {
       console.error("Failed to load users:", error);
+      showError("Failed to load users");
     }
   };
 
@@ -145,6 +148,7 @@ export default function UsersClient({
       setMeta(null);
     } catch (error) {
       console.error("Failed to search users:", error);
+      showError("Failed to search users");
     }
   };
 

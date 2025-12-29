@@ -94,7 +94,7 @@ export default function FAQClient() {
                 <button
                     onClick={openNewModal}
                     disabled={saving}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    className="px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors disabled:opacity-50"
                 >
                     Add FAQ
                 </button>
@@ -129,7 +129,7 @@ export default function FAQClient() {
                     <p className="text-slate-500 mb-4">Add your first FAQ</p>
                     <button
                         onClick={openNewModal}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+                        className="px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800"
                     >
                         Add FAQ
                     </button>
@@ -155,7 +155,7 @@ export default function FAQClient() {
                                         type="text"
                                         value={formData.question}
                                         onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
                                         required
                                     />
                                 </div>
@@ -164,7 +164,7 @@ export default function FAQClient() {
                                     <textarea
                                         value={formData.answer}
                                         onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
+                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 resize-none"
                                         rows={4}
                                         required
                                     />
@@ -174,7 +174,7 @@ export default function FAQClient() {
                                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-200 rounded-lg">
                                     Cancel
                                 </button>
-                                <button type="submit" disabled={saving} className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                                <button type="submit" disabled={saving} className="px-4 py-2 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 disabled:opacity-50">
                                     {saving ? "Saving..." : "Save"}
                                 </button>
                             </div>

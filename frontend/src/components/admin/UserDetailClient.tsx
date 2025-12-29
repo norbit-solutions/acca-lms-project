@@ -61,6 +61,7 @@ export default function UserDetailClient({
       setUser(data || null);
     } catch (error) {
       console.error("Failed to load user:", error);
+      showError("Failed to load user details");
     }
   };
 
@@ -138,7 +139,7 @@ export default function UserDetailClient({
           <span className="font-medium">Back to Users</span>
         </button>
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+          <div className="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center text-white text-2xl font-bold">
             {user?.fullName ? user.fullName.charAt(0) : "?"}
           </div>
           <div>
@@ -313,7 +314,7 @@ export default function UserDetailClient({
                 value={newLimit}
                 onChange={(e) => setNewLimit(e.target.value)}
                 placeholder="Enter number of views allowed"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none"
               />
               <p className="text-sm text-gray-500 mt-2">
                 Leave empty or set to 0 to use default lesson limit. Current usage: {user.videoViews?.find((v: any) => v.lessonId === editingViewLimit.lessonId)?.viewCount || 0} views.
@@ -335,7 +336,7 @@ export default function UserDetailClient({
                 </button>
                 <button
                   onClick={handleSetViewLimit}
-                  className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 text-sm bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
                 >
                   Save Limit
                 </button>

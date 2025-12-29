@@ -190,7 +190,9 @@ export interface UpdateLessonRequest {
   title?: string;
   sortOrder?: number;
   isFree?: boolean;
-  maxViews?: number;
+  viewLimit?: number;
+  description?: string;
+  attachments?: Array<{ url: string; name: string; type: string }>;
 }
 
 // Create enrollment request

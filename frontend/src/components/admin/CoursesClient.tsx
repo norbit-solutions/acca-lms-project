@@ -7,20 +7,10 @@ import { adminService } from "@/services";
 import { useRouter } from "next/navigation";
 import { useModal } from "./ModalProvider";
 
-// Icons
+// Icons - minimal with thin strokes
 const PlusIcon = () => (
-  <svg
-    className="w-5 h-5"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-    />
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
   </svg>
 );
 
@@ -79,18 +69,8 @@ const LessonIcon = () => (
 );
 
 const CloseIcon = () => (
-  <svg
-    className="w-5 h-5"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M6 18L18 6M6 6l12 12"
-    />
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
   </svg>
 );
 
@@ -226,7 +206,7 @@ export default function CoursesClient({
         </div>
         <button
           onClick={openNewModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-lg font-medium shadow-sm hover:bg-slate-800 transition-all duration-200"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm border border-slate-900 text-slate-900 rounded-lg hover:bg-slate-900 hover:text-white transition-colors"
         >
           <PlusIcon />
           New Course
@@ -372,16 +352,16 @@ export default function CoursesClient({
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full shadow-xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full shadow-xl max-h-[85vh] overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
-              <h2 className="text-xl font-display font-bold text-slate-900">
-                {editingCourse ? "Edit Course" : "Create New Course"}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
+              <h2 className="font-medium text-slate-900">
+                {editingCourse ? "Edit Course" : "New Course"}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-1 text-slate-400 hover:text-slate-600 rounded"
               >
                 <CloseIcon />
               </button>
@@ -389,9 +369,9 @@ export default function CoursesClient({
 
             {/* Modal Body */}
             <form onSubmit={handleSubmit}>
-              <div className="p-6 space-y-5">
+              <div className="p-5 space-y-4 overflow-y-auto max-h-[60vh]">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-xs font-medium text-slate-500 uppercase mb-2">
                     Course Title
                   </label>
                   <input
@@ -406,7 +386,7 @@ export default function CoursesClient({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-xs font-medium text-slate-500 uppercase mb-2">
                     Description
                   </label>
                   <textarea
@@ -422,8 +402,8 @@ export default function CoursesClient({
 
                 {/* Thumbnail Upload */}
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Thumbnail (optional)
+                  <label className="block text-xs font-medium text-slate-500 uppercase mb-2">
+                    Thumbnail
                   </label>
 
                   {formData.thumbnail ? (
@@ -445,7 +425,7 @@ export default function CoursesClient({
                       </button>
                     </div>
                   ) : (
-                    <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-blue-400 transition-colors">
+                    <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-slate-400 transition-colors">
                       <input
                         ref={fileInputRef}
                         type="file"
@@ -530,20 +510,20 @@ export default function CoursesClient({
               </div>
 
               {/* Modal Footer */}
-              <div className="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-slate-100 bg-slate-50">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={uploading}
-                  className="px-5 py-2.5 bg-slate-900 text-white font-medium rounded-lg shadow-sm hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-sm bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  {editingCourse ? "Save Changes" : "Create Course"}
+                  {editingCourse ? "Save" : "Create"}
                 </button>
               </div>
             </form>

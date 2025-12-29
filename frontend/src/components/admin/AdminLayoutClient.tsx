@@ -5,6 +5,8 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store";
 import { ModalProvider } from "./ModalProvider";
+import Loading from "@/app/admin/loading";
+import Loader from "./Loader";
 
 // Simple SVG Icons
 const DashboardIcon = () => (
@@ -176,12 +178,7 @@ export default function AdminLayoutClient({
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <div className="w-10 h-10 border-2 border-slate-200 border-t-slate-800 rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-slate-500 text-sm">Loading...</p>
-        </div>
-      </div>
+      <Loader />
     );
   }
 

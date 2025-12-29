@@ -84,6 +84,7 @@ router.get('/courses/:slug', [PublicController, 'course'])
 router.get('/cms/:section', [PublicController, 'cms'])
 router.get('/testimonials', [PublicController, 'testimonials'])
 router.get('/instructors', [PublicController, 'instructors'])
+router.get('/public/lessons/:id/preview', [PublicController, 'lessonPreview'])
 
 /*
 |--------------------------------------------------------------------------

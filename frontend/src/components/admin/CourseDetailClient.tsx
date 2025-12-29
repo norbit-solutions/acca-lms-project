@@ -261,6 +261,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                     ...lesson,
                     muxStatus: data.data.muxStatus,
                     muxPlaybackId: data.data.playbackId,
+                    thumbnailUrl: data.data.thumbnailUrl,
                     duration: data.data.duration,
                   }
                   : lesson
@@ -434,10 +435,19 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
     e.preventDefault();
     try {
       if (editingLesson) {
-        await adminService.updateLesson(editingLesson.id, lessonForm);
+        // Map form fields to API field names
+        await adminService.updateLesson(editingLesson.id, {
+          title: lessonForm.title,
+          isFree: lessonForm.isFree,
+          viewLimit: lessonForm.maxViews,
+          description: lessonForm.description,
+          attachments: lessonForm.attachments,
+        });
       } else if (selectedChapterId) {
         await adminService.createLesson(selectedChapterId, {
-          ...lessonForm,
+          title: lessonForm.title,
+          isFree: lessonForm.isFree,
+          maxViews: lessonForm.maxViews,
           type: 'video',
         });
       }
@@ -825,46 +835,46 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
 
       {/* Chapter Modal */}
       {showChapterModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full shadow-xl border border-slate-100 overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="text-xl font-display font-bold text-slate-900">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-sm w-full shadow-xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+              <h2 className="font-medium text-slate-900">
                 {editingChapter ? "Edit Chapter" : "New Chapter"}
               </h2>
               <button
                 onClick={() => setShowChapterModal(false)}
-                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-1 text-slate-400 hover:text-slate-600 rounded"
               >
                 <CloseIcon />
               </button>
             </div>
             <form onSubmit={handleChapterSubmit}>
-              <div className="p-6">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <div className="p-5">
+                <label className="block text-xs font-medium text-slate-500 uppercase mb-2">
                   Chapter Title
                 </label>
                 <input
                   type="text"
                   value={chapterForm.title}
                   onChange={(e) => setChapterForm({ title: e.target.value })}
-                  className="w-full px-0 py-2 border-b border-slate-300 focus:border-slate-800 outline-none bg-transparent transition-colors rounded-none placeholder:text-slate-400"
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:border-slate-400 focus:ring-0 outline-none"
                   placeholder="e.g., Introduction to Financial Reporting"
                   required
                 />
               </div>
-              <div className="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-slate-100 bg-slate-50">
                 <button
                   type="button"
                   onClick={() => setShowChapterModal(false)}
-                  className="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-slate-900 text-white font-medium rounded-lg shadow-sm hover:bg-slate-800 transition-all"
+                  className="px-4 py-2 text-sm bg-slate-900 text-white rounded-lg hover:bg-slate-800"
                 >
-                  {editingChapter ? "Save Changes" : "Create Chapter"}
+                  {editingChapter ? "Save" : "Create"}
                 </button>
               </div>
             </form>
@@ -874,23 +884,23 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
 
       {/* Lesson Modal */}
       {showLessonModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full shadow-xl border border-slate-100 overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="text-xl font-display font-bold text-slate-900">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full shadow-xl max-h-[85vh] overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+              <h2 className="font-medium text-slate-900">
                 {editingLesson ? "Edit Lesson" : "New Lesson"}
               </h2>
               <button
                 onClick={() => setShowLessonModal(false)}
-                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-1 text-slate-400 hover:text-slate-600 rounded"
               >
                 <CloseIcon />
               </button>
             </div>
             <form onSubmit={handleLessonSubmit}>
-              <div className="p-6 space-y-5">
+              <div className="p-5 space-y-4 overflow-y-auto max-h-[60vh]">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-xs font-medium text-slate-500 uppercase mb-2">
                     Lesson Title
                   </label>
                   <input
@@ -996,7 +1006,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                   )}
 
                   {/* Upload button */}
-                  <label className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-colors">
+                  <label className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:border-slate-400 hover:bg-blue-50/50 transition-colors">
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
@@ -1015,19 +1025,19 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                   </label>
                 </div>
               </div>
-              <div className="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-slate-100 bg-slate-50">
                 <button
                   type="button"
                   onClick={() => setShowLessonModal(false)}
-                  className="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-slate-900 text-white font-medium rounded-lg shadow-sm hover:bg-slate-800 transition-all"
+                  className="px-4 py-2 text-sm bg-slate-900 text-white rounded-lg hover:bg-slate-800"
                 >
-                  {editingLesson ? "Save Changes" : "Create Lesson"}
+                  {editingLesson ? "Save" : "Create"}
                 </button>
               </div>
             </form>

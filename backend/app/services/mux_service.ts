@@ -74,6 +74,25 @@ class MuxService {
   }
 
   /**
+   * Get upload status from Mux (includes asset_id when ready)
+   */
+  async getUpload(uploadId: string): Promise<{ status: string; assetId: string | null } | null> {
+    if (!this.client) {
+      throw new Error('Mux is not configured')
+    }
+
+    try {
+      const upload = await this.client.video.uploads.retrieve(uploadId)
+      return {
+        status: upload.status,
+        assetId: upload.asset_id || null,
+      }
+    } catch {
+      return null
+    }
+  }
+
+  /**
    * Get asset details from Mux
    */
   async getAsset(assetId: string): Promise<AssetResponse | null> {
@@ -139,6 +158,31 @@ class MuxService {
     })
 
     return `https://stream.mux.com/${playbackId}.m3u8?token=${token}`
+  }
+
+  /**
+   * Generate just the playback token (not full URL)
+   * Used when frontend constructs the URL
+   */
+  generatePlaybackToken(playbackId: string, expiresInSeconds: number = 3600): string | null {
+    if (!this.signingKeyId || !this.signingKeySecret) {
+      return null
+    }
+
+    const now = Math.floor(Date.now() / 1000)
+    const payload = {
+      sub: playbackId,
+      aud: 'v',
+      exp: now + expiresInSeconds,
+      kid: this.signingKeyId,
+    }
+
+    const keySecret = Buffer.from(this.signingKeySecret, 'base64')
+
+    return jwt.sign(payload, keySecret, {
+      algorithm: 'RS256',
+      keyid: this.signingKeyId,
+    })
   }
 
   /**

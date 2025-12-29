@@ -460,7 +460,7 @@ export const adminService = {
 
   async uploadPdf(file: File): Promise<FileUploadResponse> {
     const formData = new FormData();
-    formData.append("pdf", file);
+    formData.append("file", file);
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333"}${ADMIN_ENDPOINTS.UPLOAD_PDF}`,

@@ -50,7 +50,21 @@ export default class Lesson extends BaseModel {
   @column()
   declare description: string | null
 
-  @column()
+  @column({
+    prepare: (value: Array<{ url: string; name: string; type: string }> | null) => {
+      if (value === null || value === undefined) return null
+      if (Array.isArray(value) && value.length === 0) return null
+      return JSON.stringify(value)
+    },
+    consume: (value: string | null) => {
+      if (!value) return null
+      try {
+        return JSON.parse(value)
+      } catch {
+        return null
+      }
+    }
+  })
   declare attachments: Array<{ url: string; name: string; type: string }> | null
 
   @column.dateTime({ autoCreate: true })

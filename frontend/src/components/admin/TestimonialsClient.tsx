@@ -39,6 +39,7 @@ export default function TestimonialsClient() {
             setTestimonials(data as unknown as Testimonial[]);
         } catch (error) {
             console.error("Failed to load testimonials:", error);
+            showError("Failed to load testimonials");
         }
     };
 
@@ -149,7 +150,7 @@ export default function TestimonialsClient() {
                 </div>
                 <button
                     onClick={openNewModal}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                    className="px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors"
                 >
                     Add Testimonial
                 </button>
@@ -211,7 +212,7 @@ export default function TestimonialsClient() {
                     <p className="text-slate-500 mb-4">Add your first student testimonial</p>
                     <button
                         onClick={openNewModal}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                        className="px-4 py-2 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors"
                     >
                         Add Testimonial
                     </button>
@@ -244,7 +245,7 @@ export default function TestimonialsClient() {
                                         type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
                                         placeholder="Student name"
                                         required
                                     />
@@ -254,7 +255,7 @@ export default function TestimonialsClient() {
                                     <textarea
                                         value={formData.content}
                                         onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent resize-none"
                                         rows={4}
                                         placeholder="What did the student say?"
                                         required
@@ -287,7 +288,7 @@ export default function TestimonialsClient() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                                        <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center hover:border-slate-400 transition-colors">
                                             <input
                                                 ref={fileInputRef}
                                                 type="file"
@@ -303,7 +304,7 @@ export default function TestimonialsClient() {
                                             >
                                                 {uploading ? (
                                                     <div className="flex flex-col items-center">
-                                                        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
+                                                        <div className="w-8 h-8 border-4 border-slate-600 border-t-transparent rounded-full animate-spin mb-2"></div>
                                                         <span className="text-sm text-slate-500">Uploading...</span>
                                                     </div>
                                                 ) : (
@@ -332,7 +333,7 @@ export default function TestimonialsClient() {
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-4 py-2 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {editing ? "Save Changes" : "Add Testimonial"}
                                 </button>

@@ -1,8 +1,10 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Course from '#models/course'
+import Lesson from '#models/lesson'
 import CmsContent from '#models/cms_content'
 import Testimonial from '#models/testimonial'
 import Instructor from '#models/instructor'
+import muxService from '#services/mux_service'
 
 interface CourseListItem {
   id: number
@@ -217,5 +219,32 @@ export default class PublicController {
     }))
 
     return response.ok({ instructors: result })
+  }
+
+  /**
+   * Get free lesson preview (no auth required, only for lessons marked as free)
+   */
+  async lessonPreview({ params, response }: HttpContext) {
+    const lesson = await Lesson.find(params.id)
+
+    if (!lesson) {
+      return response.notFound({ message: 'Lesson not found' })
+    }
+
+    if (!lesson.isFree) {
+      return response.forbidden({ message: 'This lesson is not available for free preview' })
+    }
+
+    if (!lesson.muxPlaybackId) {
+      return response.badRequest({ message: 'Video not available' })
+    }
+
+    // Generate signed playback token for free preview
+    const playbackToken = muxService.generatePlaybackToken(lesson.muxPlaybackId)
+
+    return response.ok({
+      playbackId: lesson.muxPlaybackId,
+      playbackToken,
+    })
   }
 }
