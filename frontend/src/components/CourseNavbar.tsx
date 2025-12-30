@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useAuthStore } from "@/lib/store";
+import Link from "next/link";
 
 export default function CourseNavbar() {
   const { isAuthenticated } = useAuthStore();
@@ -12,7 +12,7 @@ export default function CourseNavbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="text-2xl font-bold tracking-tight">
-              Learn Spear
+              Learnspire
             </Link>
           </div>
           <div className="flex items-center gap-4">

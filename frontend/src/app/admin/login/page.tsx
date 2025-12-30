@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { AdminLoginForm } from "@/components/auth";
+import Link from "next/link";
 
 export default function AdminLoginPage() {
   return (
@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
           href="/"
           className="text-2xl font-display font-medium tracking-tight text-white relative z-10"
         >
-          Learn Spear
+          Learnspire
         </Link>
 
         {/* Content */}
@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
 
         {/* Footer */}
         <p className="text-gray-500 text-sm relative z-10">
-          © 2025 Learn Spear. All rights reserved.
+          © 2025 Learnspire. All rights reserved.
         </p>
       </div>
 
@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
             href="/"
             className="text-2xl font-display font-medium tracking-tight"
           >
-            Learn Spear
+            Learnspire
           </Link>
         </header>
 

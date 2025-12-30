@@ -1,4 +1,4 @@
-# Learn Spear
+# Learnspire
 
 A secure video-based Learning Management System with anti-piracy measures.
 

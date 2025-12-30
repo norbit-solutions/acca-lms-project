@@ -6,9 +6,9 @@ export default class extends BaseSchema {
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
       // Price is for display only - payments are handled manually via WhatsApp
-      table.decimal('price', 10, 2).nullable().after('thumbnail')
-      table.string('currency', 10).defaultTo('INR').after('price')
-      table.boolean('is_free').defaultTo(false).after('currency')
+      table.decimal('price', 10, 2).nullable()
+      table.string('currency', 10).defaultTo('INR')
+      table.boolean('is_free').defaultTo(false)
     })
   }
 

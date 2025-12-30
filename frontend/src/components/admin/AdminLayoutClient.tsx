@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
 import { useAuthStore } from "@/lib/store";
-import { ModalProvider } from "./ModalProvider";
-import Loading from "@/app/admin/loading";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Loader from "./Loader";
+import { ModalProvider } from "./ModalProvider";
 
 // Simple SVG Icons
 const DashboardIcon = () => (
@@ -132,7 +131,7 @@ const contentNavigation = [
   { name: "Instructors", href: "/admin/instructors" },
   { name: "Testimonials", href: "/admin/testimonials" },
   { name: "FAQ", href: "/admin/faq" },
-  { name: "Why Learn Spear", href: "/admin/why-acca" },
+  { name: "Why Learnspire", href: "/admin/why-acca" },
   { name: "Social Links", href: "/admin/social" },
 ];
 
@@ -177,9 +176,7 @@ export default function AdminLayoutClient({
   }
 
   if (loading) {
-    return (
-      <Loader />
-    );
+    return <Loader />;
   }
 
   if (!isAuthenticated || user?.role !== "admin") {
@@ -191,8 +188,9 @@ export default function AdminLayoutClient({
       <div className="min-h-screen bg-slate-50">
         {/* Sidebar */}
         <aside
-          className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-            } lg:translate-x-0`}
+          className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-out ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } lg:translate-x-0`}
         >
           {/* Logo */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
@@ -201,7 +199,7 @@ export default function AdminLayoutClient({
                 <span className="text-white font-bold text-xs">LS</span>
               </div>
               <span className="font-display text-slate-900 font-semibold">
-                Learn Spear Admin
+                Learnspire Admin
               </span>
             </Link>
             <button
@@ -224,10 +222,11 @@ export default function AdminLayoutClient({
                   <li key={item.name}>
                     <Link
                       href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                        }`}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        isActive
+                          ? "bg-slate-900 text-white"
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      }`}
                     >
                       <Icon />
                       <span>{item.name}</span>
@@ -239,7 +238,9 @@ export default function AdminLayoutClient({
 
             {/* Content Section */}
             <div className="mt-6 pt-6 border-t border-slate-200">
-              <p className="px-3 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Content</p>
+              <p className="px-3 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                Content
+              </p>
               <ul className="space-y-1">
                 {contentNavigation.map((item) => {
                   const isActive = pathname === item.href;
@@ -247,10 +248,11 @@ export default function AdminLayoutClient({
                     <li key={item.name}>
                       <Link
                         href={item.href}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
-                          ? "bg-slate-900 text-white"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                          }`}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          isActive
+                            ? "bg-slate-900 text-white"
+                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        }`}
                       >
                         <span>{item.name}</span>
                       </Link>
@@ -268,8 +270,18 @@ export default function AdminLayoutClient({
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900 rounded-lg transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
                 </svg>
                 <span>View Landing Page</span>
               </a>
@@ -308,7 +320,7 @@ export default function AdminLayoutClient({
             <MenuIcon />
           </button>
           <span className="font-display font-semibold text-slate-900">
-            Learn Spear Admin
+            Learnspire Admin
           </span>
           <div className="w-10"></div>
         </div>

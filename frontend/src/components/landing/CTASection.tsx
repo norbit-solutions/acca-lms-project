@@ -6,7 +6,7 @@ export default function CTASection() {
       <div className="max-w-4xl mx-auto">
         <h2 className="text-5xl md:text-7xl mb-8">Start Learning Today</h2>
         <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-          Join ambitious professionals building their future with Learn Spear.
+          Join ambitious professionals building their future with Learnspire.
         </p>
         <Link
           href="/register"

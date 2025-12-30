@@ -1,7 +1,7 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Suspense } from "react";
 import { LoginForm } from "@/components/auth";
+import Image from "next/image";
+import Link from "next/link";
+import { Suspense } from "react";
 
 export default function LoginPage() {
   return (
@@ -14,7 +14,7 @@ export default function LoginPage() {
             href="/"
             className="text-2xl font-display font-medium tracking-tight"
           >
-            Learn Spear
+            Learnspire
           </Link>
         </header>
 
@@ -77,7 +77,7 @@ export default function LoginPage() {
               <div>
                 <p className="text-white font-medium">2,000+ Students</p>
                 <p className="text-gray-300 text-sm">
-                  Trust Learn Spear for their success
+                  Trust Learnspire for their success
                 </p>
               </div>
             </div>

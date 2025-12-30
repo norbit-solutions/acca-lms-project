@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useAuthStore } from "@/lib/store";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function Navbar() {
@@ -30,7 +30,7 @@ export default function Navbar() {
             href="/"
             className="text-2xl font-display font-medium tracking-tight"
           >
-            Learn Spear
+            Learnspire
           </Link>
 
           {/* Desktop Navigation */}
@@ -82,7 +82,7 @@ export default function Navbar() {
                   Log In
                 </Link>
                 <Link
-                  href="https://wa.me/94XXXXXXXXX?text=Hello, I would like to know more about Learn Spear"
+                  href="https://wa.me/94XXXXXXXXX?text=Hello, I would like to know more about Learnspire"
                   target="_blank"
                   className="bg-black text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors"
                 >
@@ -124,8 +124,9 @@ export default function Navbar() {
 
         {/* Drawer */}
         <div
-          className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-            }`}
+          className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 ${
+            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         >
           <div className="p-6">
             {/* Close Button */}
@@ -154,7 +155,7 @@ export default function Navbar() {
                 href="/"
                 className="text-2xl font-display font-medium tracking-tight"
               >
-                Learn Spear
+                Learnspire
               </Link>
             </div>
 
@@ -215,7 +216,7 @@ export default function Navbar() {
                     Log In
                   </Link>
                   <Link
-                    href="https://wa.me/94XXXXXXXXX?text=Hello, I would like to know more about Learn Spear"
+                    href="https://wa.me/94XXXXXXXXX?text=Hello, I would like to know more about Learnspire"
                     target="_blank"
                     className="block text-center bg-black text-white text-sm font-medium py-3 rounded-full hover:bg-gray-800 transition-colors"
                   >

@@ -1,7 +1,7 @@
+import AuthProvider from "@/components/AuthProvider";
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
-import AuthProvider from "@/components/AuthProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,9 +15,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Learn Spear - Master Your Learning Journey",
+  title: "Learnspire - Master Your Learning Journey",
   description:
-    "Learn Spear is a premium learning platform that lets you master your exams with secure video streaming, mentor support, and tracked progress.",
+    "Learnspire is a premium learning platform that lets you master your exams with secure video streaming, mentor support, and tracked progress.",
 };
 
 export default function RootLayout({

@@ -10,7 +10,11 @@ interface WhyChooseSectionProps {
   items: WhyItem[];
 }
 
-export default function WhyChooseSection({ headline, subheadline, items }: WhyChooseSectionProps) {
+export default function WhyChooseSection({
+  headline,
+  subheadline,
+  items,
+}: WhyChooseSectionProps) {
   // Hide section if no items
   if (!items || items.length === 0) return null;
 
@@ -19,7 +23,7 @@ export default function WhyChooseSection({ headline, subheadline, items }: WhyCh
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-24">
           <h2 className="text-5xl md:text-6xl mb-4">
-            {headline || "Why Learn Spear?"}
+            {headline || "Why Learnspire?"}
           </h2>
           {subheadline && (
             <p className="text-xl text-gray-400">{subheadline}</p>
@@ -43,5 +47,3 @@ export default function WhyChooseSection({ headline, subheadline, items }: WhyCh
     </section>
   );
 }
-
-

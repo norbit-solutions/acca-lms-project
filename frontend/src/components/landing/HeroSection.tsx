@@ -1,5 +1,5 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 const heroAvatars = [
   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
@@ -38,7 +38,7 @@ export default function HeroSection() {
 
       {/* Subtext */}
       <p className="text-lg text-gray-600 max-w-xl mx-auto mb-10 leading-relaxed">
-        Learn Spear is a premium learning platform that lets you master your
+        Learnspire is a premium learning platform that lets you master your
         exams with secure video streaming, mentor support, and tracked progress.
       </p>
 
@@ -58,7 +58,7 @@ export default function HeroSection() {
           {/* Placeholder for high quality dashboard shot */}
           <Image
             src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=2000&q=80&sat=-100"
-            alt="Learn Spear Dashboard"
+            alt="Learnspire Dashboard"
             fill
             className="w-full h-full object-cover opacity-90 hover:scale-105 transition-transform duration-700"
           />

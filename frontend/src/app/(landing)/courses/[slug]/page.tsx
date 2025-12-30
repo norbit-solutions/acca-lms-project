@@ -1,12 +1,12 @@
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
 import CourseNavbar from "@/components/CourseNavbar";
 import {
-  CourseHero,
   CourseCurriculum,
+  CourseHero,
   CourseSidebar,
 } from "@/components/course";
 import { courseService } from "@/services";
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -20,12 +20,12 @@ export async function generateMetadata({
   try {
     const course = await courseService.getCourse(slug);
     return {
-      title: `${course.title} - Learn Spear`,
+      title: `${course.title} - Learnspire`,
       description: course.description || undefined,
     };
   } catch {
     return {
-      title: "Course Not Found - Learn Spear",
+      title: "Course Not Found - Learnspire",
     };
   }
 }
@@ -67,7 +67,10 @@ export default async function CourseDetailsPage({ params }: PageProps) {
       <CourseHero
         title={course.title}
         shortIntroduction={course.description || ""}
-        image={course.thumbnail || "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80"}
+        image={
+          course.thumbnail ||
+          "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80"
+        }
         courseFee={course.price || 0}
         feeCurrency={course.currency || "USD"}
         enableManualPayment={true}

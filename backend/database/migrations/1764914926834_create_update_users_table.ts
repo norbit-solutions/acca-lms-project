@@ -5,9 +5,9 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.string('phone', 20).nullable().unique().after('email')
-      table.enum('role', ['student', 'admin']).defaultTo('student').after('password')
-      table.string('session_token', 255).nullable().after('role')
+      table.string('phone', 20).nullable().unique()
+      table.enum('role', ['student', 'admin']).defaultTo('student')
+      table.string('session_token', 255).nullable()
     })
   }
 

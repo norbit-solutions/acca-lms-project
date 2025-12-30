@@ -1,4 +1,4 @@
-# Learn Spear - Project Overview
+# Learnspire - Project Overview
 
 ## Tech Stack
 - **Frontend**: Next.js 14 (App Router) + Tailwind CSS

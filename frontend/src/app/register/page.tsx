@@ -1,6 +1,6 @@
-import Link from "next/link";
-import Image from "next/image";
 import { RegisterForm } from "@/components/auth";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function RegisterPage() {
   return (
@@ -21,8 +21,8 @@ export default function RegisterPage() {
               Start your learning journey today
             </h2>
             <p className="text-gray-300 text-lg mb-8">
-              Join thousands of students mastering their exams with expert
-              video courses and personalized mentorship.
+              Join thousands of students mastering their exams with expert video
+              courses and personalized mentorship.
             </p>
             {/* Features */}
             <div className="space-y-3">
@@ -61,7 +61,7 @@ export default function RegisterPage() {
             href="/"
             className="text-2xl font-display font-medium tracking-tight"
           >
-            Learn Spear
+            Learnspire
           </Link>
           <Link
             href="/login"

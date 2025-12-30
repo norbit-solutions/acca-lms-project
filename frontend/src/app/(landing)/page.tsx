@@ -1,18 +1,18 @@
 import {
-  HeroSection,
-  UpcomingCoursesSection,
   AllCoursesSection,
-  MentorSection,
-  WhyChooseSection,
-  TestimonialsSection,
-  FAQSection,
   CTASection,
+  FAQSection,
+  HeroSection,
+  MentorSection,
+  TestimonialsSection,
+  UpcomingCoursesSection,
+  WhyChooseSection,
 } from "@/components/landing";
 import Navbar from "@/components/Navbar";
-import { courseService } from "@/services/courseService";
-import { testimonialService } from "@/services/testimonialService";
-import { instructorService } from "@/services/instructorService";
 import { cmsService } from "@/services/cmsService";
+import { courseService } from "@/services/courseService";
+import { instructorService } from "@/services/instructorService";
+import { testimonialService } from "@/services/testimonialService";
 
 export const dynamic = "force-dynamic";
 
@@ -39,18 +39,19 @@ interface FAQContent {
 
 export default async function Home() {
   // Fetch all data in parallel for better performance
-  const [courses, testimonials, instructors, faqData, whyData] = await Promise.all([
-    courseService.getCourses().catch(() => []),
-    testimonialService.getAll().catch(() => []),
-    instructorService.getAll().catch(() => []),
-    cmsService.getSection<FAQContent>("faq").catch(() => null),
-    cmsService.getSection<WhyContent>("why-acca").catch(() => null),
-  ]);
+  const [courses, testimonials, instructors, faqData, whyData] =
+    await Promise.all([
+      courseService.getCourses().catch(() => []),
+      testimonialService.getAll().catch(() => []),
+      instructorService.getAll().catch(() => []),
+      cmsService.getSection<FAQContent>("faq").catch(() => null),
+      cmsService.getSection<WhyContent>("why-acca").catch(() => null),
+    ]);
 
   // Extract FAQ items (hide if empty)
   const faqs = faqData?.content?.items || [];
 
-  // Extract Why Learn Spear content (hide if empty)
+  // Extract Why Learnspire content (hide if empty)
   const whyContent = whyData?.content || { items: [] };
   const whyItems = whyContent.items || [];
 
@@ -61,11 +62,14 @@ export default async function Home() {
       <UpcomingCoursesSection courses={courses} />
       <AllCoursesSection courses={courses} />
       <MentorSection instructors={instructors} />
-      <WhyChooseSection headline={whyContent.headline} subheadline={whyContent.subheadline} items={whyItems} />
+      <WhyChooseSection
+        headline={whyContent.headline}
+        subheadline={whyContent.subheadline}
+        items={whyItems}
+      />
       <TestimonialsSection testimonials={testimonials} />
       <FAQSection faqs={faqs} />
       <CTASection />
     </main>
   );
 }
-
