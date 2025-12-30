@@ -1,3 +1,4 @@
+import env from '#start/env'
 import { defineConfig } from '@adonisjs/cors'
 
 /**
@@ -6,9 +7,26 @@ import { defineConfig } from '@adonisjs/cors'
  *
  * https://docs.adonisjs.com/guides/security/cors
  */
+
+// Parse CORS_ORIGIN: can be comma-separated list or 'true' for all origins
+function getCorsOrigin(): boolean | string | string[] {
+  const corsOrigin = env.get('CORS_ORIGIN')
+
+  if (!corsOrigin || corsOrigin === 'true') {
+    return true // Allow all origins (development)
+  }
+
+  // Support comma-separated origins for production
+  if (corsOrigin.includes(',')) {
+    return corsOrigin.split(',').map((o) => o.trim())
+  }
+
+  return corsOrigin
+}
+
 const corsConfig = defineConfig({
   enabled: true,
-  origin: true,
+  origin: getCorsOrigin(),
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
   headers: true,
   exposeHeaders: [],

@@ -36,22 +36,74 @@ router.get('/', async () => {
 })
 
 router.get('/health', async ({ response }) => {
+  const health: {
+    status: 'healthy' | 'degraded' | 'unhealthy'
+    database: 'connected' | 'disconnected'
+    storage: 'connected' | 'disconnected' | 'local' | 'not_configured'
+    timestamp: string
+    errors?: string[]
+  } = {
+    status: 'healthy',
+    database: 'disconnected',
+    storage: 'not_configured',
+    timestamp: new Date().toISOString(),
+    errors: [],
+  }
+
+  // Check database connection
   try {
     const db = await import('@adonisjs/lucid/services/db')
     await db.default.rawQuery('SELECT 1')
-    return response.ok({
-      status: 'healthy',
-      database: 'connected',
-      timestamp: new Date().toISOString(),
-    })
+    health.database = 'connected'
   } catch (error) {
-    return response.serviceUnavailable({
-      status: 'unhealthy',
-      database: 'disconnected',
-      error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString(),
-    })
+    health.database = 'disconnected'
+    health.errors!.push(`Database: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
+
+  // Check storage connection
+  try {
+    const storageModule = await import('#services/storage_service')
+    const storageService = storageModule.default
+
+    if (storageService.isLocalStorage()) {
+      health.storage = 'local'
+    } else {
+      // Try to list bucket to verify connection (HeadBucket operation)
+      const { S3Client, HeadBucketCommand } = await import('@aws-sdk/client-s3')
+      const envModule = await import('#start/env')
+      const env = envModule.default
+
+      const client = new S3Client({
+        endpoint: `https://${env.get('S3_ENDPOINT')}`,
+        region: 'auto',
+        credentials: {
+          accessKeyId: env.get('S3_ACCESS_KEY')!,
+          secretAccessKey: env.get('S3_SECRET_KEY')!,
+        },
+      })
+
+      await client.send(new HeadBucketCommand({ Bucket: env.get('S3_BUCKET')! }))
+      health.storage = 'connected'
+    }
+  } catch (error) {
+    health.storage = 'disconnected'
+    health.errors!.push(`Storage: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+
+  // Determine overall status
+  if (health.database === 'disconnected') {
+    health.status = 'unhealthy'
+  } else if (health.storage === 'disconnected') {
+    health.status = 'degraded'
+  }
+
+  // Clean up empty errors array
+  if (health.errors!.length === 0) {
+    delete health.errors
+  }
+
+  const statusCode = health.status === 'healthy' ? 200 : health.status === 'degraded' ? 200 : 503
+  return response.status(statusCode).json(health)
 })
 
 /*

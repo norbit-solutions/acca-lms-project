@@ -20,6 +20,13 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
+  | CORS configuration
+  |----------------------------------------------------------
+  */
+  CORS_ORIGIN: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
   | Variables for configuring database connection
   |----------------------------------------------------------
   */
@@ -41,11 +48,11 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
-  | DigitalOcean Spaces (for images and PDFs)
+  | S3-compatible storage (Cloudflare R2, DO Spaces, AWS S3, etc.)
   |----------------------------------------------------------
   */
-  DO_SPACES_KEY: Env.schema.string.optional(),
-  DO_SPACES_SECRET: Env.schema.string.optional(),
-  DO_SPACES_ENDPOINT: Env.schema.string.optional(),
-  DO_SPACES_BUCKET: Env.schema.string.optional(),
+  S3_ACCESS_KEY: Env.schema.string.optional(),
+  S3_SECRET_KEY: Env.schema.string.optional(),
+  S3_ENDPOINT: Env.schema.string.optional(),
+  S3_BUCKET: Env.schema.string.optional(),
 })

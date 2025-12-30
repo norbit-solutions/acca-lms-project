@@ -1,17 +1,17 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import env from '#start/env'
-import { v4 as uuidv4 } from 'uuid'
-import { writeFile, mkdir, unlink } from 'node:fs/promises'
-import { existsSync } from 'node:fs'
-import { join } from 'node:path'
 import app from '@adonisjs/core/services/app'
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { existsSync } from 'node:fs'
+import { mkdir, unlink, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { v4 as uuidv4 } from 'uuid'
 
 /**
  * Storage Service
  *
  * Supports two storage backends:
- * 1. DigitalOcean Spaces (production) - when DO_SPACES_* env vars are set
- * 2. Local file storage (development) - fallback when DO Spaces not configured
+ * 1. S3-compatible storage (production) - Cloudflare R2, AWS S3, DO Spaces, etc.
+ * 2. Local file storage (development) - fallback when S3 not configured
  *
  * Used for uploading images and PDFs for:
  * - Course thumbnails
@@ -41,11 +41,11 @@ class StorageService {
   private localBaseUrl: string = ''
 
   constructor() {
-    // Check if DO Spaces is configured
-    const key = env.get('DO_SPACES_KEY')
-    const secret = env.get('DO_SPACES_SECRET')
-    const endpoint = env.get('DO_SPACES_ENDPOINT')
-    const bucket = env.get('DO_SPACES_BUCKET')
+    // Check if S3-compatible storage is configured
+    const key = env.get('S3_ACCESS_KEY')
+    const secret = env.get('S3_SECRET_KEY')
+    const endpoint = env.get('S3_ENDPOINT')
+    const bucket = env.get('S3_BUCKET')
 
     if (!key || !secret || !endpoint || !bucket) {
       // Fall back to local storage
@@ -54,11 +54,11 @@ class StorageService {
       const host = env.get('HOST', 'localhost')
       const port = env.get('PORT', '3333')
       this.localBaseUrl = `http://${host}:${port}/uploads`
-      console.log('📁 Storage: Using local file storage (DO Spaces not configured)')
+      console.log('📁 Storage: Using local file storage (cloud storage not configured)')
     } else {
       this.endpoint = endpoint
       this.bucket = bucket
-      console.log('☁️  Storage: Using DigitalOcean Spaces')
+      console.log('☁️  Storage: Using cloud storage (R2/S3-compatible)')
     }
   }
 
@@ -68,8 +68,8 @@ class StorageService {
     }
 
     if (!this.client) {
-      const key = env.get('DO_SPACES_KEY')!
-      const secret = env.get('DO_SPACES_SECRET')!
+      const key = env.get('S3_ACCESS_KEY')!
+      const secret = env.get('S3_SECRET_KEY')!
 
       this.client = new S3Client({
         endpoint: `https://${this.endpoint}`,
@@ -147,11 +147,14 @@ class StorageService {
       Key: key,
       Body: buffer,
       ContentType: options.contentType,
-      ACL: 'public-read',
+      // Note: R2 doesn't support ACL, use bucket settings for public access
     })
 
     await client.send(command)
 
+    // For R2 public access, you need to enable it in the bucket settings
+    // The public URL format is: https://pub-{hash}.r2.dev/{key}
+    // Or use a custom domain. For now, return the S3-style URL
     const url = `https://${this.bucket}.${this.endpoint}/${key}`
 
     return {
