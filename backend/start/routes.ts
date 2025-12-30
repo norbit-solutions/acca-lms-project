@@ -7,12 +7,12 @@
 |
 */
 
-import router from '@adonisjs/core/services/router'
-import { middleware } from './kernel.js'
 import app from '@adonisjs/core/services/app'
+import router from '@adonisjs/core/services/router'
+import { lookup } from 'mime-types'
 import { createReadStream, existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { lookup } from 'mime-types'
+import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth_controller')
 const PublicController = () => import('#controllers/public_controller')
@@ -32,6 +32,25 @@ const SseController = () => import('#controllers/sse_controller')
 router.get('/', async () => {
   return {
     hello: 'world',
+  }
+})
+
+router.get('/health', async ({ response }) => {
+  try {
+    const db = await import('@adonisjs/lucid/services/db')
+    await db.default.rawQuery('SELECT 1')
+    return response.ok({
+      status: 'healthy',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+    })
+  } catch (error) {
+    return response.serviceUnavailable({
+      status: 'unhealthy',
+      database: 'disconnected',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+    })
   }
 })
 
@@ -143,8 +162,14 @@ router
     router.get('/users/search', [AdminUsersController, 'search'])
     router.get('/users/:id', [AdminUsersController, 'show'])
     router.get('/users/:id/views', [AdminUsersController, 'views'])
-    router.post('/users/:userId/lessons/:lessonId/view-limit', [AdminUsersController, 'setCustomViewLimit'])
-    router.delete('/users/:userId/lessons/:lessonId/view-limit', [AdminUsersController, 'removeCustomViewLimit'])
+    router.post('/users/:userId/lessons/:lessonId/view-limit', [
+      AdminUsersController,
+      'setCustomViewLimit',
+    ])
+    router.delete('/users/:userId/lessons/:lessonId/view-limit', [
+      AdminUsersController,
+      'removeCustomViewLimit',
+    ])
 
     // CMS Content
     router.get('/cms', [AdminCmsController, 'index'])
@@ -184,5 +209,6 @@ router.post('/webhooks/mux', [AdminLessonsController, 'muxWebhook'])
 router.get('/sse/course/:courseId', [SseController, 'courseUpdates'])
 
 // Lesson status endpoint (for quick refresh after upload)
-router.get('/admin/lessons/:id/status', [SseController, 'lessonStatus']).use([middleware.auth(), middleware.admin()])
-
+router
+  .get('/admin/lessons/:id/status', [SseController, 'lessonStatus'])
+  .use([middleware.auth(), middleware.admin()])
