@@ -1,10 +1,10 @@
-import type { HttpContext } from '@adonisjs/core/http'
 import CmsContent from '#models/cms_content'
+import type { HttpContext } from '@adonisjs/core/http'
 
 // Request/Response interfaces for strict typing
 interface CmsContentData {
   sectionKey: string
-  content: Record<string, unknown>
+  content: Record<string, unknown> | string
   updatedAt: string
 }
 
