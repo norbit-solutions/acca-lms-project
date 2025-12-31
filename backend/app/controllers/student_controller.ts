@@ -6,6 +6,7 @@ import Lesson from '#models/lesson'
 import VideoView from '#models/video_view'
 import User from '#models/user'
 import MuxService from '#services/mux_service'
+import storageService from '#services/storage_service'
 
 interface EnrolledCourse {
   id: number
@@ -56,6 +57,7 @@ interface LessonWithProgress {
 interface LessonDetail {
   id: number
   title: string
+  description: string | null
   duration: number | null
   isFree: boolean
   maxViews: number
@@ -64,6 +66,7 @@ interface LessonDetail {
   playbackId: string | null
   signedUrl: string | null
   watermark: WatermarkData
+  attachments: Array<{ url: string; name: string; type: string }>
   chapter: {
     id: number
     title: string
@@ -306,9 +309,21 @@ export default class StudentController {
       timestamp: now.toISOString(),
     }
 
+    // Generate presigned URLs for attachments
+    let signedAttachments: Array<{ url: string; name: string; type: string }> = []
+    if (lesson.attachments && lesson.attachments.length > 0) {
+      signedAttachments = await Promise.all(
+        lesson.attachments.map(async (attachment) => ({
+          ...attachment,
+          url: await storageService.getPresignedUrl(attachment.url, 3600), // 1 hour expiry
+        }))
+      )
+    }
+
     const result: LessonDetail = {
       id: lesson.id,
       title: lesson.title,
+      description: lesson.description,
       duration: lesson.duration,
       isFree: lesson.isFree,
       maxViews: isAdmin ? 999 : maxViews,
@@ -317,6 +332,7 @@ export default class StudentController {
       playbackId: canWatch ? lesson.muxPlaybackId : null,
       signedUrl,
       watermark,
+      attachments: signedAttachments,
       chapter: {
         id: lesson.chapter.id,
         title: lesson.chapter.title,

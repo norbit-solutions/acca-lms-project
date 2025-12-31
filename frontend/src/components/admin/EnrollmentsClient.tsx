@@ -82,7 +82,7 @@ export default function EnrollmentsClient({
       const data = await adminService.searchUsers(searchQuery);
       setSearchResults(data);
     } catch (error) {
-      console.error("Failed to search users:", error);
+      console.log("Failed to search users:", error);
       showError("Failed to search users");
     } finally {
       setSearching(false);
@@ -123,7 +123,7 @@ export default function EnrollmentsClient({
         });
         successCount++;
       } catch (error) {
-        console.error("Failed to enroll in course:", courseId, error);
+        console.log("Failed to enroll in course:", courseId, error);
         errorCount++;
       }
     }
@@ -156,7 +156,7 @@ export default function EnrollmentsClient({
       await adminService.deleteEnrollment(enrollment.id);
       router.refresh();
     } catch (error) {
-      console.error("Failed to delete enrollment:", error);
+      console.log("Failed to delete enrollment:", error);
       showError("Failed to remove enrollment");
     }
   };
@@ -185,7 +185,7 @@ export default function EnrollmentsClient({
         });
         successCount++;
       } catch (error) {
-        console.error("Failed to enroll:", error);
+        console.log("Failed to enroll:", error);
         errorCount++;
       }
     }

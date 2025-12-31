@@ -92,7 +92,7 @@ export default function VideoPlayer({
                 }
             }
         } catch (err) {
-            console.error('Fullscreen error:', err);
+            console.log('Fullscreen error:', err);
         }
     }, []);
 

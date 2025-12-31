@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { adminService } from "@/services";
 import { useModal } from "./ModalProvider";
 
@@ -13,34 +13,14 @@ interface SocialLinks {
     youtube: string;
 }
 
-const defaultLinks: SocialLinks = {
-    whatsapp: "",
-    facebook: "",
-    instagram: "",
-    linkedin: "",
-    twitter: "",
-    youtube: "",
-};
+interface SocialLinksClientProps {
+    initialLinks: SocialLinks;
+}
 
-export default function SocialLinksClient() {
+export default function SocialLinksClient({ initialLinks }: SocialLinksClientProps) {
     const { showError, showSuccess } = useModal();
-    const [links, setLinks] = useState<SocialLinks>(defaultLinks);
+    const [links, setLinks] = useState<SocialLinks>(initialLinks);
     const [saving, setSaving] = useState(false);
-
-    useEffect(() => {
-        loadLinks();
-    }, []);
-
-    const loadLinks = async () => {
-        try {
-            const data = await adminService.getCmsItem("social");
-            if (data && data.content) {
-                setLinks({ ...defaultLinks, ...data.content as unknown as Partial<SocialLinks> });
-            }
-        } catch {
-            setLinks(defaultLinks);
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -49,7 +29,7 @@ export default function SocialLinksClient() {
             await adminService.createCmsItem("social", links as unknown as Record<string, unknown>);
             showSuccess("Social links saved successfully!");
         } catch (error) {
-            console.error("Failed to save:", error);
+            console.log("Failed to save:", error);
             showError("Failed to save social links");
         } finally {
             setSaving(false);
@@ -57,7 +37,7 @@ export default function SocialLinksClient() {
     };
 
     return (
-        <div className="max-w-2xl">
+        <div className="w-full">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-slate-900">Social Links</h1>
                 <p className="text-slate-500">Manage your social media and contact links</p>

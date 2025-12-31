@@ -109,7 +109,7 @@ export function broadcastLessonUpdate(
         try {
             conn.write(`data: ${message}\n\n`)
         } catch (error) {
-            console.error('[SSE] Error writing to connection:', error)
+            console.log('[SSE] Error writing to connection:', error)
             connections.delete(conn)
         }
     }

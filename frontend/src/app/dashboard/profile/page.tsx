@@ -9,7 +9,7 @@ export default async function ProfilePage() {
     try {
         courses = await studentService.getMyCourses();
     } catch (err) {
-        console.error("Failed to fetch courses:", err);
+        console.log("Failed to fetch courses:", err);
     }
 
     return <ProfileClient courses={courses} />;

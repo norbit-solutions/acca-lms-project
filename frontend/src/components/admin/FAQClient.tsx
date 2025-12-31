@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { adminService } from "@/services";
 import { useModal } from "./ModalProvider";
 
@@ -9,37 +10,27 @@ interface FAQItem {
     answer: string;
 }
 
-export default function FAQClient() {
+interface FAQClientProps {
+    initialFaqs: FAQItem[];
+}
+
+export default function FAQClient({ initialFaqs }: FAQClientProps) {
+    const router = useRouter();
     const { showError, showConfirm } = useModal();
-    const [faqs, setFaqs] = useState<FAQItem[]>([]);
+    const [faqs, setFaqs] = useState<FAQItem[]>(initialFaqs);
     const [saving, setSaving] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [formData, setFormData] = useState({ question: "", answer: "" });
-
-    useEffect(() => {
-        loadFAQs();
-    }, []);
-
-    const loadFAQs = async () => {
-        try {
-            const data = await adminService.getCmsItem("faq");
-            if (data && data.content && Array.isArray(data.content.items)) {
-                setFaqs(data.content.items as FAQItem[]);
-            }
-        } catch {
-            // CMS item doesn't exist yet, that's okay
-            setFaqs([]);
-        }
-    };
 
     const saveFAQs = async (items: FAQItem[]) => {
         setSaving(true);
         try {
             await adminService.createCmsItem("faq", { items });
             setFaqs(items);
+            router.refresh();
         } catch (error) {
-            console.error("Failed to save FAQs:", error);
+            console.log("Failed to save FAQs:", error);
             showError("Failed to save FAQs");
         } finally {
             setSaving(false);

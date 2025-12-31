@@ -12,9 +12,10 @@ const dbConfig = defineConfig({
         user: env.get('DB_USER'),
         password: env.get('DB_PASSWORD'),
         database: env.get('DB_DATABASE'),
+        // TiDB Cloud requires SSL connections
         ssl: {
           minVersion: 'TLSv1.2',
-          rejectUnauthorized: true,
+          rejectUnauthorized: false, // TiDB Cloud uses self-signed certificates
         },
       },
       migrations: {

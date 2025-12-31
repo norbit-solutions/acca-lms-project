@@ -5,193 +5,26 @@ import { AdminChapter, AdminCourseDetail, AdminLesson } from "@/types";
 import { adminService } from "@/services";
 import { useModal } from "./ModalProvider";
 import MuxPlayer from "@mux/mux-player-react";
+import {
+  BackIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  PlusIcon,
+  PlayCircleIcon,
+  UploadIcon,
+  EditIcon,
+  TrashIcon,
+  CloseIcon,
+  CheckIcon,
+  WarningIcon,
+  BookIcon,
+} from "@/lib/icons";
 
+interface CourseDetailClientProps {
+  initialCourse: AdminCourseDetail;
+}
 
-
-// Icons
-const BackIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M15 19l-7-7 7-7"
-    />
-  </svg>
-);
-
-const ChevronDownIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M19 9l-7 7-7-7"
-    />
-  </svg>
-);
-
-const ChevronRightIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M9 5l7 7-7 7"
-    />
-  </svg>
-);
-
-const PlusIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 4v16m8-8H4"
-    />
-  </svg>
-);
-
-const PlayIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
-  </svg>
-);
-
-const UploadIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-    />
-  </svg>
-);
-
-const EditIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-    />
-  </svg>
-);
-
-const TrashIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-    />
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg
-    className="w-5 h-5"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M6 18L18 6M6 6l12 12"
-    />
-  </svg>
-);
-
-const CheckIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M5 13l4 4L19 7"
-    />
-  </svg>
-);
-
-const WarningIcon = () => (
-  <svg
-    className="w-4 h-4"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-    />
-  </svg>
-);
-
-export default function CourseDetailClient({ initialCourse }: { initialCourse: AdminCourseDetail }) {
+export default function CourseDetailClient({ initialCourse }: CourseDetailClientProps) {
   const router = useRouter();
   const { showError, showSuccess, showConfirm } = useModal();
 
@@ -237,6 +70,8 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
 
   // Subscribe to SSE for real-time lesson updates
   useEffect(() => {
+
+    console.log('[SSE] Subscribing to course updates for course:', course);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333';
     const eventSource = new EventSource(`${apiUrl}/sse/course/${course.id}`);
 
@@ -286,12 +121,12 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
           }
         }
       } catch (error) {
-        console.error('[SSE] Failed to parse message:', error);
+        console.log('[SSE] Failed to parse message:', error);
       }
     };
 
     eventSource.onerror = (error) => {
-      console.error('[SSE] Error:', error);
+      console.log('[SSE] Error:', error);
       // EventSource will auto-reconnect
     };
 
@@ -300,7 +135,6 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
       eventSource.close();
     };
   }, [course.id, showSuccess]);
-
 
 
 
@@ -339,7 +173,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
       setShowChapterModal(false);
       router.refresh();
     } catch (error) {
-      console.error("Failed to save chapter:", error);
+      console.log("Failed to save chapter:", error);
       showError("Failed to save chapter");
     }
   };
@@ -356,7 +190,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
       await adminService.deleteChapter(chapter.id);
       router.refresh();
     } catch (error) {
-      console.error("Failed to delete chapter:", error);
+      console.log("Failed to delete chapter:", error);
       showError("Failed to delete chapter");
     }
   };
@@ -389,19 +223,22 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
     try {
       // Upload file using admin service (PDF endpoint works for docs too)
       const result = await adminService.uploadPdf(file);
+      console.log("[handleAttachmentUpload] Upload result:", result);
 
-      // Add to attachments
+      // Add to attachments using functional update to avoid closure issues
       const newAttachment = {
         url: result.url,
         name: file.name,
         type: file.type,
       };
-      setLessonForm({
-        ...lessonForm,
-        attachments: [...lessonForm.attachments, newAttachment],
-      });
+      console.log("[handleAttachmentUpload] Adding attachment:", newAttachment);
+
+      setLessonForm((prev) => ({
+        ...prev,
+        attachments: [...prev.attachments, newAttachment],
+      }));
     } catch (error) {
-      console.error("Failed to upload attachment:", error);
+      console.log("Failed to upload attachment:", error);
       showError("Failed to upload file");
     } finally {
       setUploadingAttachment(false);
@@ -410,10 +247,10 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
   };
 
   const handleRemoveAttachment = (index: number) => {
-    setLessonForm({
-      ...lessonForm,
-      attachments: lessonForm.attachments.filter((_, i) => i !== index),
-    });
+    setLessonForm((prev) => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index),
+    }));
   };
 
   const handlePlayVideo = async (lesson: AdminLesson) => {
@@ -426,23 +263,27 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
       setVideoTitle(lesson.title);
       setShowVideoPlayer(true);
     } catch (error) {
-      console.error("Failed to get playback URL:", error);
+      console.log("Failed to get playback URL:", error);
       showError("Failed to load video");
     }
   };
 
   const handleLessonSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("[handleLessonSubmit] lessonForm:", lessonForm);
+    console.log("[handleLessonSubmit] attachments:", lessonForm.attachments);
     try {
       if (editingLesson) {
         // Map form fields to API field names
-        await adminService.updateLesson(editingLesson.id, {
+        const updateData = {
           title: lessonForm.title,
           isFree: lessonForm.isFree,
           viewLimit: lessonForm.maxViews,
           description: lessonForm.description,
           attachments: lessonForm.attachments,
-        });
+        };
+        console.log("[handleLessonSubmit] Sending update data:", updateData);
+        await adminService.updateLesson(editingLesson.id, updateData);
       } else if (selectedChapterId) {
         await adminService.createLesson(selectedChapterId, {
           title: lessonForm.title,
@@ -454,7 +295,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
       setShowLessonModal(false);
       router.refresh();
     } catch (error) {
-      console.error("Failed to save lesson:", error);
+      console.log("Failed to save lesson:", error);
       showError("Failed to save lesson");
     }
   };
@@ -471,7 +312,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
       await adminService.deleteLesson(lesson.id);
       router.refresh();
     } catch (error) {
-      console.error("Failed to delete lesson:", error);
+      console.log("Failed to delete lesson:", error);
       showError("Failed to delete lesson");
     }
   };
@@ -533,7 +374,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
 
       showSuccess("Video uploaded! Processing in background...");
     } catch (error) {
-      console.error("Failed to upload video:", error);
+      console.log("Failed to upload video:", error);
       showError("Failed to upload video. Please try again.");
     } finally {
       setUploading(null);
@@ -571,7 +412,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
             className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-4 transition-colors group"
           >
             <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-slate-200 transition-colors">
-              <BackIcon />
+              <BackIcon className="w-4 h-4" />
             </div>
             <span className="font-medium">Back to Courses</span>
           </button>
@@ -609,7 +450,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
             onClick={openNewChapterModal}
             className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium shadow-sm hover:bg-slate-800 transition-all"
           >
-            <PlusIcon />
+            <PlusIcon className="w-4 h-4" />
             Add Chapter
           </button>
         </div>
@@ -628,9 +469,9 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                     <div className="flex items-center gap-3">
                       <span className="text-slate-400">
                         {expandedChapters.has(chapter.id) ? (
-                          <ChevronDownIcon />
+                          <ChevronDownIcon className="w-4 h-4" />
                         ) : (
-                          <ChevronRightIcon />
+                          <ChevronRightIcon className="w-4 h-4" />
                         )}
                       </span>
                       <div>
@@ -650,20 +491,20 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                         onClick={() => openNewLessonModal(chapter.id)}
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors"
                       >
-                        <PlusIcon />
+                        <PlusIcon className="w-4 h-4" />
                         Lesson
                       </button>
                       <button
                         onClick={() => openEditChapterModal(chapter)}
                         className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                       >
-                        <EditIcon />
+                        <EditIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteChapter(chapter)}
                         className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                       >
-                        <TrashIcon />
+                        <TrashIcon className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -714,7 +555,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                                   {lessonIndex + 1}
                                 </span>
                                 <div className="flex items-center gap-2">
-                                  <PlayIcon />
+                                  <PlayCircleIcon className="w-4 h-4" />
                                   <span className="text-slate-900">
                                     {lesson.title}
                                   </span>
@@ -729,11 +570,11 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                                 </span>
                                 {lesson.muxPlaybackId ? (
                                   <span className="inline-flex items-center gap-1 text-emerald-600 text-xs">
-                                    <CheckIcon /> Ready
+                                    <CheckIcon className="w-4 h-4" /> Ready
                                   </span>
                                 ) : lesson.type === 'video' && (processingLessons.has(lesson.id) || (lesson.muxStatus === 'pending' && lesson.muxUploadId)) ? (
                                   <span className="inline-flex items-center gap-1 text-amber-500 text-xs">
-                                    <WarningIcon /> Processing
+                                    <WarningIcon className="w-4 h-4" /> Processing
                                   </span>
                                 ) : null}
                               </div>
@@ -752,7 +593,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                                   disabled={uploading === lesson.id}
                                   className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-violet-50 text-violet-600 rounded-lg text-xs font-medium hover:bg-violet-100 transition-colors disabled:opacity-50 min-w-[70px] justify-center"
                                 >
-                                  <UploadIcon />
+                                  <UploadIcon className="w-4 h-4" />
                                   {uploadProgress?.lessonId === lesson.id
                                     ? `${uploadProgress.progress}%`
                                     : lesson.muxPlaybackId
@@ -765,20 +606,20 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                                     className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
                                     title="Play video"
                                   >
-                                    <PlayIcon />
+                                    <PlayCircleIcon className="w-4 h-4" />
                                   </button>
                                 )}
                                 <button
                                   onClick={() => openEditLessonModal(lesson)}
                                   className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                 >
-                                  <EditIcon />
+                                  <EditIcon className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteLesson(lesson)}
                                   className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                                 >
-                                  <TrashIcon />
+                                  <TrashIcon className="w-4 h-4" />
                                 </button>
                               </div>
                             </div>
@@ -802,19 +643,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
         ) : (
           <div className="p-12 text-center">
             <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
+              <BookIcon className="w-8 h-8" />
             </div>
             <h3 className="text-xl font-display font-bold text-slate-900 mb-2">
               No chapters yet
@@ -826,7 +655,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
               onClick={openNewChapterModal}
               className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-lg font-medium shadow-sm hover:bg-slate-800 transition-all"
             >
-              <PlusIcon />
+              <PlusIcon className="w-4 h-4" />
               Add First Chapter
             </button>
           </div>
@@ -996,9 +825,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                             onClick={() => handleRemoveAttachment(index)}
                             className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            <CloseIcon className="w-4 h-4" />
                           </button>
                         </div>
                       ))}
@@ -1059,9 +886,7 @@ export default function CourseDetailClient({ initialCourse }: { initialCourse: A
                 }}
                 className="p-2 hover:bg-slate-100 rounded-full transition-colors"
               >
-                <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <CloseIcon className="w-5 h-5 text-slate-500" />
               </button>
             </div>
             <div className="aspect-video bg-black">

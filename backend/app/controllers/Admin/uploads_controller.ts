@@ -59,13 +59,13 @@ export default class UploadsController {
   }
 
   /**
-   * Upload a PDF to DO Spaces
+   * Upload a document to DO Spaces (PDF, Word, Excel, PowerPoint)
    * Accepts multipart/form-data with 'file' field
    */
   async uploadPdf({ request, response }: HttpContext): Promise<void> {
     const file = request.file('file', {
-      size: '20mb',
-      extnames: ['pdf'],
+      size: '50mb', // Increased for larger study materials
+      extnames: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf'],
     })
 
     if (!file) {
@@ -82,7 +82,8 @@ export default class UploadsController {
 
     try {
       const buffer = await this.readFileBuffer(file)
-      const result = await storageService.uploadPdf(buffer)
+      const contentType = file.headers['content-type'] || 'application/pdf'
+      const result = await storageService.uploadPdf(buffer, contentType)
 
       const uploadRes: UploadResponse = {
         url: result.url,

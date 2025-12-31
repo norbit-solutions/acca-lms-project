@@ -1,7 +1,24 @@
 import FAQClient from "@/components/admin/FAQClient";
+import { adminService } from "@/services";
 
 export const dynamic = "force-dynamic";
 
-export default function FAQPage() {
-    return <FAQClient />;
+interface FAQItem {
+    question: string;
+    answer: string;
+}
+
+export default async function FAQPage() {
+    let faqs: FAQItem[] = [];
+
+    try {
+        const data = await adminService.getCmsItem("faq");
+        if (data && data.content && Array.isArray(data.content.items)) {
+            faqs = data.content.items as FAQItem[];
+        }
+    } catch {
+        // CMS item doesn't exist yet
+    }
+
+    return <FAQClient initialFaqs={faqs} />;
 }

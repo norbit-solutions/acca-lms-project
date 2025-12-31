@@ -44,7 +44,7 @@ export default function CourseCurriculum({
       setPlaybackId(data.playbackId);
       setPlaybackToken(data.playbackToken);
     } catch (error) {
-      console.error('Failed to load video preview:', error);
+      console.log('Failed to load video preview:', error);
       setPlayingLesson(null);
     } finally {
       setLoading(false);

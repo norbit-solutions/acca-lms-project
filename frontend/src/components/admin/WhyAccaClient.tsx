@@ -1,8 +1,9 @@
 "use client";
 
 import { adminService } from "@/services";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useModal } from "./ModalProvider";
+import { useRouter } from "next/navigation";
 
 interface WhyItem {
   title: string;
@@ -16,11 +17,9 @@ interface WhyContent {
   items: WhyItem[];
 }
 
-const defaultContent: WhyContent = {
-  headline: "Why Choose Learnspire?",
-  subheadline: "The benefits of learning with us",
-  items: [],
-};
+interface WhyAccaClientProps {
+  initialContent: WhyContent;
+}
 
 const iconOptions = [
   "📚",
@@ -35,9 +34,10 @@ const iconOptions = [
   "✅",
 ];
 
-export default function WhyAccaClient() {
+export default function WhyAccaClient({ initialContent }: WhyAccaClientProps) {
+  const router = useRouter();
   const { showError, showSuccess, showConfirm } = useModal();
-  const [content, setContent] = useState<WhyContent>(defaultContent);
+  const [content, setContent] = useState<WhyContent>(initialContent);
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -46,24 +46,6 @@ export default function WhyAccaClient() {
     description: "",
     icon: "📚",
   });
-
-  useEffect(() => {
-    loadContent();
-  }, []);
-
-  const loadContent = async () => {
-    try {
-      const data = await adminService.getCmsItem("why-acca");
-      if (data && data.content) {
-        setContent({
-          ...defaultContent,
-          ...(data.content as unknown as Partial<WhyContent>),
-        });
-      }
-    } catch {
-      setContent(defaultContent);
-    }
-  };
 
   const saveContent = async (newContent: WhyContent) => {
     setSaving(true);
@@ -74,7 +56,7 @@ export default function WhyAccaClient() {
       );
       setContent(newContent);
     } catch (error) {
-      console.error("Failed to save:", error);
+      console.log("Failed to save:", error);
       showError("Failed to save");
     } finally {
       setSaving(false);
@@ -120,7 +102,7 @@ export default function WhyAccaClient() {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 w-full">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">Why Learnspire</h1>
         <p className="text-slate-500">
@@ -258,11 +240,10 @@ export default function WhyAccaClient() {
                         key={icon}
                         type="button"
                         onClick={() => setFormData({ ...formData, icon })}
-                        className={`w-10 h-10 text-xl rounded-lg ${
-                          formData.icon === icon
-                            ? "bg-blue-100 ring-2 ring-blue-500"
-                            : "bg-slate-100 hover:bg-slate-200"
-                        }`}
+                        className={`w-10 h-10 text-xl rounded-lg ${formData.icon === icon
+                          ? "bg-blue-100 ring-2 ring-blue-500"
+                          : "bg-slate-100 hover:bg-slate-200"
+                          }`}
                       >
                         {icon}
                       </button>

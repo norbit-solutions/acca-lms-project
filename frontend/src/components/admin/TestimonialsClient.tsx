@@ -1,71 +1,55 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { adminService } from "@/services";
 import { useModal } from "./ModalProvider";
 
 interface Testimonial {
     id: number;
     name: string;
+    designation: string | null;
     content: string;
+    rating: number;
     image: string | null;
-    isActive: boolean;
     sortOrder: number;
 }
 
-export default function TestimonialsClient() {
+interface TestimonialsClientProps {
+    initialTestimonials: Testimonial[];
+}
+
+export default function TestimonialsClient({ initialTestimonials }: TestimonialsClientProps) {
+    const router = useRouter();
     const { showError, showConfirm } = useModal();
-    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+    const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<Testimonial | null>(null);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [formData, setFormData] = useState({
         name: "",
+        designation: "",
         content: "",
         image: "",
-        isActive: true,
     });
-
-    useEffect(() => {
-        loadTestimonials();
-    }, []);
-
-    const loadTestimonials = async () => {
-        try {
-            const data = await adminService.getTestimonials();
-
-            console.log('data::', data);
-            setTestimonials(data as unknown as Testimonial[]);
-        } catch (error) {
-            console.error("Failed to load testimonials:", error);
-            showError("Failed to load testimonials");
-        }
-    };
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Validate file type
         const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
         if (!validTypes.includes(file.type)) {
             showError("Please select a valid image file (JPG, PNG, WebP, or GIF)");
             return;
         }
 
-        // Validate file size (5MB max)
-        // if (file.size > 5 * 1024 * 1024) {
-        //     alert("Image must be less than 5MB");
-        //     return;
-        // }
-
         setUploading(true);
         try {
             const result = await adminService.uploadImage(file, "avatars");
             setFormData({ ...formData, image: result.url });
         } catch (error) {
-            console.error("Failed to upload image:", error);
+            console.log("Failed to upload image:", error);
             showError("Failed to upload image. Please try again.");
         } finally {
             setUploading(false);
@@ -91,10 +75,10 @@ export default function TestimonialsClient() {
             }
             setShowModal(false);
             setEditing(null);
-            setFormData({ name: "", content: "", image: "", isActive: true });
-            loadTestimonials();
+            setFormData({ name: "", designation: "", content: "", image: "" });
+            router.refresh();
         } catch (error) {
-            console.error("Failed to save testimonial:", error);
+            console.log("Failed to save testimonial:", error);
             showError("Failed to save testimonial");
         }
     };
@@ -103,9 +87,9 @@ export default function TestimonialsClient() {
         setEditing(testimonial);
         setFormData({
             name: testimonial.name,
+            designation: testimonial.designation || "",
             content: testimonial.content,
             image: testimonial.image || "",
-            isActive: testimonial.isActive,
         });
         setShowModal(true);
     };
@@ -120,16 +104,16 @@ export default function TestimonialsClient() {
         if (!confirmed) return;
         try {
             await adminService.deleteTestimonial(id);
-            loadTestimonials();
+            router.refresh();
         } catch (error) {
-            console.error("Failed to delete testimonial:", error);
+            console.log("Failed to delete testimonial:", error);
             showError("Failed to delete testimonial");
         }
     };
 
     const openNewModal = () => {
         setEditing(null);
-        setFormData({ name: "", content: "", image: "", isActive: true });
+        setFormData({ name: "", designation: "", content: "", image: "" });
         setShowModal(true);
     };
 

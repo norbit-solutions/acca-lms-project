@@ -474,7 +474,9 @@ export const adminService = {
     );
 
     if (!response.ok) {
-      throw new Error("Failed to upload PDF");
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || errorData.message || `Failed to upload PDF (${response.status})`;
+      throw new Error(errorMessage);
     }
 
     return response.json();

@@ -102,6 +102,7 @@ export interface LessonWithProgress {
 export interface LessonDetail {
   id: number;
   title: string;
+  description: string | null;
   duration: number | null;
   isFree: boolean;
   maxViews: number;
@@ -110,6 +111,7 @@ export interface LessonDetail {
   playbackId: string | null;
   signedUrl: string | null;
   watermark: WatermarkData;
+  attachments: Array<{ url: string; name: string; type: string }>;
   chapter: {
     id: number;
     title: string;

@@ -91,7 +91,7 @@ export default class CoursesController {
       })
       .firstOrFail()
 
-    // Transform to include signed thumbnail URLs
+    // Transform to include signed thumbnail URLs and ensure attachments are included
     const courseData = course.serialize()
     courseData.chapters = courseData.chapters.map((chapter: Record<string, unknown>) => ({
       ...chapter,
@@ -100,6 +100,10 @@ export default class CoursesController {
         thumbnailUrl: lesson.muxPlaybackId
           ? generateSignedThumbnailUrl(lesson.muxPlaybackId as string)
           : null,
+        // Ensure attachments is always an array (parse if it's a string)
+        attachments: typeof lesson.attachments === 'string'
+          ? JSON.parse(lesson.attachments)
+          : (lesson.attachments || []),
       })),
     }))
 

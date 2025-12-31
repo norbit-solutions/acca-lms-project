@@ -16,13 +16,13 @@ export default async function CourseDetailPage({ params }: PageProps) {
     try {
         course = await studentService.getMyCourse(slug);
     } catch (err) {
-        console.error("Failed to fetch course:", err);
+        console.log("Failed to fetch course:", err);
         error = "Failed to load course";
     }
 
     if (error || !course) {
         return (
-            <div className="max-w-5xl mx-auto">
+            <div className="w-full">
                 <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
                     <p className="text-red-600 font-medium">{error || "Course not found"}</p>
                     <Link

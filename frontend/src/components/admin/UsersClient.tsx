@@ -117,7 +117,7 @@ export default function UsersClient({
           setUsers(result.users || []);
           setMeta(result.meta || null);
         } catch (error) {
-          console.error("Failed to load users:", error);
+          console.log("Failed to load users:", error);
           showError("Failed to load users");
         }
       })();
@@ -130,7 +130,7 @@ export default function UsersClient({
       setUsers(result.users || []);
       setMeta(result.meta || null);
     } catch (error) {
-      console.error("Failed to load users:", error);
+      console.log("Failed to load users:", error);
       showError("Failed to load users");
     }
   };
@@ -147,7 +147,7 @@ export default function UsersClient({
       setUsers(users || []);
       setMeta(null);
     } catch (error) {
-      console.error("Failed to search users:", error);
+      console.log("Failed to search users:", error);
       showError("Failed to search users");
     }
   };

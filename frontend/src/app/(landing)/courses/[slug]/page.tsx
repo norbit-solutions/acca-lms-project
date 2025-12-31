@@ -37,7 +37,7 @@ export default async function CourseDetailsPage({ params }: PageProps) {
   try {
     course = await courseService.getCourse(slug);
   } catch (error) {
-    console.error("Failed to fetch course:", error);
+    console.log("Failed to fetch course:", error);
     notFound();
   }
 

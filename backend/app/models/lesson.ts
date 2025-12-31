@@ -51,18 +51,28 @@ export default class Lesson extends BaseModel {
   declare description: string | null
 
   @column({
+    columnName: 'attachments',
     prepare: (value: Array<{ url: string; name: string; type: string }> | null) => {
+      // Must use JSON.stringify because Knex passes values directly to MySQL
       if (value === null || value === undefined) return null
       if (Array.isArray(value) && value.length === 0) return null
       return JSON.stringify(value)
     },
-    consume: (value: string | null) => {
+    consume: (value: Array<{ url: string; name: string; type: string }> | string | null) => {
+      // MySQL JSON column might return already-parsed objects OR strings depending on driver
       if (!value) return null
-      try {
-        return JSON.parse(value)
-      } catch {
-        return null
+      if (Array.isArray(value)) return value  // Already parsed by MySQL driver
+      if (typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return null
+        }
       }
+      return null
+    },
+    serialize: (value: Array<{ url: string; name: string; type: string }> | null) => {
+      return value || []
     }
   })
   declare attachments: Array<{ url: string; name: string; type: string }> | null

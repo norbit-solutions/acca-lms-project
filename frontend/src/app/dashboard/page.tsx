@@ -50,7 +50,7 @@ export default async function DashboardPage() {
       studentService.getRecentLessons().catch(() => []),
     ]);
   } catch (err) {
-    console.error("Failed to fetch dashboard data:", err);
+    console.log("Failed to fetch dashboard data:", err);
   }
 
   const totalLessons = courses.reduce((acc, c) => acc + c.lessonsCount, 0);

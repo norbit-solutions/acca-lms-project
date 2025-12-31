@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { adminService } from "@/services";
 import { useModal } from "./ModalProvider";
 
@@ -13,9 +14,17 @@ interface Instructor {
     sortOrder: number;
 }
 
-export default function InstructorsClient() {
+interface InstructorsClientProps {
+    initialInstructors: Instructor[];
+}
+
+export default function InstructorsClient({ initialInstructors }: InstructorsClientProps) {
+    const router = useRouter();
     const { showError, showConfirm } = useModal();
-    const [instructors, setInstructors] = useState<Instructor[]>([]);
+    const [instructors, setInstructors] = useState<Instructor[]>(initialInstructors);
+    useEffect(() => {
+        setInstructors(initialInstructors);
+    }, [initialInstructors]);
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<Instructor | null>(null);
     const [uploading, setUploading] = useState(false);
@@ -26,20 +35,6 @@ export default function InstructorsClient() {
         bio: "",
         image: "",
     });
-
-    useEffect(() => {
-        loadInstructors();
-    }, []);
-
-    const loadInstructors = async () => {
-        try {
-            const data = await adminService.getInstructors();
-            setInstructors(data);
-        } catch (error) {
-            console.error("Failed to load instructors:", error);
-            showError("Failed to load instructors");
-        }
-    };
 
     const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -59,9 +54,15 @@ export default function InstructorsClient() {
         setUploading(true);
         try {
             const result = await adminService.uploadImage(file, "avatars");
-            setFormData({ ...formData, image: result.url });
+            console.log("Upload result:", result);
+            if (result && result.url) {
+                setFormData(prev => ({ ...prev, image: result.url }));
+            } else {
+                console.log("Upload succeeded but no URL returned:", result);
+                showError("Upload succeeded but no URL was returned");
+            }
         } catch (error) {
-            console.error("Failed to upload avatar:", error);
+            console.log("Failed to upload avatar:", error);
             showError("Failed to upload avatar. Please try again.");
         } finally {
             setUploading(false);
@@ -89,9 +90,9 @@ export default function InstructorsClient() {
             setShowModal(false);
             setEditing(null);
             setFormData({ name: "", title: "", bio: "", image: "" });
-            loadInstructors();
+            router.refresh();
         } catch (error) {
-            console.error("Failed to save instructor:", error);
+            console.log("Failed to save instructor:", error);
             showError("Failed to save instructor");
         }
     };
@@ -117,9 +118,9 @@ export default function InstructorsClient() {
         if (!confirmed) return;
         try {
             await adminService.deleteInstructor(id);
-            loadInstructors();
+            router.refresh();
         } catch (error) {
-            console.error("Failed to delete instructor:", error);
+            console.log("Failed to delete instructor:", error);
             showError("Failed to delete instructor");
         }
     };
@@ -247,6 +248,7 @@ export default function InstructorsClient() {
                                         <div className="flex items-center gap-4">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
+                                                key={formData.image}
                                                 src={formData.image}
                                                 alt="Preview"
                                                 className="w-20 h-20 rounded-full object-cover border-2 border-slate-200"

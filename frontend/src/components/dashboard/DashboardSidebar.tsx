@@ -4,108 +4,46 @@ import { useAuthStore } from "@/lib/store";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-// Minimal line icons with thin stroke
-const DashboardIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg
-    className={className}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-    />
+// Simple line icons
+const DashboardIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
   </svg>
 );
 
-const CoursesIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg
-    className={className}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-    />
+const CoursesIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
   </svg>
 );
 
-const ProfileIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg
-    className={className}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-    />
+const ProfileIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
   </svg>
 );
 
-const CloseIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg
-    className={className}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M6 18L18 6M6 6l12 12"
-    />
+const HelpIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
   </svg>
 );
 
-const LogoutIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg
-    className={className}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-    />
+const LogoutIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
   </svg>
 );
 
-const CollapseIcon = ({
-  className = "w-5 h-5",
-  isCollapsed,
-}: {
-  className?: string;
-  isCollapsed: boolean;
-}) => (
-  <svg
-    className={`${className} transition-transform duration-300 ${
-      isCollapsed ? "rotate-180" : ""
-    }`}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-    />
+const SearchIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
   </svg>
 );
 
@@ -120,7 +58,6 @@ export default function DashboardSidebar({
   isMobileOpen,
   onClose,
   isCollapsed,
-  onToggleCollapse,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -131,7 +68,7 @@ export default function DashboardSidebar({
     router.push("/login");
   };
 
-  const navItems = [
+  const menuItems = [
     {
       name: "Dashboard",
       href: "/dashboard",
@@ -139,7 +76,7 @@ export default function DashboardSidebar({
       active: pathname === "/dashboard",
     },
     {
-      name: "My Courses",
+      name: "All Courses",
       href: "/dashboard/my-courses",
       icon: CoursesIcon,
       active:
@@ -147,11 +84,21 @@ export default function DashboardSidebar({
         pathname?.startsWith("/dashboard/courses") ||
         false,
     },
+  ];
+
+  const userItems = [
     {
       name: "Profile",
       href: "/dashboard/profile",
       icon: ProfileIcon,
       active: pathname === "/dashboard/profile",
+    },
+    {
+      name: "Help & Support",
+      href: `https://wa.me/${process.env.WA_NUMBER}`,
+      icon: HelpIcon,
+      active: false,
+      external: true,
     },
   ];
 
@@ -160,7 +107,7 @@ export default function DashboardSidebar({
       {/* Mobile Backdrop */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-black/20 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -169,143 +116,118 @@ export default function DashboardSidebar({
       <aside
         className={`
                     fixed top-0 left-0 h-full z-50
-                    bg-white border-r border-slate-200
-                    shadow-sm
-                    transition-all duration-300 ease-in-out
+                    bg-white border-r border-gray-100
+                    transition-all duration-300
                     lg:translate-x-0
                     ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
-                    ${isCollapsed ? "w-[72px]" : "w-64"}
+                    ${isCollapsed ? "w-16" : "w-56"}
                 `}
       >
-        {/* Header */}
-        <div
-          className={`h-16 flex items-center justify-between border-b border-slate-100 ${
-            isCollapsed ? "px-4" : "px-5"
-          }`}
-        >
-          <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow duration-300">
-              <span className="text-white font-semibold text-sm">LS</span>
+        {/* Logo */}
+        <div className={`h-16 flex items-center ${isCollapsed ? "px-4 justify-center" : "px-5"}`}>
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-black rounded flex items-center justify-center">
+              <span className="text-white text-xs font-bold">L</span>
             </div>
-            <span
-              className={`text-slate-800 font-semibold text-[15px] tracking-tight transition-opacity duration-200 ${
-                isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
-              }`}
-            >
-              Learnspire
-            </span>
+            {!isCollapsed && (
+              <span className="text-black font-semibold text-lg">Learnspire</span>
+            )}
           </Link>
 
-          {/* Mobile Close Button */}
+          {/* Mobile Close */}
           <button
             onClick={onClose}
-            className="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all duration-200"
+            className="lg:hidden ml-auto p-2 text-gray-400 hover:text-black"
           >
-            <CloseIcon className="w-5 h-5" />
+            <CloseIcon />
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className={`mt-6 ${isCollapsed ? "px-2" : "px-3"}`}>
+        {/* Menu Section */}
+        {!isCollapsed && (
+          <div className="px-5 pt-4">
+            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">Menu</p>
+          </div>
+        )}
+        <nav className={`${isCollapsed ? "px-2" : "px-3"}`}>
           <div className="space-y-1">
-            {navItems.map((item) => {
+            {menuItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={onClose}
-                  title={isCollapsed ? item.name : undefined}
                   className={`
-                                        group relative flex items-center gap-3 rounded-xl text-[13px] font-medium
-                                        transition-all duration-200
-                                        ${
-                                          isCollapsed
-                                            ? "px-0 py-3 justify-center"
-                                            : "px-4 py-3"
-                                        }
-                                        ${
-                                          item.active
-                                            ? "bg-slate-100 text-slate-900"
-                                            : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
-                                        }
+                                        flex items-center gap-3 rounded-lg text-sm font-medium
+                                        transition-all
+                                        ${isCollapsed ? "p-2.5 justify-center" : "px-3 py-2.5"}
+                                        ${item.active
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "text-gray-600 hover:bg-gray-50"
+                    }
                                     `}
                 >
-                  {/* Active indicator */}
-                  {item.active && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-slate-900 rounded-r-full" />
-                  )}
-
-                  <Icon
-                    className={`w-5 h-5 transition-transform duration-200 group-hover:scale-105 ${
-                      item.active
-                        ? "text-slate-700"
-                        : "text-slate-400 group-hover:text-slate-600"
-                    }`}
-                  />
-
-                  <span
-                    className={`transition-opacity duration-200 ${
-                      isCollapsed
-                        ? "opacity-0 w-0 overflow-hidden absolute"
-                        : "opacity-100"
-                    }`}
-                  >
-                    {item.name}
-                  </span>
-
-                  {/* Tooltip for collapsed state */}
-                  {isCollapsed && (
-                    <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-800 text-white text-xs rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap shadow-lg z-50">
-                      {item.name}
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full border-4 border-transparent border-r-slate-800" />
-                    </div>
-                  )}
+                  <Icon />
+                  {!isCollapsed && <span>{item.name}</span>}
                 </Link>
               );
             })}
           </div>
         </nav>
 
-        {/* Footer */}
-        <div
-          className={`absolute bottom-0 left-0 right-0 border-t border-slate-100 ${
-            isCollapsed ? "px-2 py-3" : "px-3 py-4"
-          }`}
-        >
-          {/* Logout Button */}
+        {/* User Section */}
+        {!isCollapsed && (
+          <div className="px-5 pt-6">
+            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">User</p>
+          </div>
+        )}
+        <nav className={`${isCollapsed ? "px-2" : "px-3"}`}>
+          <div className="space-y-1">
+            {userItems.map((item) => {
+              const Icon = item.icon;
+              const Component = item.external ? "a" : Link;
+              const extraProps = item.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
+
+              return (
+                <Component
+                  key={item.name}
+                  href={item.href}
+                  onClick={item.external ? undefined : onClose}
+                  className={`
+                                        flex items-center gap-3 rounded-lg text-sm font-medium
+                                        transition-all
+                                        ${isCollapsed ? "p-2.5 justify-center" : "px-3 py-2.5"}
+                                        ${item.active
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "text-gray-600 hover:bg-gray-50"
+                    }
+                                    `}
+                  {...extraProps}
+                >
+                  <Icon />
+                  {!isCollapsed && <span>{item.name}</span>}
+                </Component>
+              );
+            })}
+          </div>
+        </nav>
+
+
+
+        {/* Logout */}
+        <div className={`absolute bottom-0 left-0 right-0 border-t border-gray-100 ${isCollapsed ? "p-2" : "p-3"}`}>
           <button
             onClick={handleLogout}
-            title={isCollapsed ? "Sign out" : undefined}
             className={`
-                            w-full group relative flex items-center gap-3 rounded-xl text-[13px] font-medium
-                            text-slate-400 hover:text-red-500 hover:bg-red-50
-                            transition-all duration-200
-                            ${
-                              isCollapsed
-                                ? "px-0 py-3 justify-center"
-                                : "px-4 py-3"
-                            }
+                            w-full flex items-center gap-3 rounded-lg text-sm font-medium
+                            text-gray-500 hover:bg-gray-50 hover:text-black
+                            transition-all
+                            ${isCollapsed ? "p-2.5 justify-center" : "px-3 py-2.5"}
                         `}
           >
-            <LogoutIcon className="w-5 h-5 transition-transform duration-200 group-hover:scale-105" />
-            <span
-              className={`transition-opacity duration-200 ${
-                isCollapsed
-                  ? "opacity-0 w-0 overflow-hidden absolute"
-                  : "opacity-100"
-              }`}
-            >
-              Sign out
-            </span>
-
-            {/* Tooltip for collapsed state */}
-            {isCollapsed && (
-              <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-800 text-white text-xs rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap shadow-lg z-50">
-                Sign out
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full border-4 border-transparent border-r-slate-800" />
-              </div>
-            )}
+            <LogoutIcon />
+            {!isCollapsed && <span>Sign out</span>}
           </button>
         </div>
       </aside>

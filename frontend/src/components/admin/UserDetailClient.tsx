@@ -60,7 +60,7 @@ export default function UserDetailClient({
       const data = await adminService.getUser(user.id);
       setUser(data || null);
     } catch (error) {
-      console.error("Failed to load user:", error);
+      console.log("Failed to load user:", error);
       showError("Failed to load user details");
     }
   };
@@ -77,7 +77,7 @@ export default function UserDetailClient({
       await adminService.deleteEnrollment(enrollment.id);
       loadUser();
     } catch (error) {
-      console.error("Failed to remove enrollment:", error);
+      console.log("Failed to remove enrollment:", error);
       showError("Failed to remove enrollment");
     }
   };
@@ -106,7 +106,7 @@ export default function UserDetailClient({
       setEditingViewLimit(null);
       loadUser();
     } catch (error) {
-      console.error("Failed to set view limit:", error);
+      console.log("Failed to set view limit:", error);
       showError("Failed to set view limit");
     }
   };
@@ -120,7 +120,7 @@ export default function UserDetailClient({
       setEditingViewLimit(null);
       loadUser();
     } catch (error) {
-      console.error("Failed to remove view limit:", error);
+      console.log("Failed to remove view limit:", error);
       showError("Failed to remove view limit");
     }
   };

@@ -117,7 +117,7 @@ export default function CoursesClient({
       const result = await adminService.uploadImage(file, "thumbnails");
       setFormData({ ...formData, thumbnail: result.url });
     } catch (error) {
-      console.error("Failed to upload thumbnail:", error);
+      console.log("Failed to upload thumbnail:", error);
       showError("Failed to upload thumbnail. Please try again.");
     } finally {
       setUploading(false);
@@ -150,7 +150,7 @@ export default function CoursesClient({
       setFormData({ title: "", description: "", thumbnail: "", isPublished: false, isUpcoming: false });
       router.refresh();
     } catch (error) {
-      console.error("Failed to save course:", error);
+      console.log("Failed to save course:", error);
       showError("Failed to save course");
     }
   };
@@ -180,7 +180,7 @@ export default function CoursesClient({
       await adminService.deleteCourse(course.id);
       router.refresh();
     } catch (error) {
-      console.error("Failed to delete course:", error);
+      console.log("Failed to delete course:", error);
       showError("Failed to delete course");
     }
   };

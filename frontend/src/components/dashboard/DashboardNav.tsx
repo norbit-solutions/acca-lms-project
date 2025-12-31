@@ -3,30 +3,7 @@
 import { useAuthStore } from "@/lib/store";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-const MenuIcon = () => (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
-);
-
-const SidebarToggleIcon = ({ isCollapsed }: { isCollapsed: boolean }) => (
-    <svg className={`w-5 h-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h7" />
-    </svg>
-);
-
-const UserIcon = () => (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-    </svg>
-);
-
-const LogoutIcon = () => (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-    </svg>
-);
+import { MenuIcon, UserIcon, LogoutIcon, ChevronDownIcon, getInitials } from "@/lib";
 
 interface DashboardNavProps {
     onMenuClick: () => void;
@@ -58,13 +35,13 @@ export default function DashboardNav({ onMenuClick, isSidebarCollapsed, onToggle
     };
 
     return (
-        <nav className="h-16 bg-white px-6 lg:px-8 flex items-center justify-between sticky top-0 z-30 border-b border-slate-100 shadow-sm shadow-slate-100/50">
+        <nav className="h-14 bg-white px-4 lg:px-6 flex items-center justify-between sticky top-0 z-30 border-b border-gray-200">
             {/* Left: Menu Buttons */}
             <div className="flex items-center gap-2">
                 {/* Mobile Menu Button */}
                 <button
                     onClick={onMenuClick}
-                    className="lg:hidden p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all duration-200 -ml-2"
+                    className="lg:hidden p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg transition-colors"
                 >
                     <MenuIcon />
                 </button>
@@ -73,9 +50,9 @@ export default function DashboardNav({ onMenuClick, isSidebarCollapsed, onToggle
                 <button
                     onClick={onToggleSidebar}
                     title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                    className="hidden lg:flex p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all duration-200 -ml-1"
+                    className="hidden lg:flex p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                    <SidebarToggleIcon isCollapsed={isSidebarCollapsed} />
+                    <MenuIcon />
                 </button>
             </div>
 
@@ -84,33 +61,28 @@ export default function DashboardNav({ onMenuClick, isSidebarCollapsed, onToggle
                 <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className={`
-                        flex items-center gap-2.5 px-3 py-2 rounded-xl
-                        text-slate-500 hover:text-slate-700 hover:bg-slate-50
-                        transition-all duration-200
-                        ${isDropdownOpen ? 'bg-slate-50' : ''}
+                        flex items-center gap-2 px-2 py-1.5 rounded-lg
+                        text-gray-600 hover:text-black hover:bg-gray-100
+                        transition-colors
+                        ${isDropdownOpen ? 'bg-gray-100' : ''}
                     `}
                 >
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-                        <span className="text-xs font-semibold">
-                            {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
-                        </span>
+                    <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white text-sm font-medium">
+                        {user?.fullName ? getInitials(user.fullName) : "?"}
                     </div>
-                    <div className="hidden md:block text-left">
-                        <p className="text-sm font-medium text-slate-700">{user?.fullName || "Account"}</p>
-                        <p className="text-xs text-slate-400">Student</p>
-                    </div>
-                    <svg className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <span className="hidden md:block text-sm font-medium">
+                        {user?.fullName || "Account"}
+                    </span>
+                    <ChevronDownIcon className={`w-4 h-4 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Dropdown Menu */}
                 {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 py-2 overflow-hidden">
-                        {/* User Info Header */}
-                        <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
-                            <p className="text-sm font-medium text-slate-700">{user?.fullName}</p>
-                            <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 overflow-hidden">
+                        {/* User Info */}
+                        <div className="px-4 py-3 border-b border-gray-100">
+                            <p className="text-sm font-medium text-black">{user?.fullName}</p>
+                            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                         </div>
 
                         {/* Menu Items */}
@@ -120,28 +92,21 @@ export default function DashboardNav({ onMenuClick, isSidebarCollapsed, onToggle
                                     router.push("/dashboard/profile");
                                     setIsDropdownOpen(false);
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors text-sm"
+                                className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-black transition-colors"
                             >
-                                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                                    <UserIcon />
-                                </div>
-                                <div className="text-left">
-                                    <p className="font-medium">Profile</p>
-                                    <p className="text-xs text-slate-400">Manage your account</p>
-                                </div>
+                                <UserIcon className="w-4 h-4" />
+                                Profile
                             </button>
                         </div>
 
                         {/* Logout */}
-                        <div className="border-t border-slate-100 pt-1">
+                        <div className="border-t border-gray-100 py-1">
                             <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors text-sm"
+                                className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-black transition-colors"
                             >
-                                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                                    <LogoutIcon />
-                                </div>
-                                <span className="font-medium">Sign out</span>
+                                <LogoutIcon className="w-4 h-4" />
+                                Sign out
                             </button>
                         </div>
                     </div>
