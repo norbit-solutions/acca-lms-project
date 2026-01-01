@@ -67,10 +67,7 @@ export default async function CourseDetailsPage({ params }: PageProps) {
       <CourseHero
         title={course.title}
         shortIntroduction={course.description || ""}
-        image={
-          course.thumbnail ||
-          "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80"
-        }
+        image={course.thumbnail || ""}
         courseFee={course.price || 0}
         feeCurrency={course.currency || "USD"}
         enableManualPayment={true}

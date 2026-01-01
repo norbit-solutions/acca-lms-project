@@ -180,6 +180,30 @@ export default class CoursesController {
 
     await course.save()
 
+    // If course is updated to be free, make all its lessons free too
+    if (course.isFree) {
+      // Find all chapters for this course
+      const chapters = await course.related('chapters').query().orderBy('id')
+      const chapterIds = chapters.map((c) => c.id)
+
+      if (chapterIds.length > 0) {
+        // Bulk update all lessons in these chapters
+        // We need to import Lesson model at the top if not present, but using db query is safer/easier here
+        // or iterate through chapters -> lessons.
+        // Let's use a raw query or relationships for efficiency if possible, but standard Lucid way:
+
+        // We need to import Lesson, let's just do it via models to be safe with types
+        // Actually, we can just use a raw query or wait, let's see if we can easily import Lesson.
+        // importing Lesson at top of file
+
+        // Let's loop for now to be safe, or use query builder on Lesson if imported
+        const { default: Lesson } = await import('#models/lesson')
+        await Lesson.query()
+          .whereIn('chapter_id', chapterIds)
+          .update({ is_free: true })
+      }
+    }
+
     return response.ok({ course })
   }
 

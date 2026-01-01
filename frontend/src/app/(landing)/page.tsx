@@ -87,11 +87,11 @@ export default async function Home() {
       <UpcomingCoursesSection courses={upcomingCourses} />
       <AllCoursesSection courses={publishedCourses} />
       <MentorSection instructors={instructors} />
-      <WhyChooseSection
+      {/* <WhyChooseSection
         headline={whyContent.headline}
         subheadline={whyContent.subheadline}
         items={whyItems}
-      />
+      /> */}
       <TestimonialsSection testimonials={testimonials} />
       <FAQSection faqs={faqs} />
       <CTASection />

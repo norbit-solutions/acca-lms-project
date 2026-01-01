@@ -89,6 +89,9 @@ export default function CoursesClient({
     thumbnail: "",
     isPublished: false,
     isUpcoming: false,
+    price: "",
+    currency: "USD",
+    isFree: false,
   });
 
   const router = useRouter();
@@ -145,17 +148,25 @@ export default function CoursesClient({
       if (editingCourse) {
         await adminService.updateCourse(editingCourse.id, {
           ...formData,
+          price: formData.price ? Number(formData.price) : undefined,
+          isFree: formData.isFree,
           thumbnail: formData.thumbnail || undefined,
         });
       } else {
         await adminService.createCourse({
           ...formData,
+          price: formData.price ? Number(formData.price) : undefined,
+          isFree: formData.isFree,
           thumbnail: formData.thumbnail || undefined,
         });
       }
       setShowModal(false);
       setEditingCourse(null);
-      setFormData({ title: "", description: "", thumbnail: "", isPublished: false, isUpcoming: false });
+      setEditingCourse(null);
+      setEditingCourse(null);
+      setFormData({ title: "", description: "", thumbnail: "", isPublished: false, isUpcoming: false, price: "", currency: "USD", isFree: false });
+      router.refresh();
+      router.refresh();
       router.refresh();
     } catch (error) {
       console.log("Failed to save course:", error);
@@ -171,6 +182,9 @@ export default function CoursesClient({
       thumbnail: course.thumbnail || "",
       isPublished: course.isPublished,
       isUpcoming: course.isUpcoming || false,
+      price: course.price?.toString() || "",
+      currency: course.currency || "USD",
+      isFree: course.isFree,
     });
     setShowModal(true);
     router.refresh();
@@ -195,7 +209,11 @@ export default function CoursesClient({
 
   const openNewModal = () => {
     setEditingCourse(null);
-    setFormData({ title: "", description: "", thumbnail: "", isPublished: false, isUpcoming: false });
+    setEditingCourse(null);
+    setEditingCourse(null);
+    setFormData({ title: "", description: "", thumbnail: "", isPublished: false, isUpcoming: false, price: "", currency: "USD", isFree: false });
+    setShowModal(true);
+    setShowModal(true);
     setShowModal(true);
   };
 
@@ -464,6 +482,71 @@ export default function CoursesClient({
                       </label>
                     </div>
                   )}
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      Price
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.price}
+                      onChange={(e) =>
+                        setFormData({ ...formData, price: e.target.value })
+                      }
+                      placeholder="0"
+                      disabled={formData.isFree}
+                      className={`w-full px-0 py-2 border-b outline-none bg-transparent transition-colors rounded-none placeholder:text-slate-400 ${formData.isFree ? 'border-slate-100 text-slate-300' : 'border-slate-300 focus:border-slate-800'}`}
+                    />
+                  </div>
+                  <div className="w-1/3">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      Currency
+                    </label>
+                    <select
+                      value={formData.currency}
+                      onChange={(e) =>
+                        setFormData({ ...formData, currency: e.target.value })
+                      }
+                      disabled={formData.isFree}
+                      className={`w-full px-0 py-2 border-b outline-none bg-transparent transition-colors rounded-none ${formData.isFree ? 'border-slate-100 text-slate-300' : 'border-slate-300 focus:border-slate-800'}`}
+                    >
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="GBP">GBP</option>
+                      <option value="INR">INR</option>
+                      <option value="AED">AED</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl">
+                  <input
+                    type="checkbox"
+                    id="isFree"
+                    checked={formData.isFree}
+                    onChange={(e) => {
+                      const isFree = e.target.checked;
+                      setFormData({
+                        ...formData,
+                        isFree,
+                        price: isFree ? "0" : formData.price,
+                      });
+                    }}
+                    className="w-5 h-5 text-emerald-600 border-emerald-300 rounded focus:ring-emerald-500 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="isFree"
+                    className="flex-1 cursor-pointer"
+                  >
+                    <span className="block font-semibold text-slate-700">
+                      Free Course
+                    </span>
+                    <span className="text-sm text-slate-500">
+                      Make this course free for everyone (includes all lessons)
+                    </span>
+                  </label>
                 </div>
                 <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
                   <input
