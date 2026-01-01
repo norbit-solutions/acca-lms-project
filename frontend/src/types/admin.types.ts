@@ -39,6 +39,7 @@ export interface AdminCourse {
   chaptersCount: number;
   lessonsCount: number;
   enrollmentsCount: number;
+  isFree: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -151,6 +152,7 @@ export interface CreateCourseRequest {
   isUpcoming?: boolean;
   price?: number;
   currency?: string;
+  isFree?: boolean;
 }
 
 // Update course request
@@ -162,6 +164,7 @@ export interface UpdateCourseRequest {
   isUpcoming?: boolean;
   price?: number;
   currency?: string;
+  isFree?: boolean;
 }
 
 // Create chapter request
