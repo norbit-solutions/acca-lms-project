@@ -224,8 +224,8 @@ export const api = {
   patch: <T = unknown>(endpoint: string, body?: unknown): Promise<T> =>
     fetchApi<T>(endpoint, { method: "PATCH", body }),
 
-  delete: <T = unknown>(endpoint: string): Promise<T> =>
-    fetchApi<T>(endpoint, { method: "DELETE" }),
+  delete: <T = unknown>(endpoint: string, body?: unknown): Promise<T> =>
+    fetchApi<T>(endpoint, { method: "DELETE", body }),
 };
 
 export default api;

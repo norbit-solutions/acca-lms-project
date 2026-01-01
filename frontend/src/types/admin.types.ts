@@ -64,7 +64,7 @@ export interface AdminLesson {
   sortOrder: number;
   duration: number | null;
   isFree: boolean;
-  maxViews: number;
+  viewLimit: number;
   muxPlaybackId: string | null;
   muxAssetId: string | null;
   muxUploadId: string | null;
@@ -114,7 +114,7 @@ export interface UserVideoView {
   lesson: {
     id: number;
     title: string;
-    maxViews: number;
+    viewLimit: number;
     chapter: {
       course: { title: string };
     };
@@ -183,6 +183,10 @@ export interface CreateLessonRequest {
   sortOrder?: number;
   isFree?: boolean;
   viewLimit?: number;
+  description?: string;
+  content?: string;
+  pdfUrl?: string;
+  attachments?: Array<{ url: string; name: string; type: string }>;
 }
 
 // Update lesson request

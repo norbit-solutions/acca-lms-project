@@ -31,7 +31,9 @@ export default function UserEnrollments({ user, onRemoveEnrollment }: UserEnroll
                                     </p>
                                     <p className="text-sm text-gray-500">
                                         Enrolled{" "}
-                                        {new Date(enrollment.createdAt).toLocaleDateString()}
+                                        {enrollment.createdAt
+                                            ? new Date(enrollment.createdAt).toLocaleDateString()
+                                            : "Unknown date"}
                                     </p>
                                 </div>
                                 <button

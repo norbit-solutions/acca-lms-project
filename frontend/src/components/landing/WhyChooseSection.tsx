@@ -19,25 +19,35 @@ export default function WhyChooseSection({
   if (!items || items.length === 0) return null;
 
   return (
-    <section className="py-32 px-4 bg-black text-white" id="benefits">
+    <section className="py-32 px-4 bg-white" id="benefits">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-24">
-          <h2 className="text-5xl md:text-6xl mb-4">
-            {headline || "Why Learnspire?"}
+        {/* Header - matching other sections */}
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 px-4">
+          <h2 className="text-4xl md:text-5xl max-w-xl leading-tight">
+            Why <br /> <span className="font-display">{headline || "Learnspire"}</span>?
           </h2>
-          {subheadline && (
-            <p className="text-xl text-gray-400">{subheadline}</p>
-          )}
+          <div className="flex flex-col items-end">
+            <p className="text-gray-600 max-w-xs mt-6 md:mt-0 text-right mb-4">
+              {subheadline || "Discover what makes us different."}
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-white/20">
+        {/* Items Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {items.map((item, index) => (
-            <div key={index} className="pt-12 group">
-              <span className="block text-6xl font-display text-white mb-8 group-hover:text-white transition-colors">
-                {item.icon || `0${index + 1}`}
-              </span>
-              <h3 className="text-2xl mb-4">{item.title}</h3>
-              <p className="text-gray-400 leading-relaxed">
+            <div
+              key={index}
+              className="group p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300"
+            >
+              {/* Number/Icon */}
+              <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center text-white text-lg font-bold mb-6">
+                {item.icon || `${index + 1}`}
+              </div>
+              <h3 className="text-xl font-medium mb-3 text-gray-900">
+                {item.title}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
                 {item.description}
               </p>
             </div>
@@ -47,3 +57,4 @@ export default function WhyChooseSection({
     </section>
   );
 }
+

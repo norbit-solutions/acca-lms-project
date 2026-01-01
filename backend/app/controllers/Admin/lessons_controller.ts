@@ -13,13 +13,19 @@ export default class LessonsController {
   async store({ params, request, response }: HttpContext) {
     const chapter = await Chapter.findOrFail(params.chapterId)
 
-    const { title, type, content, pdfUrl, viewLimit, sortOrder } = request.only([
+    // Log full request body
+    console.log('[Lesson Create] Full request body:', request.body())
+
+    const { title, type, content, pdfUrl, viewLimit, sortOrder, isFree, description, attachments } = request.only([
       'title',
       'type',
       'content',
       'pdfUrl',
       'viewLimit',
       'sortOrder',
+      'isFree',
+      'description',
+      'attachments',
     ])
 
     // Get max sort order if not provided
@@ -29,16 +35,26 @@ export default class LessonsController {
       order = (maxOrder[0]?.$extras?.max || 0) + 1
     }
 
+    // Process attachments
+    const processedAttachments = Array.isArray(attachments) && attachments.length > 0 ? attachments : null
+
+    console.log('[Lesson Create] viewLimit received:', viewLimit, 'typeof:', typeof viewLimit)
+
     const lesson = await Lesson.create({
       chapterId: chapter.id,
       title,
       type,
       content: type === 'text' ? content : null,
       pdfUrl: type === 'pdf' ? pdfUrl : null,
-      viewLimit: viewLimit || 2,
+      viewLimit: viewLimit !== undefined && viewLimit !== null ? viewLimit : 2,
       sortOrder: order,
       muxStatus: type === 'video' ? 'pending' : 'ready',
+      isFree: isFree || false,
+      description: description || null,
+      attachments: processedAttachments,
     })
+
+    console.log('[Lesson Create] Saved lesson viewLimit:', lesson.viewLimit)
 
     return response.created({ lesson })
   }

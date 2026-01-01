@@ -57,7 +57,7 @@ export default function CourseDetailClient({ initialCourse }: CourseDetailClient
   const [lessonForm, setLessonForm] = useState({
     title: "",
     isFree: false,
-    maxViews: 2,
+    viewLimit: 2,
     description: "",
     attachments: [] as Array<{ url: string; name: string; type: string }>,
   });
@@ -200,7 +200,7 @@ export default function CourseDetailClient({ initialCourse }: CourseDetailClient
   const openNewLessonModal = (chapterId: number) => {
     setSelectedChapterId(chapterId);
     setEditingLesson(null);
-    setLessonForm({ title: "", isFree: false, maxViews: 2, description: "", attachments: [] });
+    setLessonForm({ title: "", isFree: false, viewLimit: 2, description: "", attachments: [] });
     setShowLessonModal(true);
   };
 
@@ -209,7 +209,7 @@ export default function CourseDetailClient({ initialCourse }: CourseDetailClient
     setLessonForm({
       title: lesson.title,
       isFree: lesson.isFree,
-      maxViews: lesson.maxViews ?? 2,
+      viewLimit: lesson.viewLimit ?? 2,
       description: lesson.description || "",
       attachments: lesson.attachments || [],
     });
@@ -247,7 +247,19 @@ export default function CourseDetailClient({ initialCourse }: CourseDetailClient
     }
   };
 
-  const handleRemoveAttachment = (index: number) => {
+  const handleRemoveAttachment = async (index: number) => {
+    // Get the attachment to delete before removing from state
+    const attachmentToDelete = lessonForm.attachments[index];
+
+    // Delete from bucket
+    if (attachmentToDelete?.url) {
+      try {
+        await adminService.deleteFile(attachmentToDelete.url);
+      } catch (error) {
+        console.log("Failed to delete attachment from bucket:", error);
+      }
+    }
+
     setLessonForm((prev) => ({
       ...prev,
       attachments: prev.attachments.filter((_, i) => i !== index),
@@ -280,19 +292,23 @@ export default function CourseDetailClient({ initialCourse }: CourseDetailClient
         const updateData = {
           title: lessonForm.title,
           isFree: lessonForm.isFree,
-          viewLimit: lessonForm.maxViews,
+          viewLimit: lessonForm.viewLimit,
           description: lessonForm.description,
           attachments: lessonForm.attachments,
         };
         console.log("[handleLessonSubmit] Sending update data:", updateData);
         await adminService.updateLesson(editingLesson.id, updateData);
       } else if (selectedChapterId) {
-        await adminService.createLesson(selectedChapterId, {
+        const createData = {
           title: lessonForm.title,
           isFree: lessonForm.isFree,
-          viewLimit: lessonForm.maxViews,
-          type: 'video',
-        });
+          viewLimit: lessonForm.viewLimit,
+          type: 'video' as const,
+          description: lessonForm.description,
+          attachments: lessonForm.attachments,
+        };
+        console.log("[handleLessonSubmit] Creating lesson with data:", createData);
+        await adminService.createLesson(selectedChapterId, createData);
       }
       setShowLessonModal(false);
       router.refresh();
@@ -753,11 +769,11 @@ export default function CourseDetailClient({ initialCourse }: CourseDetailClient
                   </label>
                   <input
                     type="number"
-                    value={lessonForm.maxViews ?? 2}
+                    value={lessonForm.viewLimit ?? 2}
                     onChange={(e) =>
                       setLessonForm({
                         ...lessonForm,
-                        maxViews: Number(e.target.value),
+                        viewLimit: Number(e.target.value),
                       })
                     }
                     className="w-full px-0 py-2 border-b border-slate-300 focus:border-slate-800 outline-none bg-transparent transition-colors rounded-none placeholder:text-slate-400"
