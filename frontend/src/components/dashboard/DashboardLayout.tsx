@@ -12,7 +12,7 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-    const { isAuthenticated, isLoading } = useAuthStore();
+    const { isAuthenticated, isLoading, user } = useAuthStore();
     const router = useRouter();
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -32,12 +32,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         localStorage.setItem('sidebarCollapsed', JSON.stringify(newState));
     };
 
-    // Redirect to login if not authenticated
+    // Redirect to login if not authenticated, or to admin dashboard if admin
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
             router.push("/login");
+        } else if (!isLoading && isAuthenticated && user?.role === "admin") {
+            // Admins should use the admin dashboard
+            router.push("/admin");
         }
-    }, [isLoading, isAuthenticated, router]);
+    }, [isLoading, isAuthenticated, user, router]);
 
     // Show loading spinner while checking auth
     if (isLoading) {

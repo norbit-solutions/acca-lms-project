@@ -4,7 +4,10 @@ import { useAuthStore } from "@/lib/store";
 import Link from "next/link";
 
 export default function CourseNavbar() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
+
+  // Admins go to admin dashboard, students go to user dashboard
+  const dashboardUrl = user?.role === "admin" ? "/admin" : "/dashboard";
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -18,10 +21,10 @@ export default function CourseNavbar() {
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <Link
-                href="/dashboard"
+                href={dashboardUrl}
                 className="text-sm font-medium text-gray-600 hover:text-black transition-colors"
               >
-                Dashboard
+                {user?.role === "admin" ? "Admin" : "Dashboard"}
               </Link>
             ) : (
               <Link
@@ -37,3 +40,4 @@ export default function CourseNavbar() {
     </nav>
   );
 }
+
