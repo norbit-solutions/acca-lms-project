@@ -7,6 +7,7 @@ interface AllCoursesSectionProps {
 }
 
 export default function AllCoursesSection({ courses }: AllCoursesSectionProps) {
+  // Courses are already filtered by backend - only published, non-upcoming courses
   if (!courses || courses.length === 0) return null;
 
   return (

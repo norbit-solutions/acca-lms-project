@@ -39,9 +39,10 @@ interface FAQContent {
 
 export default async function Home() {
   // Fetch all data in parallel for better performance
-  const [courses, testimonials, instructors, faqData, whyData] =
+  const [publishedCourses, upcomingCourses, testimonials, instructors, faqData, whyData] =
     await Promise.all([
-      courseService.getCourses().catch(() => []),
+      courseService.getPublishedCourses().catch(() => []),
+      courseService.getUpcomingCourses().catch(() => []),
       testimonialService.getAll().catch(() => []),
       instructorService.getAll().catch(() => []),
       cmsService.getSection<FAQContent>("faq").catch(() => null),
@@ -59,8 +60,8 @@ export default async function Home() {
     <main className="min-h-screen">
       <Navbar />
       <HeroSection />
-      <UpcomingCoursesSection courses={courses} />
-      <AllCoursesSection courses={courses} />
+      <UpcomingCoursesSection courses={upcomingCourses} />
+      <AllCoursesSection courses={publishedCourses} />
       <MentorSection instructors={instructors} />
       <WhyChooseSection
         headline={whyContent.headline}

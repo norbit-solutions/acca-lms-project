@@ -117,12 +117,93 @@ export default class PublicController {
   }
 
   /**
+   * List published courses only (not upcoming)
+   */
+  async publishedCourses({ response }: HttpContext) {
+    const courses = await Course.query()
+      .where('is_published', true)
+      .where('is_upcoming', false)
+      .withCount('chapters')
+      .orderBy('created_at', 'desc')
+
+    const coursesWithCounts: CourseListItem[] = await Promise.all(
+      courses.map(async (course) => {
+        const lessonsCount = await course
+          .related('chapters')
+          .query()
+          .withCount('lessons')
+          .then((chapters) =>
+            chapters.reduce((sum, ch) => sum + Number(ch.$extras.lessons_count || 0), 0)
+          )
+
+        return {
+          id: course.id,
+          title: course.title,
+          slug: course.slug,
+          description: course.description,
+          thumbnail: course.thumbnail,
+          chaptersCount: Number(course.$extras.chapters_count || 0),
+          lessonsCount,
+          price: course.price,
+          currency: course.currency,
+          isFree: course.isFree,
+          isPublished: course.isPublished,
+          isUpcoming: course.isUpcoming,
+        }
+      })
+    )
+
+    return response.ok({ courses: coursesWithCounts })
+  }
+
+  /**
+   * List upcoming courses only
+   */
+  async upcomingCourses({ response }: HttpContext) {
+    const courses = await Course.query()
+      .where('is_upcoming', true)
+      .withCount('chapters')
+      .orderBy('created_at', 'desc')
+
+    const coursesWithCounts: CourseListItem[] = await Promise.all(
+      courses.map(async (course) => {
+        const lessonsCount = await course
+          .related('chapters')
+          .query()
+          .withCount('lessons')
+          .then((chapters) =>
+            chapters.reduce((sum, ch) => sum + Number(ch.$extras.lessons_count || 0), 0)
+          )
+
+        return {
+          id: course.id,
+          title: course.title,
+          slug: course.slug,
+          description: course.description,
+          thumbnail: course.thumbnail,
+          chaptersCount: Number(course.$extras.chapters_count || 0),
+          lessonsCount,
+          price: course.price,
+          currency: course.currency,
+          isFree: course.isFree,
+          isPublished: course.isPublished,
+          isUpcoming: course.isUpcoming,
+        }
+      })
+    )
+
+    return response.ok({ courses: coursesWithCounts })
+  }
+
+  /**
    * Get single course by slug (public preview)
    */
   async course({ params, response }: HttpContext) {
     const course = await Course.query()
       .where('slug', params.slug)
-      .where('is_published', true)
+      .where((query) => {
+        query.where('is_published', true).orWhere('is_upcoming', true)
+      })
       .preload('chapters', (chapterQuery) => {
         chapterQuery.orderBy('sort_order', 'asc')
         chapterQuery.preload('lessons', (lessonQuery) => {

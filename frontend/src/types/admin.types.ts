@@ -182,7 +182,7 @@ export interface CreateLessonRequest {
   type?: 'video' | 'text' | 'pdf';
   sortOrder?: number;
   isFree?: boolean;
-  maxViews?: number;
+  viewLimit?: number;
 }
 
 // Update lesson request

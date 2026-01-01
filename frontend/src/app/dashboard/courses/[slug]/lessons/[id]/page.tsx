@@ -41,10 +41,6 @@ export default async function LessonPlayerPage({ params }: PageProps) {
         );
     }
 
-    // Video unavailable state
-    if (!lesson.playbackId) {
-        return <VideoUnavailable slug={slug} />;
-    }
 
     return <LessonPlayerClient lesson={lesson} slug={slug} />;
 }

@@ -13,15 +13,33 @@ import type {
 
 const COURSE_ENDPOINTS = {
   COURSES: "/courses",
+  PUBLISHED_COURSES: "/courses/published",
+  UPCOMING_COURSES: "/courses/upcoming",
   COURSE: (slug: string) => `/courses/${slug}`,
 } as const;
 
 export const courseService = {
   /**
-   * Get all published courses
+   * Get all courses (published + upcoming)
    */
   async getCourses(): Promise<CourseListItem[]> {
     const response = await api.get<CoursesResponse>(COURSE_ENDPOINTS.COURSES);
+    return response.courses;
+  },
+
+  /**
+   * Get only published courses (not upcoming)
+   */
+  async getPublishedCourses(): Promise<CourseListItem[]> {
+    const response = await api.get<CoursesResponse>(COURSE_ENDPOINTS.PUBLISHED_COURSES);
+    return response.courses;
+  },
+
+  /**
+   * Get only upcoming courses
+   */
+  async getUpcomingCourses(): Promise<CourseListItem[]> {
+    const response = await api.get<CoursesResponse>(COURSE_ENDPOINTS.UPCOMING_COURSES);
     return response.courses;
   },
 
@@ -37,3 +55,4 @@ export const courseService = {
 };
 
 export default courseService;
+

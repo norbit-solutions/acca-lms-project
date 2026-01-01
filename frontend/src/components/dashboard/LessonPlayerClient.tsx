@@ -7,6 +7,7 @@ import { studentService } from "@/services";
 import { BackIcon, extractTokenFromUrl, formatDuration } from "@/lib";
 import VideoPlayer from "@/components/dashboard/VideoPlayer";
 import type { LessonDetail } from "@/types";
+import { VideoUnavailable } from "./VideoUnavailable";
 
 interface LessonPlayerClientProps {
     lesson: LessonDetail;
@@ -67,34 +68,43 @@ export default function LessonPlayerClient({ lesson, slug }: LessonPlayerClientP
                 </button>
 
                 {/* Progress Indicator */}
-                <div className="flex items-center gap-3">
-                    <div className="hidden sm:flex items-center gap-2 text-xs text-gray-500">
-                        <span>{lesson.viewCount} of {lesson.maxViews} views used</span>
-                    </div>
-                    <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                            className={`h-full rounded-full transition-all ${viewsPercentage >= 100 ? 'bg-red-500' :
+                {
+                    lesson.playbackId &&
+                    <div className="flex items-center gap-3">
+                        <div className="hidden sm:flex items-center gap-2 text-xs text-gray-500">
+                            <span>{lesson.viewCount} of {lesson.maxViews} views used</span>
+                        </div>
+                        <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                                className={`h-full rounded-full transition-all ${viewsPercentage >= 100 ? 'bg-red-500' :
                                     viewsPercentage >= 80 ? 'bg-amber-500' : 'bg-black'
-                                }`}
-                            style={{ width: `${Math.min(viewsPercentage, 100)}%` }}
-                        />
+                                    }`}
+                                style={{ width: `${Math.min(viewsPercentage, 100)}%` }}
+                            />
+                        </div>
                     </div>
-                </div>
+                }
             </div>
 
-            {/* Video Container */}
-            <div className="relative mb-6">
-                <div className="bg-black rounded-2xl overflow-hidden shadow-xl">
-                    <VideoPlayer
-                        playbackId={lesson.playbackId!}
-                        playbackToken={playbackToken}
-                        watermarkText={lesson.watermark.text}
-                        watermarkPhone={lesson.watermark.phone}
-                        title={lesson.title}
-                        onViewStart={handleViewStart}
-                    />
-                </div>
-            </div>
+            {
+                lesson.playbackId && (
+
+                    < div className="relative mb-6">
+                        <div className="bg-black rounded-2xl overflow-hidden shadow-xl">
+                            <VideoPlayer
+                                playbackId={lesson.playbackId!}
+                                playbackToken={playbackToken}
+                                watermarkText={lesson.watermark.text}
+                                watermarkPhone={lesson.watermark.phone}
+                                title={lesson.title}
+                                onViewStart={handleViewStart}
+                            />
+                        </div>
+                    </div>
+                )
+            }
+
+
 
             {/* Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -138,38 +148,41 @@ export default function LessonPlayerClient({ lesson, slug }: LessonPlayerClientP
                         </div>
 
                         {/* Stats */}
-                        <div className="flex items-center gap-5 mt-5 pt-5 border-t border-gray-100">
-                            {lesson.duration && (
+                        {lesson.playbackId && (
+                            <div className="flex items-center gap-5 mt-5 pt-5 border-t border-gray-100">
+                                {lesson.duration && (
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+                                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold text-black">{formatDuration(lesson.duration)}</p>
+                                            <p className="text-xs text-gray-500">Duration</p>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="flex items-center gap-2">
-                                    <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
-                                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <div className={`w-9 h-9 rounded-full flex items-center justify-center ${viewsRemaining === 0 ? 'bg-red-100' :
+                                        viewsRemaining === 1 ? 'bg-amber-100' : 'bg-gray-100'
+                                        }`}>
+                                        <svg className={`w-4 h-4 ${viewsRemaining === 0 ? 'text-red-600' :
+                                            viewsRemaining === 1 ? 'text-amber-600' : 'text-gray-600'
+                                            }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-semibold text-black">{formatDuration(lesson.duration)}</p>
-                                        <p className="text-xs text-gray-500">Duration</p>
+                                        <p className="text-sm font-semibold text-black">{viewsRemaining} remaining</p>
+                                        <p className="text-xs text-gray-500">{lesson.viewCount}/{lesson.maxViews} used</p>
                                     </div>
                                 </div>
-                            )}
-                            <div className="flex items-center gap-2">
-                                <div className={`w-9 h-9 rounded-full flex items-center justify-center ${viewsRemaining === 0 ? 'bg-red-100' :
-                                        viewsRemaining === 1 ? 'bg-amber-100' : 'bg-gray-100'
-                                    }`}>
-                                    <svg className={`w-4 h-4 ${viewsRemaining === 0 ? 'text-red-600' :
-                                            viewsRemaining === 1 ? 'text-amber-600' : 'text-gray-600'
-                                        }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-black">{viewsRemaining} remaining</p>
-                                    <p className="text-xs text-gray-500">{lesson.viewCount}/{lesson.maxViews} used</p>
-                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
+
                 </div>
 
                 {/* Sidebar */}
@@ -223,7 +236,7 @@ export default function LessonPlayerClient({ lesson, slug }: LessonPlayerClientP
                                 </svg>
                                 <span>View all lessons</span>
                             </Link>
-                            <Link
+                            {/* <Link
                                 href="/dashboard"
                                 className="flex items-center gap-3 p-3 bg-white hover:bg-gray-100 rounded-xl transition-all group text-sm text-gray-700 hover:text-black"
                             >
@@ -231,11 +244,11 @@ export default function LessonPlayerClient({ lesson, slug }: LessonPlayerClientP
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                 </svg>
                                 <span>Back to dashboard</span>
-                            </Link>
+                            </Link> */}
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

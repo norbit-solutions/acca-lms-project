@@ -60,7 +60,7 @@ export default async function DashboardPage() {
     : 0;
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="w-full">
       {/* Header */}
       <div className="mb-10">
         <h1 className="text-2xl font-normal text-neutral-800 mb-1">

@@ -151,6 +151,8 @@ router
 |--------------------------------------------------------------------------
 */
 router.get('/courses', [PublicController, 'courses'])
+router.get('/courses/published', [PublicController, 'publishedCourses'])
+router.get('/courses/upcoming', [PublicController, 'upcomingCourses'])
 router.get('/courses/:slug', [PublicController, 'course'])
 router.get('/cms/:section', [PublicController, 'cms'])
 router.get('/testimonials', [PublicController, 'testimonials'])

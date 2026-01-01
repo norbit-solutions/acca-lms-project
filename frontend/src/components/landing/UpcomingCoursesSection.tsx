@@ -7,10 +7,8 @@ interface UpcomingCoursesSectionProps {
 }
 
 export default function UpcomingCoursesSection({ courses }: UpcomingCoursesSectionProps) {
-  // Filter courses marked as upcoming
-  const upcomingCourses = courses.filter(course => course.isUpcoming);
-
-  if (!upcomingCourses || upcomingCourses.length === 0) return null;
+  // Courses are already filtered by backend - only upcoming courses
+  if (!courses || courses.length === 0) return null;
 
   return (
     <section className="py-32 px-4 bg-off-white" id="upcoming-courses">
@@ -27,7 +25,7 @@ export default function UpcomingCoursesSection({ courses }: UpcomingCoursesSecti
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {upcomingCourses.map((course) => (
+          {courses.map((course) => (
             <Link
               key={course.id}
               href={`/courses/${course.slug}`}
