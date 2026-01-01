@@ -1,5 +1,6 @@
 "use client";
 
+import { useSocialSafe } from "@/context/SocialContext";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store";
 import { formatDateString, getInitials } from "@/lib";
@@ -11,6 +12,7 @@ interface ProfileClientProps {
 
 export default function ProfileClient({ courses }: ProfileClientProps) {
     const { user } = useAuthStore();
+    const { whatsappNumber } = useSocialSafe();
 
     const completedLessons = courses.reduce((acc, c) => acc + c.completedLessons, 0);
     const totalLessons = courses.reduce((acc, c) => acc + c.lessonsCount, 0);
@@ -101,7 +103,7 @@ export default function ProfileClient({ courses }: ProfileClientProps) {
                     Need help? Contact us via WhatsApp for support.
                 </p>
                 <a
-                    href={`https://wa.me/${process.env.WA_NUMBER}`}
+                    href={`https://wa.me/${whatsappNumber}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors"

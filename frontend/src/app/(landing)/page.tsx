@@ -6,7 +6,6 @@ import {
   MentorSection,
   TestimonialsSection,
   UpcomingCoursesSection,
-  WhyChooseSection,
 } from "@/components/landing";
 import Navbar from "@/components/Navbar";
 import { cmsService } from "@/services/cmsService";
@@ -50,29 +49,30 @@ interface HeroContent {
 
 export default async function Home() {
   // Fetch all data in parallel for better performance
-  const [publishedCourses, upcomingCourses, testimonials, instructors, faqData, whyData, heroData] =
+  const [publishedCourses, upcomingCourses, testimonials, instructors, faqData, heroData] =
     await Promise.all([
       courseService.getPublishedCourses().catch(() => []),
       courseService.getUpcomingCourses().catch(() => []),
       testimonialService.getAll().catch(() => []),
       instructorService.getAll().catch(() => []),
       cmsService.getSection<FAQContent>("faq").catch(() => null),
-      cmsService.getSection<WhyContent>("why-acca").catch(() => null),
       cmsService.getSection<HeroContent>("hero").catch(() => null),
     ]);
 
   // Extract FAQ items (hide if empty)
   const faqs = faqData?.content?.items || [];
 
-  // Extract Why Learnspire content (hide if empty)
-  const whyContent = whyData?.content || { items: [] };
-  const whyItems = whyContent.items || [];
-
   // Extract Hero content
   const heroContent = heroData?.content || {};
 
+  // Extract testimonials avatars for Hero section (take up to 4)
+  const trustedAvatars = testimonials
+    .filter(t => t.avatarUrl)
+    .map(t => t.avatarUrl!)
+    .slice(0, 4);
+
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen ">
       <Navbar />
       <HeroSection
         headline={heroContent.headline}
@@ -83,15 +83,11 @@ export default async function Home() {
         heroImage={heroContent.heroImage}
         floatingCardTitle={heroContent.floatingCardTitle}
         floatingCardSubtitle={heroContent.floatingCardSubtitle}
+        trustedAvatars={trustedAvatars}
       />
       <UpcomingCoursesSection courses={upcomingCourses} />
       <AllCoursesSection courses={publishedCourses} />
       <MentorSection instructors={instructors} />
-      {/* <WhyChooseSection
-        headline={whyContent.headline}
-        subheadline={whyContent.subheadline}
-        items={whyItems}
-      /> */}
       <TestimonialsSection testimonials={testimonials} />
       <FAQSection faqs={faqs} />
       <CTASection />

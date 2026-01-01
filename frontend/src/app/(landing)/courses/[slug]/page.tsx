@@ -44,8 +44,6 @@ export default async function CourseDetailsPage({ params }: PageProps) {
   if (!course) {
     notFound();
   }
-
-  // Transform chapters to match component expectations
   const chapters = course.chapters.map((chapter) => ({
     id: chapter.id,
     title: chapter.title,
@@ -58,7 +56,6 @@ export default async function CourseDetailsPage({ params }: PageProps) {
   }));
 
   // This would come from auth state in a real app
-  const enrolled = false;
 
   return (
     <div className="min-h-screen bg-off-white">
@@ -69,15 +66,12 @@ export default async function CourseDetailsPage({ params }: PageProps) {
         shortIntroduction={course.description || ""}
         image={course.thumbnail || ""}
         courseFee={course.price || 0}
-        feeCurrency={course.currency || "USD"}
-        enableManualPayment={true}
-        whatsappNumber=""
-        enrolled={enrolled}
+        feeCurrency={course.currency}
         courseSlug={course.slug}
       />
 
       {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="max-w-7xl mx-auto px-4 py-24 grid grid-cols-1 lg:grid-cols-3 gap-16">
         <CourseCurriculum
           chapters={chapters}
           description={course.description || ""}
@@ -85,9 +79,8 @@ export default async function CourseDetailsPage({ params }: PageProps) {
         />
 
         <CourseSidebar
-          enrolled={enrolled}
           enableManualPayment={true}
-          whatsappNumber=""
+          whatsappNumber="" // Removed from component props logic
           title={course.title}
         />
       </div>

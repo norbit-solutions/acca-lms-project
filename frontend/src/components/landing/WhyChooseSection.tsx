@@ -23,10 +23,16 @@ export default function WhyChooseSection({
       <div className="max-w-7xl mx-auto">
         {/* Header - matching other sections */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 px-4">
-          <h2 className="text-4xl md:text-5xl max-w-xl leading-tight">
+          <h2
+            className="text-4xl md:text-5xl max-w-xl leading-tight"
+            data-aos="fade-right"
+          >
             Why <br /> <span className="font-display">{headline || "Learnspire"}</span>?
           </h2>
-          <div className="flex flex-col items-end">
+          <div
+            className="flex flex-col items-end"
+            data-aos="fade-left"
+          >
             <p className="text-gray-600 max-w-xs mt-6 md:mt-0 text-right mb-4">
               {subheadline || "Discover what makes us different."}
             </p>
@@ -39,6 +45,8 @@ export default function WhyChooseSection({
             <div
               key={index}
               className="group p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300"
+              data-aos="fade-up"
+              data-aos-delay={index * 100}
             >
               {/* Number/Icon */}
               <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center text-white text-lg font-bold mb-6">

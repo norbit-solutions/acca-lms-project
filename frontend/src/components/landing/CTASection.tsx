@@ -3,7 +3,10 @@ import Link from "next/link";
 export default function CTASection() {
   return (
     <section className="py-32 px-4 bg-black text-white text-center">
-      <div className="max-w-4xl mx-auto">
+      <div
+        className="max-w-4xl mx-auto"
+        data-aos="zoom-in"
+      >
         <h2 className="text-5xl md:text-7xl mb-8">Start Learning Today</h2>
         <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
           Join ambitious professionals building their future with Learnspire.

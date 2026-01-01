@@ -10,8 +10,11 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
 
   return (
     <section className="py-32 px-4" id="testimonials">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
+      <div className="w-full">
+        <div
+          className="text-center mb-16"
+          data-aos="fade-up"
+        >
           <h2 className="text-4xl md:text-5xl mb-4">
             What our <span className="font-display">students</span> say
           </h2>
@@ -21,8 +24,13 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          {testimonials.slice(0, 2).map((testimonial) => (
-            <div key={testimonial.id} className="flex flex-col items-center">
+          {testimonials.slice(0, 2).map((testimonial, index) => (
+            <div
+              key={testimonial.id}
+              className="flex flex-col items-center"
+              data-aos="fade-up"
+              data-aos-delay={index * 100}
+            >
               <p className="text-lg md:text-xl leading-relaxed mb-8">
                 &quot;{testimonial.content}&quot;
               </p>

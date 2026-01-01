@@ -1,4 +1,7 @@
 import AuthProvider from "@/components/AuthProvider";
+import { SocialProvider } from "@/context/SocialContext";
+import AOSProvider from "@/providers/AOSProvider";
+import { cmsService } from "@/services/cmsService";
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
@@ -20,17 +23,24 @@ export const metadata: Metadata = {
     "Learnspire is a premium learning platform that lets you master your exams with secure video streaming, mentor support, and tracked progress.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const socialData = await cmsService.getSocial<Record<string, string>>().catch(() => null);
+  const whatsappNumber = socialData?.content?.whatsapp || "";
+
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${poppins.variable} font-sans antialiased`}
+        className={`${inter.variable} ${poppins.variable}  antialiased`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AOSProvider>
+          <SocialProvider whatsappNumber={whatsappNumber}>
+            <AuthProvider>{children}</AuthProvider>
+          </SocialProvider>
+        </AOSProvider>
       </body>
     </html>
   );

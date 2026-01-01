@@ -17,6 +17,7 @@ interface HeroSectionProps {
   heroImage?: string;
   floatingCardTitle?: string;
   floatingCardSubtitle?: string;
+  trustedAvatars?: string[];
 }
 
 export default function HeroSection({
@@ -28,6 +29,7 @@ export default function HeroSection({
   heroImage,
   floatingCardTitle,
   floatingCardSubtitle,
+  trustedAvatars,
 }: HeroSectionProps) {
   // Defaults for all content
   const displayHeadline = headline || "Launch your Learning Journey with Confidence";
@@ -39,12 +41,20 @@ export default function HeroSection({
   const displayFloatingTitle = floatingCardTitle || "Live Classes";
   const displayFloatingSubtitle = floatingCardSubtitle || "Strategic Business Leader";
 
+  const displayAvatars = trustedAvatars && trustedAvatars.length > 0
+    ? trustedAvatars.slice(0, 4)
+    : defaultAvatars;
+
   return (
     <section className="pt-40 pb-20 px-4 min-h-screen flex flex-col items-center justify-center text-center relative overflow-hidden">
       {/* Trusted By */}
-      <div className="flex flex-col items-center gap-3 mb-8">
+      <div
+        className="flex flex-col items-center gap-3 mb-8"
+        data-aos="fade-down"
+        data-aos-delay="100"
+      >
         <div className="flex -space-x-3">
-          {defaultAvatars.map((img, index) => (
+          {displayAvatars.map((img, index) => (
             <Image
               key={index}
               src={img}
@@ -61,7 +71,11 @@ export default function HeroSection({
       </div>
 
       {/* Headline */}
-      <h1 className="text-4xl md:text-6xl leading-tight mb-6 max-w-4xl mx-auto">
+      <h1
+        className="text-4xl md:text-6xl leading-tight mb-6 max-w-4xl mx-auto"
+        data-aos="fade-up"
+        data-aos-delay="200"
+      >
         {displayHeadline.includes("|") ? (
           <>
             {displayHeadline.split("|")[0]} <br />
@@ -73,12 +87,20 @@ export default function HeroSection({
       </h1>
 
       {/* Subtext */}
-      <p className="text-lg text-gray-600 max-w-xl mx-auto mb-10 leading-relaxed">
+      <p
+        className="text-lg text-gray-600 max-w-xl mx-auto mb-10 leading-relaxed"
+        data-aos="fade-up"
+        data-aos-delay="300"
+      >
         {displaySubheadline}
       </p>
 
       {/* CTA Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+      <div
+        className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+        data-aos="fade-up"
+        data-aos-delay="400"
+      >
         <Link
           href={displayCtaLink}
           className="bg-black text-white px-8 py-4 rounded-full font-medium hover:bg-gray-800 transition-all hover:scale-105 shadow-lg"
@@ -88,7 +110,12 @@ export default function HeroSection({
       </div>
 
       {/* Hero Image */}
-      <div className="mt-20 w-full max-w-5xl mx-auto relative">
+      <div
+        className="mt-20 w-full max-w-5xl mx-auto relative"
+        data-aos="zoom-in-up"
+        data-aos-delay="500"
+        data-aos-duration="1000"
+      >
         <div className="aspect-video rounded-2xl overflow-hidden bg-gray-100 shadow-2xl relative">
           <Image
             src={displayHeroImage}
@@ -98,7 +125,11 @@ export default function HeroSection({
           />
 
           {/* Floating UI Elements (Decorative) */}
-          <div className="absolute top-10 left-10 bg-black/80 backdrop-blur text-white p-4 rounded-xl text-sm">
+          <div
+            className="absolute top-10 left-10 bg-black/80 backdrop-blur text-white p-4 rounded-xl text-sm"
+            data-aos="fade-right"
+            data-aos-delay="800"
+          >
             <div className="flex items-center gap-2 mb-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -1,5 +1,6 @@
 "use client";
 
+import { useSocialSafe } from "@/context/SocialContext";
 import { useAuthStore } from "@/lib/store";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -62,6 +63,7 @@ export default function DashboardSidebar({
   const pathname = usePathname();
   const router = useRouter();
   const { logout } = useAuthStore();
+  const { whatsappNumber } = useSocialSafe();
 
   const handleLogout = async () => {
     await logout();
@@ -95,7 +97,7 @@ export default function DashboardSidebar({
     },
     {
       name: "Help & Support",
-      href: `https://wa.me/${process.env.WA_NUMBER}`,
+      href: `https://wa.me/${whatsappNumber}`,
       icon: HelpIcon,
       active: false,
       external: true,

@@ -14,7 +14,6 @@ interface FAQSectionProps {
 export default function FAQSection({ faqs }: FAQSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  // Hide section if no FAQs
   if (!faqs || faqs.length === 0) return null;
 
   const toggleFAQ = (index: number) => {
@@ -23,9 +22,11 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
 
   return (
     <section className="py-32 px-4 bg-white" id="faq">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
+      <div className="w-full">
+        <div
+          className="text-center mb-16"
+          data-aos="fade-up"
+        >
           <div className="inline-block px-4 py-1 rounded-full border border-gray-200 bg-white text-sm font-medium mb-6">
             FAQ
           </div>
@@ -38,11 +39,13 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
         </div>
 
         {/* FAQ List */}
-        <div className="space-y-4">
+        <div className="space-y-4 px-4 md:px-16">
           {faqs.map((faq, index) => (
             <div
               key={index}
               className="group bg-off-white rounded-2xl p-1 transition-all duration-300 hover:bg-gray-100"
+              data-aos="fade-up"
+              data-aos-delay={index * 50}
             >
               <div>
                 <button
