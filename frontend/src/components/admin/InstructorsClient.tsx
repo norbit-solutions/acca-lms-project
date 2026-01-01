@@ -131,7 +131,15 @@ export default function InstructorsClient({ initialInstructors }: InstructorsCli
         setShowModal(true);
     };
 
-    const removeAvatar = () => {
+    const removeAvatar = async () => {
+        // Delete from bucket if there's an existing image
+        if (formData.image) {
+            try {
+                await adminService.deleteFile(formData.image);
+            } catch (error) {
+                console.log("Failed to delete avatar from bucket:", error);
+            }
+        }
         setFormData({ ...formData, image: "" });
         if (fileInputRef.current) {
             fileInputRef.current.value = "";

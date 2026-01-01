@@ -13,13 +13,15 @@ export default class LessonsController {
   async store({ params, request, response }: HttpContext) {
     const chapter = await Chapter.findOrFail(params.chapterId)
 
-    const { title, type, content, pdfUrl, viewLimit, sortOrder } = request.only([
+    const { title, type, content, pdfUrl, viewLimit, sortOrder, isFree, description } = request.only([
       'title',
       'type',
       'content',
       'pdfUrl',
       'viewLimit',
       'sortOrder',
+      'isFree',
+      'description',
     ])
 
     // Get max sort order if not provided
@@ -38,6 +40,8 @@ export default class LessonsController {
       viewLimit: viewLimit || 2,
       sortOrder: order,
       muxStatus: type === 'video' ? 'pending' : 'ready',
+      isFree: isFree || false,
+      description: description || null,
     })
 
     return response.created({ lesson })

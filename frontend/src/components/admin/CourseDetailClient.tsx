@@ -247,7 +247,19 @@ export default function CourseDetailClient({ initialCourse }: CourseDetailClient
     }
   };
 
-  const handleRemoveAttachment = (index: number) => {
+  const handleRemoveAttachment = async (index: number) => {
+    // Get the attachment to delete before removing from state
+    const attachmentToDelete = lessonForm.attachments[index];
+
+    // Delete from bucket
+    if (attachmentToDelete?.url) {
+      try {
+        await adminService.deleteFile(attachmentToDelete.url);
+      } catch (error) {
+        console.log("Failed to delete attachment from bucket:", error);
+      }
+    }
+
     setLessonForm((prev) => ({
       ...prev,
       attachments: prev.attachments.filter((_, i) => i !== index),
@@ -292,6 +304,7 @@ export default function CourseDetailClient({ initialCourse }: CourseDetailClient
           isFree: lessonForm.isFree,
           viewLimit: lessonForm.maxViews,
           type: 'video',
+          description: lessonForm.description,
         });
       }
       setShowLessonModal(false);

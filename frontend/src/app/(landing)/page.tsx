@@ -37,9 +37,20 @@ interface FAQContent {
   items?: FAQItem[];
 }
 
+interface HeroContent {
+  headline?: string;
+  subheadline?: string;
+  ctaText?: string;
+  ctaLink?: string;
+  trustedByText?: string;
+  heroImage?: string;
+  floatingCardTitle?: string;
+  floatingCardSubtitle?: string;
+}
+
 export default async function Home() {
   // Fetch all data in parallel for better performance
-  const [publishedCourses, upcomingCourses, testimonials, instructors, faqData, whyData] =
+  const [publishedCourses, upcomingCourses, testimonials, instructors, faqData, whyData, heroData] =
     await Promise.all([
       courseService.getPublishedCourses().catch(() => []),
       courseService.getUpcomingCourses().catch(() => []),
@@ -47,6 +58,7 @@ export default async function Home() {
       instructorService.getAll().catch(() => []),
       cmsService.getSection<FAQContent>("faq").catch(() => null),
       cmsService.getSection<WhyContent>("why-acca").catch(() => null),
+      cmsService.getSection<HeroContent>("hero").catch(() => null),
     ]);
 
   // Extract FAQ items (hide if empty)
@@ -56,10 +68,22 @@ export default async function Home() {
   const whyContent = whyData?.content || { items: [] };
   const whyItems = whyContent.items || [];
 
+  // Extract Hero content
+  const heroContent = heroData?.content || {};
+
   return (
     <main className="min-h-screen">
       <Navbar />
-      <HeroSection />
+      <HeroSection
+        headline={heroContent.headline}
+        subheadline={heroContent.subheadline}
+        ctaText={heroContent.ctaText}
+        ctaLink={heroContent.ctaLink}
+        trustedByText={heroContent.trustedByText}
+        heroImage={heroContent.heroImage}
+        floatingCardTitle={heroContent.floatingCardTitle}
+        floatingCardSubtitle={heroContent.floatingCardSubtitle}
+      />
       <UpcomingCoursesSection courses={upcomingCourses} />
       <AllCoursesSection courses={publishedCourses} />
       <MentorSection instructors={instructors} />
@@ -74,3 +98,4 @@ export default async function Home() {
     </main>
   );
 }
+

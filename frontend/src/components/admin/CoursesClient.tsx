@@ -124,7 +124,15 @@ export default function CoursesClient({
     }
   };
 
-  const removeThumbnail = () => {
+  const removeThumbnail = async () => {
+    // Delete from bucket if there's an existing thumbnail
+    if (formData.thumbnail) {
+      try {
+        await adminService.deleteFile(formData.thumbnail);
+      } catch (error) {
+        console.log("Failed to delete thumbnail from bucket:", error);
+      }
+    }
     setFormData({ ...formData, thumbnail: "" });
     if (fileInputRef.current) {
       fileInputRef.current.value = "";

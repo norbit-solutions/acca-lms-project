@@ -482,8 +482,18 @@ export const adminService = {
     return response.json();
   },
 
-  async deleteFile(key: string): Promise<void> {
-    await api.delete(`${ADMIN_ENDPOINTS.DELETE_UPLOAD}?key=${encodeURIComponent(key)}`);
+  async deleteFile(urlOrKey: string): Promise<void> {
+    // Extract key from URL if full URL is provided
+    let key = urlOrKey;
+    if (urlOrKey.includes('://')) {
+      try {
+        const url = new URL(urlOrKey);
+        key = url.pathname.replace(/^\//, '');
+      } catch {
+        // If URL parsing fails, use as-is
+      }
+    }
+    await api.delete(ADMIN_ENDPOINTS.DELETE_UPLOAD, { key });
   },
 };
 

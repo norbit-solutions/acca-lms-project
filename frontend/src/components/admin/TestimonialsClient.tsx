@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { adminService } from "@/services";
 import { useModal } from "./ModalProvider";
@@ -33,6 +33,11 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
         content: "",
         image: "",
     });
+
+    // Sync with initialTestimonials when it changes (e.g., after router.refresh())
+    useEffect(() => {
+        setTestimonials(initialTestimonials);
+    }, [initialTestimonials]);
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -117,7 +122,15 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
         setShowModal(true);
     };
 
-    const removeImage = () => {
+    const removeImage = async () => {
+        // Delete from bucket if there's an existing image
+        if (formData.image) {
+            try {
+                await adminService.deleteFile(formData.image);
+            } catch (error) {
+                console.log("Failed to delete image from bucket:", error);
+            }
+        }
         setFormData({ ...formData, image: "" });
         if (fileInputRef.current) {
             fileInputRef.current.value = "";

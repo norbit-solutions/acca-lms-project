@@ -183,6 +183,9 @@ export interface CreateLessonRequest {
   sortOrder?: number;
   isFree?: boolean;
   viewLimit?: number;
+  description?: string;
+  content?: string;
+  pdfUrl?: string;
 }
 
 // Update lesson request
