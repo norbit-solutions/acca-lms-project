@@ -16,13 +16,16 @@ export default async function UserDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  let user;
   try {
-    const user = await adminService.getUser(userId);
-    if (!user) {
-      notFound();
-    }
-    return <UserDetailClient initialUser={user} />;
+    user = await adminService.getUser(userId);
   } catch {
     notFound();
   }
+
+  if (!user) {
+    notFound();
+  }
+
+  return <UserDetailClient initialUser={user} />;
 }

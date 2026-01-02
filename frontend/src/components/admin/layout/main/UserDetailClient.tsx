@@ -83,7 +83,7 @@ export default function UserDetailClient({
         />
       </div>
 
-      <UserAccountInfo user={user} />
+      {/* <UserAccountInfo user={user} /> */}
     </div>
   );
 }
