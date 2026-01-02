@@ -21,7 +21,7 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
   };
 
   return (
-    <section className="py-32 px-4 bg-white" id="faq">
+    <section className="py-32 px-4 bg-slate-100" id="faq">
       <div className="w-full">
         <div
           className="text-center mb-16"

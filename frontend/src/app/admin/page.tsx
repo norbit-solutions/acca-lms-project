@@ -1,4 +1,4 @@
-import DashboardClient from "@/components/admin/DashboardClient";
+import DashboardClient from "@/components/admin/layout/main/DashboardClient";
 import { adminService } from "@/services/adminService";
 
 export const dynamic = "force-dynamic";

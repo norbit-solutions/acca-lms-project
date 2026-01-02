@@ -20,7 +20,7 @@ export default async function Footer() {
   return (
     <footer className="bg-white pt-10 pb-10 border-t border-gray-100 font-display!">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-6">
           {/* Brand & Socials */}
           <div className="flex flex-col md:flex-row items-center gap-6">
             <Link href="/" className="text-2xl font-medium tracking-tight">
@@ -44,9 +44,11 @@ export default async function Footer() {
               ))}
             </div>
           </div>
+            {/* <p className="text-gray-400">© {new Date().getFullYear()} Learnspire</p> */}
+
 
           {/* Legal Links & Copyright */}
-          <div className="flex flex-col md:flex-row items-center gap-6 text-sm text-gray-500">
+          {/* <div className="flex flex-col md:flex-row items-center gap-6 text-sm text-gray-500">
             <div className="flex gap-6">
               <Link href="/privacy" className="hover:text-black transition-colors">
                 Privacy Policy
@@ -55,8 +57,7 @@ export default async function Footer() {
                 Terms of Service
               </Link>
             </div>
-            <p className="text-gray-400">© {new Date().getFullYear()} NorBit Solutions</p>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

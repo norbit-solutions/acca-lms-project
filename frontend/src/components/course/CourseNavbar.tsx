@@ -6,7 +6,6 @@ import Link from "next/link";
 export default function CourseNavbar() {
   const { isAuthenticated, user } = useAuthStore();
 
-  // Admins go to admin dashboard, students go to user dashboard
   const dashboardUrl = user?.role === "admin" ? "/admin" : "/dashboard";
 
   return (

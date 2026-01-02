@@ -361,7 +361,7 @@ export const adminService = {
     designation?: string;
     content: string;
     rating: number;
-    image?: string;
+    image?: string | null;
   }): Promise<{ id: number }> {
     const response = await api.post<{ testimonial: { id: number } }>(
       ADMIN_ENDPOINTS.TESTIMONIALS,
@@ -377,7 +377,7 @@ export const adminService = {
       designation?: string;
       content?: string;
       rating?: number;
-      image?: string;
+      image?: string | null;
     }
   ): Promise<void> {
     await api.put(ADMIN_ENDPOINTS.TESTIMONIAL(id), data);
@@ -419,7 +419,7 @@ export const adminService = {
     name: string;
     title?: string;
     bio?: string;
-    image?: string;
+    image?: string | null;
   }): Promise<{ id: number }> {
     const response = await api.post<{ instructor: { id: number } }>(
       ADMIN_ENDPOINTS.INSTRUCTORS,
@@ -434,7 +434,7 @@ export const adminService = {
       name?: string;
       title?: string;
       bio?: string;
-      image?: string;
+      image?: string | null;
     }
   ): Promise<void> {
     await api.put(ADMIN_ENDPOINTS.INSTRUCTOR(id), data);

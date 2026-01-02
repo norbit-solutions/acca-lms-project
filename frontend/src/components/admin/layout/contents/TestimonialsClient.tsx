@@ -87,15 +87,17 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
         setSaving(true);
         
         try {
-            let finalImageUrl: string | undefined = undefined;
+            let finalImageUrl: string | null | undefined = undefined;
             
-            // If editing and image was removed (and not replaced), delete the old image
+            // If editing and image was removed (and not replaced), delete the old image from bucket and set to null
             if (editing && imageRemoved && existingImageUrl && !pendingFile) {
                 try {
                     await adminService.deleteFile(existingImageUrl);
                 } catch (error) {
                     console.log("Failed to delete old image from bucket:", error);
                 }
+                // Explicitly set to null to clear in database
+                finalImageUrl = null;
             }
             
             // If there's a pending file, upload it now
@@ -118,7 +120,11 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
                     return;
                 }
             } else if (!imageRemoved && existingImageUrl) {
+                // Keep existing image if not removed
                 finalImageUrl = existingImageUrl;
+            } else if (imageRemoved) {
+                // Image was removed - explicitly set to null
+                finalImageUrl = null;
             }
             
             if (editing) {

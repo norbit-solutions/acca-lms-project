@@ -20,17 +20,6 @@ interface FAQItem {
   answer: string;
 }
 
-interface WhyItem {
-  title: string;
-  description: string;
-  icon?: string;
-}
-
-interface WhyContent {
-  headline?: string;
-  subheadline?: string;
-  items?: WhyItem[];
-}
 
 interface FAQContent {
   items?: FAQItem[];
@@ -72,7 +61,7 @@ export default async function Home() {
     .slice(0, 4);
 
   return (
-    <main className="min-h-screen ">
+    <main className="min-h-screen font-display!">
       <Navbar />
       <HeroSection
         headline={heroContent.headline}

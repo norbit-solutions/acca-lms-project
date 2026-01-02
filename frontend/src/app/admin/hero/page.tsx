@@ -1,4 +1,4 @@
-import HeroCmsClient from "@/components/admin/HeroCmsClient";
+import HeroCmsClient from "@/components/admin/layout/contents/HeroCmsClient";
 import { adminService } from "@/services";
 
 export const dynamic = "force-dynamic";

@@ -86,15 +86,17 @@ export default function InstructorsClient({ initialInstructors }: InstructorsCli
         setSaving(true);
         
         try {
-            let finalImageUrl: string | undefined = undefined;
+            let finalImageUrl: string | null | undefined = undefined;
             
-            // If editing and image was removed (and not replaced), delete the old image
+            // If editing and image was removed (and not replaced), delete the old image from bucket
             if (editing && imageRemoved && existingImageUrl && !pendingFile) {
                 try {
                     await adminService.deleteFile(existingImageUrl);
                 } catch (error) {
                     console.log("Failed to delete old image from bucket:", error);
                 }
+                // Explicitly set to null to clear in database
+                finalImageUrl = null;
             }
             
             // If there's a pending file, upload it now
@@ -119,6 +121,9 @@ export default function InstructorsClient({ initialInstructors }: InstructorsCli
             } else if (!imageRemoved && existingImageUrl) {
                 // Keep existing image if not removed
                 finalImageUrl = existingImageUrl;
+            } else if (imageRemoved) {
+                // Image was removed - explicitly set to null
+                finalImageUrl = null;
             }
             
             if (editing) {
@@ -391,13 +396,13 @@ export default function InstructorsClient({ initialInstructors }: InstructorsCli
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Title</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Affiliations</label>
                         <input
                             type="text"
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                             className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all"
-                            placeholder="e.g. Senior Instructor"
+                            placeholder="e.g. ACCA, CA, CPA"
                         />
                     </div>
 

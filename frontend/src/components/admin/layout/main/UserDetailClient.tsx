@@ -5,10 +5,10 @@ import { adminService } from "@/services";
 import type { AdminUser, UserEnrollment } from "@/types";
 import { showError, showSuccess } from "@/lib/toast";
 import { useConfirm } from "@/components/ConfirmProvider";
-import UserHeader from "./user-detail/UserHeader";
-import UserEnrollments from "./user-detail/UserEnrollments";
-import UserVideoViews from "./user-detail/UserVideoViews";
-import UserAccountInfo from "./user-detail/UserAccountInfo";
+import UserHeader from "../../components/user-detail/UserHeader";
+import UserEnrollments from "../../components/user-detail/UserEnrollments";
+import UserVideoViews from "../../components/user-detail/UserVideoViews";
+import UserAccountInfo from "../../components/user-detail/UserAccountInfo";
 
 interface UserDetailClientProps {
   initialUser: AdminUser;

@@ -10,7 +10,7 @@ import {
   ChapterModal,
   LessonModal,
   EmptyChaptersState,
-} from "./courses/course-details";
+} from "../../components/courses/course-details";
 
 interface CourseDetailClientProps {
   course: AdminCourseDetail; // renamed from initialCourse - used directly, not copied to state

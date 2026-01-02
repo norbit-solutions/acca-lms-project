@@ -5,10 +5,10 @@ import { adminService } from "@/services";
 import { showError, showSuccess } from "@/lib/toast";
 import { useConfirm } from "@/components/ConfirmProvider";
 import { useRouter } from "next/navigation";
-import EnrollmentsHeader from "./enrollment/EnrollmentsHeader";
-import EnrollmentsFilter from "./enrollment/EnrollmentsFilter";
-import EnrollmentsTable from "./enrollment/EnrollmentsTable";
-import NewEnrollmentModal from "./enrollment/NewEnrollmentModal";
+import EnrollmentsHeader from "../../components/enrollment/EnrollmentsHeader";
+import EnrollmentsFilter from "../../components/enrollment/EnrollmentsFilter";
+import EnrollmentsTable from "../../components/enrollment/EnrollmentsTable";
+import NewEnrollmentModal from "../../components/enrollment/NewEnrollmentModal";
 
 export default function EnrollmentsClient({
   initialEnrollments = [],

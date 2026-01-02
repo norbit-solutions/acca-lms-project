@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { adminService } from "@/services";
 import type { AdminUser, PaginatedResponse } from "@/types";
 import { showError } from "@/lib/toast";
-import { UsersHeader, UsersSearch, UsersTable } from "./users";
+import { UsersHeader, UsersSearch, UsersTable } from "../../components/users";
 
 export default function UsersClient({
   initialUsers = [],

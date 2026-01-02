@@ -11,7 +11,7 @@ import {
   CourseCard,
   CoursesEmptyState,
   CourseModal,
-} from "./courses";
+} from "../../components/courses";
 
 interface CourseFormData {
   title: string;

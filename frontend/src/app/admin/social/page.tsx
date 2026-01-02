@@ -1,4 +1,4 @@
-import SocialLinksClient from "@/components/admin/SocialLinksClient";
+import SocialLinksClient from "@/components/admin/layout/contents/SocialLinksClient";
 import { adminService } from "@/services";
 
 export const dynamic = "force-dynamic";

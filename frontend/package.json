@@ -11,12 +11,15 @@
   "dependencies": {
     "@mux/mux-player-react": "^3.10.1",
     "@types/aos": "^3.0.7",
+    "@types/react-slick": "^0.23.13",
     "aos": "^2.3.4",
     "axios": "^1.13.2",
     "next": "16.0.7",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-hot-toast": "^2.6.0",
+    "react-slick": "^0.31.0",
+    "slick-carousel": "^1.8.1",
     "zustand": "^5.0.9"
   },
   "devDependencies": {

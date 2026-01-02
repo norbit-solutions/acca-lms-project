@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ToastProvider } from "@/lib/toast";
 import { ConfirmProvider } from "@/components/ConfirmProvider";
 import { MenuIcon } from "@/lib/icons";
-import AdminSideNavbar from "./sidenavbar/AdminSideNavbar";
+import AdminSideNavbar from "../../components/sidenavbar/AdminSideNavbar";
 
 interface AdminLayoutClientProps {
   children: React.ReactNode;

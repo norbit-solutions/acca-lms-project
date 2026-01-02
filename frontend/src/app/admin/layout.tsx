@@ -1,4 +1,4 @@
-import AdminLayoutClient from "@/components/admin/AdminLayoutClient";
+import AdminLayoutClient from "@/components/admin/layout/main/AdminLayoutClient";
 
 
 

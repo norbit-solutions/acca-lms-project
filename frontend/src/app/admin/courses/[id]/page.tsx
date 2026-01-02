@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { adminService } from "@/services";
-import CourseDetailClient from "@/components/admin/CourseDetailClient";
+import CourseDetailClient from "@/components/admin/layout/main/CourseDetailClient";
 
 export const dynamic = "force-dynamic";
 

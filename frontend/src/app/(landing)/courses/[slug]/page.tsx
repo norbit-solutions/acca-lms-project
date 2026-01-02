@@ -1,4 +1,4 @@
-import CourseNavbar from "@/components/CourseNavbar";
+import CourseNavbar from "@/components/course/CourseNavbar";
 import {
   CourseCurriculum,
   CourseHero,
