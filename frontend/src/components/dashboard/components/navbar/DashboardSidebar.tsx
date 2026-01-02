@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useSocialSafe } from "@/context/SocialContext";
-import { useAuthStore } from "@/lib/store";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import LogoutModal from "../LogoutModal";
 
 // Simple line icons
 const DashboardIcon = () => (
@@ -36,12 +37,6 @@ const LogoutIcon = () => (
   </svg>
 );
 
-const SearchIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-  </svg>
-);
-
 const CloseIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -61,14 +56,8 @@ export default function DashboardSidebar({
   isCollapsed,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { logout } = useAuthStore();
   const { whatsappNumber } = useSocialSafe();
-
-  const handleLogout = async () => {
-    await logout();
-    router.push("/login");
-  };
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const menuItems = [
     {
@@ -215,12 +204,10 @@ export default function DashboardSidebar({
           </div>
         </nav>
 
-
-
         {/* Logout */}
         <div className={`absolute bottom-0 left-0 right-0 border-t border-gray-100 ${isCollapsed ? "p-2" : "p-3"}`}>
           <button
-            onClick={handleLogout}
+            onClick={() => setIsLogoutModalOpen(true)}
             className={`
                             w-full flex items-center gap-3 rounded-lg text-sm font-medium
                             text-gray-500 hover:bg-gray-50 hover:text-black
@@ -233,6 +220,12 @@ export default function DashboardSidebar({
           </button>
         </div>
       </aside>
+
+      {/* Logout Modal */}
+      <LogoutModal 
+        isOpen={isLogoutModalOpen} 
+        onClose={() => setIsLogoutModalOpen(false)} 
+      />
     </>
   );
 }
