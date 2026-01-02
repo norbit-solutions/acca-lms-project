@@ -1,4 +1,4 @@
-import UsersClient from "@/components/admin/UsersClient";
+import UsersClient from "@/components/admin/layout/main/UsersClient";
 import { adminService } from "@/services/adminService";
 
 export const dynamic = "force-dynamic";

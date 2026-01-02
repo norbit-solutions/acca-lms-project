@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import UserDetailClient from "@/components/admin/UserDetailClient";
+import UserDetailClient from "@/components/admin/layout/main/UserDetailClient";
 import { adminService } from "@/services/adminService";
 
 export const dynamic = "force-dynamic";

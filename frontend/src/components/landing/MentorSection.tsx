@@ -13,8 +13,11 @@ export default function MentorSection({ instructors }: MentorSectionProps) {
 
   return (
     <section className="py-32 px-4 bg-off-white" id="mentors">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
+      <div className="w-full">
+        <div
+          className="text-center mb-12"
+          data-aos="fade-up"
+        >
           <div className="inline-block px-4 py-1 rounded-full border border-gray-200 bg-white text-sm font-medium mb-6">
             Mentor
           </div>
@@ -28,7 +31,11 @@ export default function MentorSection({ instructors }: MentorSectionProps) {
           )}
         </div>
 
-        <div className="flex justify-center mb-16">
+        <div
+          className="flex justify-center mb-16"
+          data-aos="zoom-in"
+          data-aos-duration="1000"
+        >
           <div className="relative w-80 h-96 group cursor-pointer">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl transform rotate-6 group-hover:rotate-12 transition-transform duration-500"></div>
             <div className="relative rounded-3xl overflow-hidden transform -rotate-3 group-hover:rotate-0 shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:scale-105 w-full h-full">
@@ -51,7 +58,10 @@ export default function MentorSection({ instructors }: MentorSectionProps) {
         </div>
 
         {mentor.title && (
-          <div className="text-center">
+          <div
+            className="text-center"
+            data-aos="fade-up"
+          >
             <h3 className="text-2xl font-semibold mb-8 mt-52">
               {mentor.title}
             </h3>
@@ -60,7 +70,10 @@ export default function MentorSection({ instructors }: MentorSectionProps) {
 
         {/* Show other instructors if available */}
         {instructors.length > 1 && (
-          <div className="mt-16">
+          <div
+            className="mt-16"
+            data-aos="fade-up"
+          >
             <h3 className="text-xl font-semibold text-center mb-8">Our Team</h3>
             <div className="flex justify-center gap-8 flex-wrap">
               {instructors.slice(1).map((instructor) => (

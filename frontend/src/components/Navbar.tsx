@@ -1,11 +1,13 @@
 "use client";
 
+import { useSocialSafe } from "@/context/SocialContext";
 import { useAuthStore } from "@/lib/store";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function Navbar() {
   const { isAuthenticated, user } = useAuthStore();
+  const { whatsappNumber } = useSocialSafe();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Admins go to admin dashboard, students go to user dashboard
@@ -82,7 +84,7 @@ export default function Navbar() {
                   Log In
                 </Link>
                 <Link
-                  href="https://wa.me/94XXXXXXXXX?text=Hello, I would like to know more about Learnspire"
+                  href={`https://wa.me/${whatsappNumber}?text=Hello, I would like to know more about Learnspire`}
                   target="_blank"
                   className="bg-black text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors"
                 >
@@ -124,9 +126,8 @@ export default function Navbar() {
 
         {/* Drawer */}
         <div
-          className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 ${
-            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+            }`}
         >
           <div className="p-6">
             {/* Close Button */}
@@ -216,7 +217,7 @@ export default function Navbar() {
                     Log In
                   </Link>
                   <Link
-                    href="https://wa.me/94XXXXXXXXX?text=Hello, I would like to know more about Learnspire"
+                    href={`https://wa.me/${whatsappNumber}?text=Hello, I would like to know more about Learnspire`}
                     target="_blank"
                     className="block text-center bg-black text-white text-sm font-medium py-3 rounded-full hover:bg-gray-800 transition-colors"
                   >

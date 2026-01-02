@@ -201,10 +201,12 @@ router
     // Lessons
     router.post('/chapters/:chapterId/lessons', [AdminLessonsController, 'store'])
     router.put('/chapters/:chapterId/lessons/reorder', [AdminLessonsController, 'reorder'])
+    router.get('/lessons/:id', [AdminLessonsController, 'show'])
     router.put('/lessons/:id', [AdminLessonsController, 'update'])
     router.delete('/lessons/:id', [AdminLessonsController, 'destroy'])
     router.post('/lessons/:id/upload-url', [AdminLessonsController, 'getUploadUrl'])
     router.get('/lessons/:id/signed-urls', [AdminLessonsController, 'getSignedUrls'])
+    router.post('/lessons/:id/sync-mux', [AdminLessonsController, 'syncMuxStatus'])
 
     // Enrollments
     router.get('/enrollments', [AdminEnrollmentsController, 'index'])

@@ -1,4 +1,4 @@
-import InstructorsClient from "@/components/admin/InstructorsClient";
+import InstructorsClient from "@/components/admin/layout/contents/InstructorsClient";
 import { adminService } from "@/services";
 
 export const dynamic = "force-dynamic";

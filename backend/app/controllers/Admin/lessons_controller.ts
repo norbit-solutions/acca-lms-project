@@ -8,18 +8,58 @@ import muxService from '#services/mux_service'
 
 export default class LessonsController {
   /**
+   * Get a single lesson with chapter and course info
+   */
+  async show({ params, response }: HttpContext) {
+    const lesson = await Lesson.query()
+      .where('id', params.id)
+      .preload('chapter', (query) => {
+        query.preload('course')
+      })
+      .firstOrFail()
+
+    // Generate thumbnail URL if playback ID exists
+    let thumbnailUrl = null
+    if (lesson.muxPlaybackId) {
+      thumbnailUrl = muxService.generateThumbnailUrl(lesson.muxPlaybackId, { width: 640 })
+    }
+
+    return response.ok({
+      lesson: {
+        ...lesson.serialize(),
+        thumbnailUrl,
+        chapter: {
+          id: lesson.chapter.id,
+          title: lesson.chapter.title,
+          course: {
+            id: lesson.chapter.course.id,
+            title: lesson.chapter.course.title,
+            slug: lesson.chapter.course.slug,
+          },
+        },
+      },
+    })
+  }
+
+  /**
    * Create a new lesson for a chapter
    */
   async store({ params, request, response }: HttpContext) {
     const chapter = await Chapter.findOrFail(params.chapterId)
 
-    const { title, type, content, pdfUrl, viewLimit, sortOrder } = request.only([
+    // Log full request body
+    console.log('[Lesson Create] Full request body:', request.body())
+
+    const { title, type, content, pdfUrl, viewLimit, sortOrder, isFree, description, attachments } = request.only([
       'title',
       'type',
       'content',
       'pdfUrl',
       'viewLimit',
       'sortOrder',
+      'isFree',
+      'description',
+      'attachments',
     ])
 
     // Get max sort order if not provided
@@ -29,16 +69,26 @@ export default class LessonsController {
       order = (maxOrder[0]?.$extras?.max || 0) + 1
     }
 
+    // Process attachments
+    const processedAttachments = Array.isArray(attachments) && attachments.length > 0 ? attachments : null
+
+    console.log('[Lesson Create] viewLimit received:', viewLimit, 'typeof:', typeof viewLimit)
+
     const lesson = await Lesson.create({
       chapterId: chapter.id,
       title,
       type,
       content: type === 'text' ? content : null,
       pdfUrl: type === 'pdf' ? pdfUrl : null,
-      viewLimit: viewLimit || 2,
+      viewLimit: viewLimit !== undefined && viewLimit !== null ? viewLimit : 2,
       sortOrder: order,
       muxStatus: type === 'video' ? 'pending' : 'ready',
+      isFree: isFree || false,
+      description: description || null,
+      attachments: processedAttachments,
     })
+
+    console.log('[Lesson Create] Saved lesson viewLimit:', lesson.viewLimit)
 
     return response.created({ lesson })
   }
@@ -193,6 +243,78 @@ export default class LessonsController {
       thumbnailUrl: `https://image.mux.com/${lesson.muxPlaybackId}/thumbnail.png?width=640&token=${thumbnailToken}`,
       playbackUrl: `https://stream.mux.com/${lesson.muxPlaybackId}.m3u8?token=${playbackToken}`,
     })
+  }
+
+  /**
+   * Manually sync video status from Mux API
+   * Use when webhooks aren't working (e.g., local development)
+   */
+  async syncMuxStatus({ params, response }: HttpContext) {
+    const lesson = await Lesson.findOrFail(params.id)
+
+    // If no upload ID, nothing to sync
+    if (!lesson.muxUploadId && !lesson.muxAssetId) {
+      return response.badRequest({ message: 'No Mux upload found for this lesson' })
+    }
+
+    try {
+      // Step 1: If we have upload ID but no asset ID, check if upload created an asset
+      if (lesson.muxUploadId && !lesson.muxAssetId) {
+        const upload = await muxService.getUpload(lesson.muxUploadId)
+        if (upload?.assetId) {
+          lesson.muxAssetId = upload.assetId
+          await lesson.save()
+          console.log(`[Mux Sync] Found asset ID ${upload.assetId} from upload ${lesson.muxUploadId}`)
+        } else {
+          return response.ok({
+            message: 'Upload still processing, no asset created yet',
+            status: upload?.status || 'unknown',
+          })
+        }
+      }
+
+      // Step 2: If we have asset ID, get the asset details
+      if (lesson.muxAssetId) {
+        const asset = await muxService.getAsset(lesson.muxAssetId)
+        
+        if (!asset) {
+          return response.notFound({ message: 'Asset not found in Mux' })
+        }
+
+        // Update lesson with asset data
+        if (asset.status === 'ready' && asset.playbackId) {
+          lesson.muxPlaybackId = asset.playbackId
+          lesson.muxStatus = 'ready'
+          lesson.duration = asset.duration ? Math.round(asset.duration) : null
+          await lesson.save()
+
+          // Generate thumbnail URL for response
+          const thumbnailUrl = muxService.generateThumbnailUrl(asset.playbackId, { width: 80 })
+
+          return response.ok({
+            message: 'Video is ready!',
+            status: 'ready',
+            playbackId: asset.playbackId,
+            duration: lesson.duration,
+            thumbnailUrl,
+          })
+        } else if (asset.status === 'errored') {
+          lesson.muxStatus = 'error'
+          await lesson.save()
+          return response.ok({ message: 'Video processing failed', status: 'error' })
+        } else {
+          return response.ok({ 
+            message: 'Video still processing', 
+            status: asset.status,
+          })
+        }
+      }
+
+      return response.ok({ message: 'No updates available' })
+    } catch (error) {
+      console.log('[Mux Sync] Error:', error)
+      return response.internalServerError({ message: 'Failed to sync with Mux API' })
+    }
   }
 
   /**

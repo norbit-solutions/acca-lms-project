@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/auth";
+import WhatsAppLink from "@/components/WhatsAppLink";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -45,13 +46,9 @@ export default function LoginPage() {
             {/* Footer */}
             <p className="mt-4 text-center text-gray-400 text-sm">
               Need help?{" "}
-              <Link
-                href="https://wa.me/94XXXXXXXXX"
-                target="_blank"
-                className="text-gray-600 hover:text-black transition-colors"
-              >
+              <WhatsAppLink className="text-gray-600 hover:text-black transition-colors">
                 Contact support
-              </Link>
+              </WhatsAppLink>
             </p>
           </div>
         </main>

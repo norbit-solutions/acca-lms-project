@@ -39,6 +39,7 @@ export interface AdminCourse {
   chaptersCount: number;
   lessonsCount: number;
   enrollmentsCount: number;
+  isFree: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -64,7 +65,7 @@ export interface AdminLesson {
   sortOrder: number;
   duration: number | null;
   isFree: boolean;
-  maxViews: number;
+  viewLimit: number;
   muxPlaybackId: string | null;
   muxAssetId: string | null;
   muxUploadId: string | null;
@@ -74,6 +75,19 @@ export interface AdminLesson {
   content: string | null;
   pdfUrl: string | null;
   attachments: Array<{ url: string; name: string; type: string }> | null;
+}
+
+// Admin lesson with chapter and course info (for lesson details page)
+export interface AdminLessonDetail extends AdminLesson {
+  chapter: {
+    id: number;
+    title: string;
+    course: {
+      id: number;
+      title: string;
+      slug: string;
+    };
+  };
 }
 
 // Enrollment
@@ -106,19 +120,15 @@ export interface UserEnrollment {
   createdAt: string;
 }
 
-// User video view for detail view
+// User video view for detail view (matches backend flattened response)
 export interface UserVideoView {
   id: number;
+  lessonId: number;
+  lessonTitle: string;
+  courseTitle: string;
   viewCount: number;
-  updatedAt: string;
-  lesson: {
-    id: number;
-    title: string;
-    maxViews: number;
-    chapter: {
-      course: { title: string };
-    };
-  };
+  customViewLimit?: number | null;
+  lastViewedAt: string;
 }
 
 // Video view
@@ -151,6 +161,7 @@ export interface CreateCourseRequest {
   isUpcoming?: boolean;
   price?: number;
   currency?: string;
+  isFree?: boolean;
 }
 
 // Update course request
@@ -162,6 +173,7 @@ export interface UpdateCourseRequest {
   isUpcoming?: boolean;
   price?: number;
   currency?: string;
+  isFree?: boolean;
 }
 
 // Create chapter request
@@ -183,6 +195,10 @@ export interface CreateLessonRequest {
   sortOrder?: number;
   isFree?: boolean;
   viewLimit?: number;
+  description?: string;
+  content?: string;
+  pdfUrl?: string;
+  attachments?: Array<{ url: string; name: string; type: string }>;
 }
 
 // Update lesson request

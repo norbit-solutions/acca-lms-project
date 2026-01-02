@@ -1,4 +1,4 @@
-import EnrollmentsClient from "@/components/admin/EnrollmentsClient";
+import EnrollmentsClient from "@/components/admin/layout/main/EnrollmentsClient";
 import { adminService } from "@/services/adminService";
 
 export const dynamic = "force-dynamic";

@@ -8,6 +8,7 @@ import type {
   DashboardStats,
   AdminCourse,
   AdminCourseDetail,
+  AdminLessonDetail,
   CreateCourseRequest,
   UpdateCourseRequest,
   CreateChapterRequest,
@@ -194,6 +195,11 @@ export const adminService = {
     return api.get(`/admin/lessons/${id}/status`);
   },
 
+  async getLesson(id: number): Promise<AdminLessonDetail> {
+    const response = await api.get<{ lesson: AdminLessonDetail }>(`/admin/lessons/${id}`);
+    return response.lesson;
+  },
+
   async getLessonSignedUrls(id: number): Promise<{
     playbackId: string;
     playbackToken: string;
@@ -201,6 +207,16 @@ export const adminService = {
     playbackUrl: string;
   }> {
     return api.get(`/admin/lessons/${id}/signed-urls`);
+  },
+
+  async syncLessonMux(id: number): Promise<{
+    message: string;
+    status: string;
+    playbackId?: string;
+    duration?: number;
+    thumbnailUrl?: string;
+  }> {
+    return api.post(`/admin/lessons/${id}/sync-mux`);
   },
 
   // Enrollments
@@ -345,7 +361,7 @@ export const adminService = {
     designation?: string;
     content: string;
     rating: number;
-    image?: string;
+    image?: string | null;
   }): Promise<{ id: number }> {
     const response = await api.post<{ testimonial: { id: number } }>(
       ADMIN_ENDPOINTS.TESTIMONIALS,
@@ -361,7 +377,7 @@ export const adminService = {
       designation?: string;
       content?: string;
       rating?: number;
-      image?: string;
+      image?: string | null;
     }
   ): Promise<void> {
     await api.put(ADMIN_ENDPOINTS.TESTIMONIAL(id), data);
@@ -403,7 +419,7 @@ export const adminService = {
     name: string;
     title?: string;
     bio?: string;
-    image?: string;
+    image?: string | null;
   }): Promise<{ id: number }> {
     const response = await api.post<{ instructor: { id: number } }>(
       ADMIN_ENDPOINTS.INSTRUCTORS,
@@ -418,7 +434,7 @@ export const adminService = {
       name?: string;
       title?: string;
       bio?: string;
-      image?: string;
+      image?: string | null;
     }
   ): Promise<void> {
     await api.put(ADMIN_ENDPOINTS.INSTRUCTOR(id), data);
@@ -482,8 +498,18 @@ export const adminService = {
     return response.json();
   },
 
-  async deleteFile(key: string): Promise<void> {
-    await api.delete(`${ADMIN_ENDPOINTS.DELETE_UPLOAD}?key=${encodeURIComponent(key)}`);
+  async deleteFile(urlOrKey: string): Promise<void> {
+    // Extract key from URL if full URL is provided
+    let key = urlOrKey;
+    if (urlOrKey.includes('://')) {
+      try {
+        const url = new URL(urlOrKey);
+        key = url.pathname.replace(/^\//, '');
+      } catch {
+        // If URL parsing fails, use as-is
+      }
+    }
+    await api.delete(ADMIN_ENDPOINTS.DELETE_UPLOAD, { key });
   },
 };
 

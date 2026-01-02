@@ -1,4 +1,4 @@
-import FAQClient from "@/components/admin/FAQClient";
+import FAQClient from "@/components/admin/layout/contents/FAQClient";
 import { adminService } from "@/services";
 
 export const dynamic = "force-dynamic";

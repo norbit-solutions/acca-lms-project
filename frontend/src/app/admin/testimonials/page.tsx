@@ -1,4 +1,4 @@
-import TestimonialsClient from "@/components/admin/TestimonialsClient";
+import TestimonialsClient from "@/components/admin/layout/contents/TestimonialsClient";
 import { adminService } from "@/services";
 
 export const dynamic = "force-dynamic";

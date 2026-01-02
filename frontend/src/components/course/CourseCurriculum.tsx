@@ -58,57 +58,54 @@ export default function CourseCurriculum({
   };
 
   return (
-    <div className="lg:col-span-2">
-      <h2 className="text-2xl font-bold mb-6">About this Course</h2>
-      <div className="prose max-w-none text-gray-600 mb-12">
+    <div
+      className="lg:col-span-2"
+      data-aos="fade-up"
+    >
+      <h2 className="text-2xl font-medium mb-4">About this Course</h2>
+      <p className="text-gray-600 mb-12 leading-relaxed">
         {description || shortIntroduction}
-      </div>
+      </p>
 
-      <h2 className="text-2xl font-bold mb-6">Curriculum</h2>
+      <h2 className="text-2xl font-medium mb-6">Curriculum</h2>
       <div className="space-y-4">
         {chapters.map((chapter) => (
           <div
             key={chapter.id}
             className="border border-gray-200 rounded-xl overflow-hidden"
           >
-            <div className="bg-gray-50 px-6 py-4 font-bold flex justify-between items-center">
-              <span>{chapter.title}</span>
-              <span className="text-sm text-gray-500 font-normal">
-                {chapter.lessons.length} Lessons
+            <div className="bg-gray-50 px-5 py-4 flex justify-between items-center">
+              <span className="font-medium text-gray-900">{chapter.title}</span>
+              <span className="text-xs text-gray-500">
+                {chapter.lessons.length} lessons
               </span>
             </div>
             <div className="divide-y divide-gray-100">
               {chapter.lessons.map((lesson) => (
                 <div
                   key={lesson.id}
-                  className={`px-6 py-3 flex items-center justify-between transition-colors ${lesson.isFree ? 'hover:bg-blue-50 cursor-pointer' : 'hover:bg-gray-50'
+                  className={`px-5 py-3.5 flex items-center justify-between ${lesson.isFree
+                    ? 'cursor-pointer hover:bg-gray-50 transition-colors'
+                    : ''
                     }`}
                   onClick={() => lesson.isFree && handlePlayFreeLesson(lesson)}
                 >
                   <div className="flex items-center gap-3">
-                    <svg
-                      className={`w-4 h-4 ${lesson.isFree ? 'text-blue-500' : 'text-gray-400'}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span className={lesson.isFree ? 'text-gray-900' : 'text-gray-700'}>{lesson.title}</span>
+                    {lesson.isFree ? (
+                      <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    )}
+                    <span className={`text-sm ${lesson.isFree ? 'text-gray-900' : 'text-gray-500'}`}>
+                      {lesson.title}
+                    </span>
                     {lesson.isFree && (
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                        Free Preview
+                      <span className="text-[10px] font-medium uppercase tracking-wide text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                        Free
                       </span>
                     )}
                   </div>

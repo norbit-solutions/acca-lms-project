@@ -48,6 +48,13 @@ export const cmsService = {
   async getFaq() {
     return this.getSection("faq");
   },
+
+  /**
+   * Get Social Media links
+   */
+  async getSocial<T = Record<string, unknown>>() {
+    return this.getSection<T>("social");
+  },
 };
 
 export default cmsService;
