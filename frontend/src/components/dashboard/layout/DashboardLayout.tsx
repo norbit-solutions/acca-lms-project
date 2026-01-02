@@ -1,29 +1,19 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/store";
-import DashboardSidebar from "./DashboardSidebar";
-import DashboardNav from "./DashboardNav";
-import Loader from "../admin/Loader";
-
+import { useState } from "react";
+import DashboardSidebar from "../components/navbar/DashboardSidebar";
+import DashboardNav from "../components/navbar/DashboardNav";
 interface DashboardLayoutProps {
     children: React.ReactNode;
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-    const { isAuthenticated, isLoading, user } = useAuthStore();
-    const router = useRouter();
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
-    // Load collapsed state from localStorage
-    useEffect(() => {
+    // Load collapsed state from localStorage using lazy initializer
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+        if (typeof window === 'undefined') return false; // SSR safety
         const savedState = localStorage.getItem('sidebarCollapsed');
-        if (savedState !== null) {
-            setIsSidebarCollapsed(JSON.parse(savedState));
-        }
-    }, []);
+        return savedState !== null ? JSON.parse(savedState) : false;
+    });
 
     // Save collapsed state to localStorage
     const handleToggleCollapse = () => {
@@ -31,28 +21,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         setIsSidebarCollapsed(newState);
         localStorage.setItem('sidebarCollapsed', JSON.stringify(newState));
     };
-
-    // Redirect to login if not authenticated, or to admin dashboard if admin
-    useEffect(() => {
-        if (!isLoading && !isAuthenticated) {
-            router.push("/login");
-        } else if (!isLoading && isAuthenticated && user?.role === "admin") {
-            // Admins should use the admin dashboard
-            router.push("/admin");
-        }
-    }, [isLoading, isAuthenticated, user, router]);
-
-    // Show loading spinner while checking auth
-    if (isLoading) {
-        return (
-            <Loader />
-        );
-    }
-
-    // Don't render dashboard if not authenticated
-    if (!isAuthenticated) {
-        return null;
-    }
 
     return (
         <div className="min-h-screen bg-gray-50 !font-display">
