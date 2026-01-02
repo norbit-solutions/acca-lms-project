@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { studentService } from "@/services";
-import CourseDetailClient from "@/components/dashboard/CourseDetailClient";
+import CourseDetailClient from "@/components/dashboard/components/courses/CourseDetailClient";
 
 interface PageProps {
     params: Promise<{ slug: string }>;

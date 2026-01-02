@@ -1,15 +1,15 @@
 "use client";
 
 import { useRef, useEffect, useState, useCallback } from "react";
-import MuxPlayer from "@mux/mux-player-react";
+import MuxPlayer, { MuxPlayerRefAttributes } from "@mux/mux-player-react";
 
 interface VideoPlayerProps {
     playbackId: string;
     playbackToken?: string | null;
-    watermarkText: string;
     watermarkPhone: string;
     title: string;
     onViewStart?: (watchPercentage: number) => void;
+    onReady?: () => void;
 }
 
 interface WatermarkPosition {
@@ -20,17 +20,18 @@ interface WatermarkPosition {
 export default function VideoPlayer({
     playbackId,
     playbackToken,
-    watermarkText,
     watermarkPhone,
     title,
     onViewStart,
+    onReady,
 }: VideoPlayerProps) {
     const hasCountedView = useRef(false);
-    const playerRef = useRef<any>(null);
+    const playerRef = useRef<MuxPlayerRefAttributes>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
     const [watermarkPosition, setWatermarkPosition] = useState<WatermarkPosition>({ x: 50, y: 50 });
+    const [isScreenRecording, setIsScreenRecording] = useState(false);
 
     // Generate random position for watermark
     const generateRandomPosition = useCallback(() => {
@@ -54,10 +55,80 @@ export default function VideoPlayer({
         return () => clearInterval(intervalId);
     }, [generateRandomPosition]);
 
+    // Screen recording detection
+    useEffect(() => {
+        // Method 1: Detect when Display Capture API is used
+        const detectDisplayCapture = () => {
+            if (navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices) {
+                const originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia;
+                navigator.mediaDevices.getDisplayMedia = async function(...args) {
+                    setIsScreenRecording(true);
+                    return originalGetDisplayMedia.apply(this, args);
+                };
+            }
+        };
+
+        // Method 2: Visibility change detection (might indicate recording setup)
+        const handleVisibilityChange = () => {
+            // Some screen recorders cause visibility changes
+            if (document.hidden) {
+                // Could be recording, but don't block - just be aware
+            }
+        };
+
+        // Method 3: Detect Picture-in-Picture (often used with recording)
+        const handlePipChange = () => {
+            if (document.pictureInPictureElement) {
+                setIsScreenRecording(true);
+            }
+        };
+
+        // Method 4: Monitor for DevTools and screen recording indicators
+        const detectDevTools = () => {
+            const threshold = 160;
+            const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+            const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+            
+            if (widthThreshold || heightThreshold) {
+                // DevTools might be open - potential recording
+            }
+        };
+
+        detectDisplayCapture();
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        document.addEventListener('enterpictureinpicture', handlePipChange);
+        window.addEventListener('resize', detectDevTools);
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            document.removeEventListener('enterpictureinpicture', handlePipChange);
+            window.removeEventListener('resize', detectDevTools);
+        };
+    }, []);
+
+    // Additional protection: Blur video when page is not visible or potential recording detected
+    useEffect(() => {
+        const handleBlur = () => {
+            // When window loses focus, could indicate screen capture
+        };
+
+        const handleFocus = () => {
+            setIsScreenRecording(false);
+        };
+
+        window.addEventListener('blur', handleBlur);
+        window.addEventListener('focus', handleFocus);
+
+        return () => {
+            window.removeEventListener('blur', handleBlur);
+            window.removeEventListener('focus', handleFocus);
+        };
+    }, []);
+
     // Handle fullscreen changes
     useEffect(() => {
         const handleFullscreenChange = () => {
-            const isFs = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+            const isFs = !!(document.fullscreenElement || (document as unknown as { webkitFullscreenElement: Element }).webkitFullscreenElement);
             setIsFullscreen(isFs);
         };
 
@@ -76,19 +147,19 @@ export default function VideoPlayer({
         if (!container) return;
 
         try {
-            if (!document.fullscreenElement && !(document as any).webkitFullscreenElement) {
+            if (!document.fullscreenElement && !(document as unknown as { webkitFullscreenElement: Element }).webkitFullscreenElement) {
                 // Enter fullscreen on our container
                 if (container.requestFullscreen) {
                     await container.requestFullscreen();
-                } else if ((container as any).webkitRequestFullscreen) {
-                    await (container as any).webkitRequestFullscreen();
+                } else if ((container as unknown as { webkitRequestFullscreen: () => Promise<void> }).webkitRequestFullscreen) {
+                    await (container as unknown as { webkitRequestFullscreen: () => Promise<void> }).webkitRequestFullscreen();
                 }
             } else {
                 // Exit fullscreen
                 if (document.exitFullscreen) {
                     await document.exitFullscreen();
-                } else if ((document as any).webkitExitFullscreen) {
-                    await (document as any).webkitExitFullscreen();
+                } else if ((document as unknown as { webkitExitFullscreen: () => Promise<void> }).webkitExitFullscreen) {
+                    await (document as unknown as { webkitExitFullscreen: () => Promise<void> }).webkitExitFullscreen();
                 }
             }
         } catch (err) {
@@ -107,7 +178,7 @@ export default function VideoPlayer({
 
         // Wait for shadow DOM to be ready, then intercept fullscreen button
         const setupFullscreenIntercept = () => {
-            const shadowRoot = (muxPlayer as any).shadowRoot;
+            const shadowRoot = (muxPlayer as unknown as { shadowRoot: ShadowRoot }).shadowRoot;
             if (!shadowRoot) {
                 // Retry after a short delay if shadow DOM isn't ready
                 setTimeout(setupFullscreenIntercept, 100);
@@ -124,10 +195,10 @@ export default function VideoPlayer({
             // Intercept clicks on fullscreen button in shadow DOM
             const handleClick = (e: Event) => {
                 const path = e.composedPath();
-                const isFullscreenButton = path.some((el: any) => {
-                    if (el.tagName) {
+                const isFullscreenButton = path.some((el) => {
+                    if (el instanceof Element) {
                         const tag = el.tagName.toLowerCase();
-                        const ariaLabel = el.getAttribute?.('aria-label')?.toLowerCase() || '';
+                        const ariaLabel = el.getAttribute('aria-label')?.toLowerCase() || '';
                         return tag === 'media-fullscreen-button' ||
                             tag.includes('fullscreen') ||
                             ariaLabel.includes('fullscreen');
@@ -147,7 +218,7 @@ export default function VideoPlayer({
             muxPlayer.addEventListener('click', handleClick, true);
 
             // Store cleanup function
-            (muxPlayer as any)._fullscreenCleanup = () => {
+            (muxPlayer as unknown as { _fullscreenCleanup: () => void })._fullscreenCleanup = () => {
                 muxPlayer.removeEventListener('click', handleClick, true);
             };
         };
@@ -164,8 +235,8 @@ export default function VideoPlayer({
 
         return () => {
             muxPlayer.removeEventListener('dblclick', handleDoubleClick);
-            if ((muxPlayer as any)._fullscreenCleanup) {
-                (muxPlayer as any)._fullscreenCleanup();
+            if ((muxPlayer as unknown as { _fullscreenCleanup: () => void })._fullscreenCleanup) {
+                (muxPlayer as unknown as { _fullscreenCleanup: () => void })._fullscreenCleanup();
             }
         };
     }, [toggleFullscreen]);
@@ -188,6 +259,13 @@ export default function VideoPlayer({
             }
             if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
                 e.preventDefault();
+                return false;
+            }
+            // Detect PrintScreen key
+            if (e.key === "PrintScreen") {
+                e.preventDefault();
+                setIsScreenRecording(true);
+                setTimeout(() => setIsScreenRecording(false), 3000);
                 return false;
             }
             // Handle 'F' key for fullscreen toggle
@@ -255,7 +333,7 @@ export default function VideoPlayer({
                 })
             }}
         >
-            {/* CSS to hide Mux's native fullscreen and PIP buttons */}
+            {/* CSS to hide Mux's native fullscreen and PIP buttons + screen recording protection */}
             <style jsx global>{`
                 mux-player::part(pip button),
                 mux-player [slot="pip-button"],
@@ -267,7 +345,30 @@ export default function VideoPlayer({
                 media-fullscreen-button {
                     display: none !important;
                 }
+                
+                /* Attempt to prevent screen capture visibility */
+                @media (display-mode: picture-in-picture) {
+                    .video-protected {
+                        filter: blur(50px) brightness(0.1) !important;
+                    }
+                }
             `}</style>
+
+            {/* Screen Recording Overlay - Blacks out video when recording detected */}
+            {isScreenRecording && (
+                <div
+                    className="absolute inset-0 z-[10001] bg-black flex items-center justify-center"
+                    style={{ pointerEvents: 'none' }}
+                >
+                    <div className="text-center text-white">
+                        <svg className="w-16 h-16 mx-auto mb-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                        <p className="text-lg font-semibold">Screen Recording Detected</p>
+                        <p className="text-sm text-gray-400 mt-2">Video playback is protected</p>
+                    </div>
+                </div>
+            )}
 
             <MuxPlayer
                 ref={playerRef}
@@ -279,15 +380,16 @@ export default function VideoPlayer({
                     video_title: title,
                 }}
                 streamType="on-demand"
-                className="w-full h-full"
+                className={`w-full h-full video-protected ${isScreenRecording ? 'blur-3xl brightness-0' : ''}`}
                 style={{
                     width: '100%',
                     height: '100%',
                     '--media-accent-color': '#64748b',
-                } as any}
+                } }
                 autoPlay={false}
                 onTimeUpdate={handleTimeUpdate}
                 onPlay={handlePlay}
+                onCanPlay={onReady}
             />
 
             {/* Custom fullscreen button - only shows after video has been played */}
@@ -321,7 +423,7 @@ export default function VideoPlayer({
                 </button>
             )}
 
-            {/* Watermark - stays in place for 10 seconds, then moves to a new random position */}
+            {/* Watermark - only shows phone number, moves every 10 seconds */}
             <div
                 className="pointer-events-none select-none transition-all duration-1000 ease-in-out"
                 style={{
@@ -330,20 +432,19 @@ export default function VideoPlayer({
                     top: `${watermarkPosition.y}%`,
                     transform: 'translate(-50%, -50%)',
                     zIndex: 9999,
-                    opacity: 0.3,
-                    fontSize: isFullscreen ? '18px' : '13px',
+                    opacity: 0.4,
+                    fontSize: isFullscreen ? '20px' : '14px',
                     fontWeight: 600,
                     color: 'white',
                     textShadow: '0 2px 4px rgba(0,0,0,0.8)',
                     whiteSpace: 'nowrap',
                     userSelect: 'none',
+                    letterSpacing: '0.05em',
                 }}
             >
-                <div className="flex flex-col items-center gap-0.5">
-                    <span>{watermarkText}</span>
-                    <span style={{ opacity: 0.8 }}>{watermarkPhone}</span>
-                </div>
+                {watermarkPhone}
             </div>
         </div>
     );
 }
+

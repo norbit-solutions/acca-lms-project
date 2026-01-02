@@ -27,7 +27,6 @@ export default async function MyCoursesPage() {
                 </p>
             </div>
 
-            {/* Courses Grid */}
             {error ? (
                 <div className="border border-gray-200 rounded-lg p-8 text-center">
                     <p className="text-gray-600">{error}</p>

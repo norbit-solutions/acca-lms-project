@@ -329,7 +329,7 @@ export default class StudentController {
       maxViews: isAdmin ? 999 : maxViews,
       viewCount,
       canWatch,
-      playbackId: canWatch ? lesson.muxPlaybackId : null,
+      playbackId: lesson.muxPlaybackId, // Always return for thumbnail display
       signedUrl,
       watermark,
       attachments: signedAttachments,

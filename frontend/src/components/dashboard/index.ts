@@ -6,8 +6,8 @@
 export { DashboardStats } from "../admin/components/dashboard/DashboardStats";
 export { RecentLessons } from "./RecentLessons";
 export { CoursesList } from "./CoursesList";
-export { MyCoursesGrid } from "./MyCoursesGrid";
-export { EmptyCoursesState } from "./EmptyCoursesState";
+export { MyCoursesGrid } from "./components/my-courses/MyCoursesGrid";
+export { EmptyCoursesState } from "./components/my-courses/EmptyCoursesState";
 
 // Lesson Components
 export { LessonLoadingSkeleton } from "./LessonLoadingSkeleton";

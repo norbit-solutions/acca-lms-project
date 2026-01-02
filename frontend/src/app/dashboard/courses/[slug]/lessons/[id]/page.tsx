@@ -1,8 +1,6 @@
 import { studentService } from "@/services";
 import {
     LessonError,
-    LessonAccessDenied,
-    VideoUnavailable,
 } from "@/components/dashboard";
 import LessonPlayerClient from "@/components/dashboard/LessonPlayerClient";
 
@@ -30,17 +28,6 @@ export default async function LessonPlayerPage({ params }: PageProps) {
         return <LessonError error={error} slug={slug} />;
     }
 
-    // Access denied state
-    if (!lesson.canWatch) {
-        return (
-            <LessonAccessDenied
-                slug={slug}
-                viewCount={lesson.viewCount}
-                maxViews={lesson.maxViews}
-            />
-        );
-    }
-
-
     return <LessonPlayerClient lesson={lesson} slug={slug} />;
 }
+

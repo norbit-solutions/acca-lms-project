@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
         hostname: 'pub-21b67f544eae4559b7436b81b0250a58.r2.dev',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'image.mux.com',
+        pathname: '/**',
+      },
     ],
     // Allow unoptimized images for local development
     unoptimized: process.env.NODE_ENV === "development",

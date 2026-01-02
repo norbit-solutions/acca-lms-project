@@ -50,9 +50,9 @@ export default function LessonDetailClient({ lesson, playbackToken }: LessonDeta
             <h1 className="text-2xl font-display font-bold text-slate-900">
               {lesson.title}
             </h1>
-            <p className="text-sm text-slate-500">
+            {/* <p className="text-sm text-slate-500">
               {lesson.chapter.course.title} → {lesson.chapter.title}
-            </p>
+            </p> */}
           </div>
         </div>
       </div>

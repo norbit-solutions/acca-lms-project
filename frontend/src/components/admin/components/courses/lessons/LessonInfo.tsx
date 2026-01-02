@@ -85,14 +85,14 @@ export default function LessonInfo({
         </div>
 
         {/* Breadcrumb */}
-        <div className="pt-4 border-t border-slate-100 min-w-0">
+        {/* <div className="pt-4 border-t border-slate-100 min-w-0">
           <p className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wide mb-2">Location</p>
           <p className="text-xs sm:text-sm text-slate-600 break-words">
             <span className="font-medium text-slate-900">{courseTitle}</span>
             <span className="mx-1">→</span>
             <span>{chapterTitle}</span>
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
