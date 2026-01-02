@@ -1,17 +1,15 @@
 
 import { Enrollment } from "@/types";
-import { EditIcon, TrashIcon, UsersIcon } from "@/lib/icons";
+import { TrashIcon, UsersIcon } from "@/lib/icons";
 
 interface EnrollmentsTableProps {
     enrollments: Enrollment[];
-    onEdit: (enrollment: Enrollment) => void;
     onDelete: (enrollment: Enrollment) => void;
     onSelectNew: () => void;
 }
 
 export default function EnrollmentsTable({
     enrollments,
-    onEdit,
     onDelete,
     onSelectNew,
 }: EnrollmentsTableProps) {
@@ -51,22 +49,13 @@ export default function EnrollmentsTable({
                                     })()}
                                 </td>
                                 <td className="px-4 py-3 text-right">
-                                    <div className="flex items-center justify-end gap-1">
-                                        <button
-                                            onClick={() => onEdit(enrollment)}
-                                            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors"
-                                            title="Add courses"
-                                        >
-                                            <EditIcon className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            onClick={() => onDelete(enrollment)}
-                                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                                            title="Remove"
-                                        >
-                                            <TrashIcon className="w-4 h-4" />
-                                        </button>
-                                    </div>
+                                    <button
+                                        onClick={() => onDelete(enrollment)}
+                                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                                        title="Remove enrollment"
+                                    >
+                                        <TrashIcon className="w-4 h-4" />
+                                    </button>
                                 </td>
                             </tr>
                         ))}

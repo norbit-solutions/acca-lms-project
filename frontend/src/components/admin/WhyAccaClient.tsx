@@ -2,7 +2,8 @@
 
 import { adminService } from "@/services";
 import { useState } from "react";
-import { useModal } from "./ModalProvider";
+import { showError, showSuccess } from "@/lib/toast";
+import { useConfirm } from "@/components/ConfirmProvider";
 import { useRouter } from "next/navigation";
 
 interface WhyItem {
@@ -36,7 +37,7 @@ const iconOptions = [
 
 export default function WhyAccaClient({ initialContent }: WhyAccaClientProps) {
   const router = useRouter();
-  const { showError, showSuccess, showConfirm } = useModal();
+  const { showConfirm } = useConfirm();
   const [content, setContent] = useState<WhyContent>(initialContent);
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);

@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminService } from "@/services";
-import { useModal } from "./ModalProvider";
+import { showError } from "@/lib/toast";
+import { useConfirm } from "@/components/ConfirmProvider";
+import Modal from "@/components/modals/Modal";
 
 interface FAQItem {
     question: string;
@@ -16,7 +18,7 @@ interface FAQClientProps {
 
 export default function FAQClient({ initialFaqs }: FAQClientProps) {
     const router = useRouter();
-    const { showError, showConfirm } = useModal();
+    const { showConfirm } = useConfirm();
     const [faqs, setFaqs] = useState<FAQItem[]>(initialFaqs);
     const [saving, setSaving] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -75,6 +77,12 @@ export default function FAQClient({ initialFaqs }: FAQClientProps) {
         setShowModal(true);
     };
 
+    const closeModal = () => {
+        setShowModal(false);
+        setEditingIndex(null);
+        setFormData({ question: "", answer: "" });
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -100,13 +108,13 @@ export default function FAQClient({ initialFaqs }: FAQClientProps) {
                             <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
                                 <button
                                     onClick={() => handleEdit(index)}
-                                    className="px-3 py-1.5 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium"
+                                    className="px-3 py-1.5 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors"
                                 >
                                     Edit
                                 </button>
                                 <button
                                     onClick={() => handleDelete(index)}
-                                    className="px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium"
+                                    className="px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-colors"
                                 >
                                     Delete
                                 </button>
@@ -116,6 +124,11 @@ export default function FAQClient({ initialFaqs }: FAQClientProps) {
                 </div>
             ) : (
                 <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
                     <h3 className="text-lg font-semibold text-slate-900 mb-2">No FAQs yet</h3>
                     <p className="text-slate-500 mb-4">Add your first FAQ</p>
                     <button
@@ -127,52 +140,56 @@ export default function FAQClient({ initialFaqs }: FAQClientProps) {
                 </div>
             )}
 
-            {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl max-w-lg w-full shadow-xl">
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-                            <h2 className="text-lg font-semibold">{editingIndex !== null ? "Edit FAQ" : "Add FAQ"}</h2>
-                            <button onClick={() => setShowModal(false)} className="p-2 text-slate-400 hover:text-slate-600 rounded-lg">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
-                            <div className="p-6 space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Question</label>
-                                    <input
-                                        type="text"
-                                        value={formData.question}
-                                        onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Answer</label>
-                                    <textarea
-                                        value={formData.answer}
-                                        onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 resize-none"
-                                        rows={4}
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex justify-end gap-3 px-6 py-4 bg-slate-50 border-t border-slate-200">
-                                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-200 rounded-lg">
-                                    Cancel
-                                </button>
-                                <button type="submit" disabled={saving} className="px-4 py-2 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 disabled:opacity-50">
-                                    {saving ? "Saving..." : "Save"}
-                                </button>
-                            </div>
-                        </form>
+            {/* Modal */}
+            <Modal
+                isOpen={showModal}
+                onClose={closeModal}
+                title={editingIndex !== null ? "Edit FAQ" : "Add FAQ"}
+                subtitle="Manage frequently asked questions for the landing page"
+                size="md"
+                onSubmit={handleSubmit}
+                buttons={[
+                    {
+                        label: "Cancel",
+                        onClick: closeModal,
+                        variant: "secondary",
+                    },
+                    {
+                        label: saving ? "Saving..." : "Save",
+                        type: "submit",
+                        variant: "primary",
+                        isLoading: saving,
+                        loadingText: "Saving...",
+                        disabled: saving,
+                    },
+                ]}
+            >
+                <div className="space-y-5">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Question *</label>
+                        <input
+                            type="text"
+                            value={formData.question}
+                            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+                            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all"
+                            placeholder="Enter the question"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Answer *</label>
+                        <textarea
+                            value={formData.answer}
+                            onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
+                            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent resize-none transition-all"
+                            rows={4}
+                            placeholder="Enter the answer"
+                            required
+                        />
                     </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 }
+

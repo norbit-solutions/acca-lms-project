@@ -77,6 +77,19 @@ export interface AdminLesson {
   attachments: Array<{ url: string; name: string; type: string }> | null;
 }
 
+// Admin lesson with chapter and course info (for lesson details page)
+export interface AdminLessonDetail extends AdminLesson {
+  chapter: {
+    id: number;
+    title: string;
+    course: {
+      id: number;
+      title: string;
+      slug: string;
+    };
+  };
+}
+
 // Enrollment
 export interface Enrollment {
   id: number;
@@ -107,19 +120,15 @@ export interface UserEnrollment {
   createdAt: string;
 }
 
-// User video view for detail view
+// User video view for detail view (matches backend flattened response)
 export interface UserVideoView {
   id: number;
+  lessonId: number;
+  lessonTitle: string;
+  courseTitle: string;
   viewCount: number;
-  updatedAt: string;
-  lesson: {
-    id: number;
-    title: string;
-    viewLimit: number;
-    chapter: {
-      course: { title: string };
-    };
-  };
+  customViewLimit?: number | null;
+  lastViewedAt: string;
 }
 
 // Video view

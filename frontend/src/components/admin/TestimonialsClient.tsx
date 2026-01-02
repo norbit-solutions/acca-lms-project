@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { adminService } from "@/services";
-import { useModal } from "./ModalProvider";
+import { showError } from "@/lib/toast";
+import { useConfirm } from "@/components/ConfirmProvider";
+import Modal from "@/components/modals/Modal";
 
 interface Testimonial {
     id: number;
@@ -21,25 +23,47 @@ interface TestimonialsClientProps {
 
 export default function TestimonialsClient({ initialTestimonials }: TestimonialsClientProps) {
     const router = useRouter();
-    const { showError, showConfirm } = useModal();
+    const { showConfirm } = useConfirm();
     const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<Testimonial | null>(null);
-    const [uploading, setUploading] = useState(false);
+    const [saving, setSaving] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    
+    // Form data state
     const [formData, setFormData] = useState({
         name: "",
         designation: "",
         content: "",
-        image: "",
     });
+    
+    // Separate state for image handling
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
+    const [existingImageUrl, setExistingImageUrl] = useState<string>("");
+    const [imageRemoved, setImageRemoved] = useState(false);
+    
+    // Local preview URL for pending file
+    const localPreviewUrl = useMemo(() => {
+        if (pendingFile) {
+            return URL.createObjectURL(pendingFile);
+        }
+        return null;
+    }, [pendingFile]);
+    
+    // Cleanup object URL on unmount or when file changes
+    useEffect(() => {
+        return () => {
+            if (localPreviewUrl) {
+                URL.revokeObjectURL(localPreviewUrl);
+            }
+        };
+    }, [localPreviewUrl]);
 
-    // Sync with initialTestimonials when it changes (e.g., after router.refresh())
     useEffect(() => {
         setTestimonials(initialTestimonials);
     }, [initialTestimonials]);
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -49,42 +73,76 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
             return;
         }
 
-        setUploading(true);
-        try {
-            const result = await adminService.uploadImage(file, "avatars");
-            setFormData({ ...formData, image: result.url });
-        } catch (error) {
-            console.log("Failed to upload image:", error);
-            showError("Failed to upload image. Please try again.");
-        } finally {
-            setUploading(false);
+        if (file.size > 5 * 1024 * 1024) {
+            showError("Image must be less than 5MB");
+            return;
         }
+
+        setPendingFile(file);
+        setImageRemoved(true);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSaving(true);
+        
         try {
+            let finalImageUrl: string | undefined = undefined;
+            
+            // If editing and image was removed (and not replaced), delete the old image
+            if (editing && imageRemoved && existingImageUrl && !pendingFile) {
+                try {
+                    await adminService.deleteFile(existingImageUrl);
+                } catch (error) {
+                    console.log("Failed to delete old image from bucket:", error);
+                }
+            }
+            
+            // If there's a pending file, upload it now
+            if (pendingFile) {
+                // If editing and there was an old image, delete it first
+                if (editing && existingImageUrl) {
+                    try {
+                        await adminService.deleteFile(existingImageUrl);
+                    } catch (error) {
+                        console.log("Failed to delete old image from bucket:", error);
+                    }
+                }
+                
+                const result = await adminService.uploadImage(pendingFile, "avatars");
+                if (result && result.url) {
+                    finalImageUrl = result.url;
+                } else {
+                    showError("Failed to upload image");
+                    setSaving(false);
+                    return;
+                }
+            } else if (!imageRemoved && existingImageUrl) {
+                finalImageUrl = existingImageUrl;
+            }
+            
             if (editing) {
                 await adminService.updateTestimonial(editing.id, {
                     name: formData.name,
                     content: formData.content,
-                    image: formData.image || undefined,
+                    image: finalImageUrl,
                 });
             } else {
                 await adminService.createTestimonial({
                     name: formData.name,
                     content: formData.content,
-                    image: formData.image || undefined,
+                    image: finalImageUrl,
                     rating: 5,
                 });
             }
-            setShowModal(false);
-            setEditing(null);
-            setFormData({ name: "", designation: "", content: "", image: "" });
+            
+            closeModal();
             router.refresh();
         } catch (error) {
             console.log("Failed to save testimonial:", error);
             showError("Failed to save testimonial");
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -94,8 +152,10 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
             name: testimonial.name,
             designation: testimonial.designation || "",
             content: testimonial.content,
-            image: testimonial.image || "",
         });
+        setExistingImageUrl(testimonial.image || "");
+        setPendingFile(null);
+        setImageRemoved(false);
         setShowModal(true);
     };
 
@@ -107,6 +167,17 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
             variant: "danger",
         });
         if (!confirmed) return;
+        
+        // Delete image from bucket
+        const testimonial = testimonials.find(t => t.id === id);
+        if (testimonial?.image) {
+            try {
+                await adminService.deleteFile(testimonial.image);
+            } catch (error) {
+                console.log("Failed to delete image from bucket:", error);
+            }
+        }
+        
         try {
             await adminService.deleteTestimonial(id);
             router.refresh();
@@ -118,24 +189,34 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
 
     const openNewModal = () => {
         setEditing(null);
-        setFormData({ name: "", designation: "", content: "", image: "" });
+        setFormData({ name: "", designation: "", content: "" });
+        setExistingImageUrl("");
+        setPendingFile(null);
+        setImageRemoved(false);
         setShowModal(true);
     };
 
-    const removeImage = async () => {
-        // Delete from bucket if there's an existing image
-        if (formData.image) {
-            try {
-                await adminService.deleteFile(formData.image);
-            } catch (error) {
-                console.log("Failed to delete image from bucket:", error);
-            }
-        }
-        setFormData({ ...formData, image: "" });
+    const closeModal = () => {
+        setShowModal(false);
+        setEditing(null);
+        setFormData({ name: "", designation: "", content: "" });
+        setExistingImageUrl("");
+        setPendingFile(null);
+        setImageRemoved(false);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
     };
+
+    const removeImage = () => {
+        setPendingFile(null);
+        setImageRemoved(true);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
+    
+    const displayImageUrl = pendingFile ? localPreviewUrl : (!imageRemoved ? existingImageUrl : null);
 
     return (
         <div className="space-y-6">
@@ -170,7 +251,7 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
                                         className="w-12 h-12 rounded-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold">
                                         {testimonial.name.charAt(0)}
                                     </div>
                                 )}
@@ -184,7 +265,7 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
                             <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
                                 <button
                                     onClick={() => handleEdit(testimonial)}
-                                    className="px-3 py-1.5 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium transition-colors"
+                                    className="px-3 py-1.5 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors"
                                 >
                                     Edit
                                 </button>
@@ -217,128 +298,105 @@ export default function TestimonialsClient({ initialTestimonials }: Testimonials
             )}
 
             {/* Modal */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl max-w-lg w-full shadow-xl">
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-                            <h2 className="text-lg font-semibold text-slate-900">
-                                {editing ? "Edit Testimonial" : "Add Testimonial"}
-                            </h2>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
+            <Modal
+                isOpen={showModal}
+                onClose={closeModal}
+                title={editing ? "Edit Testimonial" : "Add Testimonial"}
+                subtitle="Manage student testimonials for the landing page"
+                size="md"
+                onSubmit={handleSubmit}
+                buttons={[
+                    {
+                        label: "Cancel",
+                        onClick: closeModal,
+                        variant: "secondary",
+                    },
+                    {
+                        label: editing ? "Save Changes" : "Add Testimonial",
+                        type: "submit",
+                        variant: "primary",
+                        isLoading: saving,
+                        loadingText: "Saving...",
+                        disabled: saving,
+                    },
+                ]}
+            >
+                <div className="space-y-5">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Name *</label>
+                        <input
+                            type="text"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all"
+                            placeholder="Student name"
+                            required
+                        />
+                    </div>
 
-                        <form onSubmit={handleSubmit}>
-                            <div className="p-6 space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                                    <input
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                                        placeholder="Student name"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Testimonial</label>
-                                    <textarea
-                                        value={formData.content}
-                                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent resize-none"
-                                        rows={4}
-                                        placeholder="What did the student say?"
-                                        required
-                                    />
-                                </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Testimonial *</label>
+                        <textarea
+                            value={formData.content}
+                            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent resize-none transition-all"
+                            rows={4}
+                            placeholder="What did the student say?"
+                            required
+                        />
+                    </div>
 
-                                {/* Image Upload */}
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-2">Avatar (optional)</label>
-
-                                    {formData.image ? (
-                                        <div className="flex items-center gap-4">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
-                                                src={formData.image}
-                                                alt="Preview"
-                                                className="w-16 h-16 rounded-full object-cover border-2 border-slate-200"
-                                            />
-                                            <div className="flex-1">
-                                                <p className="text-sm text-slate-600 truncate max-w-[200px]">
-                                                    {formData.image.split('/').pop()}
-                                                </p>
-                                                <button
-                                                    type="button"
-                                                    onClick={removeImage}
-                                                    className="text-sm text-red-600 hover:text-red-700 font-medium mt-1"
-                                                >
-                                                    Remove image
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center hover:border-slate-400 transition-colors">
-                                            <input
-                                                ref={fileInputRef}
-                                                type="file"
-                                                accept="image/jpeg,image/png,image/webp,image/gif"
-                                                onChange={handleImageUpload}
-                                                className="hidden"
-                                                id="avatar-upload"
-                                                disabled={uploading}
-                                            />
-                                            <label
-                                                htmlFor="avatar-upload"
-                                                className={`cursor-pointer ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                            >
-                                                {uploading ? (
-                                                    <div className="flex flex-col items-center">
-                                                        <div className="w-8 h-8 border-4 border-slate-600 border-t-transparent rounded-full animate-spin mb-2"></div>
-                                                        <span className="text-sm text-slate-500">Uploading...</span>
-                                                    </div>
-                                                ) : (
-                                                    <>
-                                                        <svg className="w-10 h-10 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                        </svg>
-                                                        <span className="text-sm text-slate-600 font-medium">Click to upload image</span>
-                                                        <span className="text-xs text-slate-400 block mt-1">JPG, PNG, WebP, GIF (max 5MB)</span>
-                                                    </>
-                                                )}
-                                            </label>
-                                        </div>
-                                    )}
+                    {/* Image Upload */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Avatar (optional)</label>
+                        {displayImageUrl ? (
+                            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={displayImageUrl}
+                                    alt="Preview"
+                                    className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm"
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-slate-600 truncate">
+                                        {pendingFile ? pendingFile.name : existingImageUrl.split('/').pop()}
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={removeImage}
+                                        className="text-sm text-red-600 hover:text-red-700 font-medium mt-1"
+                                    >
+                                        Remove image
+                                    </button>
                                 </div>
                             </div>
-
-                            <div className="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50 border-t border-slate-200">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-200 rounded-lg transition-colors"
+                        ) : (
+                            <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-slate-400 transition-colors bg-slate-50">
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp,image/gif"
+                                    onChange={handleFileSelect}
+                                    className="hidden"
+                                    id="testimonial-avatar-upload"
+                                />
+                                <label
+                                    htmlFor="testimonial-avatar-upload"
+                                    className="cursor-pointer"
                                 >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={uploading}
-                                    className="px-4 py-2 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {editing ? "Save Changes" : "Add Testimonial"}
-                                </button>
+                                    <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <span className="text-sm text-slate-600 font-medium">Click to upload image</span>
+                                    <span className="text-xs text-slate-400 block mt-1">JPG, PNG, WebP, GIF (max 5MB)</span>
+                                </label>
                             </div>
-                        </form>
+                        )}
                     </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 }

@@ -2,7 +2,7 @@
 
 import { adminService } from "@/services";
 import { useState, useRef } from "react";
-import { useModal } from "./ModalProvider";
+import { showError, showSuccess } from "@/lib/toast";
 
 interface HeroContent {
   headline?: string;
@@ -23,7 +23,7 @@ interface HeroCmsClientProps {
 }
 
 export default function HeroCmsClient({ initialContent }: HeroCmsClientProps) {
-  const { showError, showSuccess } = useModal();
+
   const [content, setContent] = useState<HeroContent>(initialContent?.content || {});
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -96,7 +96,7 @@ export default function HeroCmsClient({ initialContent }: HeroCmsClientProps) {
   };
 
   return (
-    <div className="space-y-6 w-full max-w-4xl mx-auto">
+    <div className="space-y-6 w-full">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">Hero Section</h1>
         <p className="text-slate-500">

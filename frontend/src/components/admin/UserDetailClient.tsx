@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { adminService } from "@/services";
 import type { AdminUser, UserEnrollment } from "@/types";
-import { useModal } from "./ModalProvider";
+import { showError, showSuccess } from "@/lib/toast";
+import { useConfirm } from "@/components/ConfirmProvider";
 import UserHeader from "./user-detail/UserHeader";
 import UserEnrollments from "./user-detail/UserEnrollments";
 import UserVideoViews from "./user-detail/UserVideoViews";
@@ -16,7 +17,7 @@ interface UserDetailClientProps {
 export default function UserDetailClient({
   initialUser,
 }: UserDetailClientProps) {
-  const { showError, showConfirm, showSuccess } = useModal();
+  const { showConfirm } = useConfirm();
   const [user, setUser] = useState<AdminUser>(initialUser);
 
   const loadUser = async () => {

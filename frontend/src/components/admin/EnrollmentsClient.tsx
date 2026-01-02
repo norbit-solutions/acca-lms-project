@@ -2,13 +2,13 @@
 import { useState } from "react";
 import type { Enrollment, AdminCourse, User } from "@/types";
 import { adminService } from "@/services";
-import { useModal } from "./ModalProvider";
+import { showError, showSuccess } from "@/lib/toast";
+import { useConfirm } from "@/components/ConfirmProvider";
 import { useRouter } from "next/navigation";
 import EnrollmentsHeader from "./enrollment/EnrollmentsHeader";
 import EnrollmentsFilter from "./enrollment/EnrollmentsFilter";
 import EnrollmentsTable from "./enrollment/EnrollmentsTable";
 import NewEnrollmentModal from "./enrollment/NewEnrollmentModal";
-import EditEnrollmentModal from "./enrollment/EditEnrollmentModal";
 
 export default function EnrollmentsClient({
   initialEnrollments = [],
@@ -17,18 +17,17 @@ export default function EnrollmentsClient({
   initialEnrollments?: Enrollment[];
   initialCourses?: AdminCourse[];
 }) {
-  const { showError, showSuccess, showConfirm } = useModal();
+  const { showConfirm } = useConfirm();
   const router = useRouter();
 
   const [showModal, setShowModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [searching, setSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedCourses, setSelectedCourses] = useState<Set<number>>(new Set());
   const [filterCourse, setFilterCourse] = useState<number | null>(null);
-  const [editingEnrollment, setEditingEnrollment] = useState<Enrollment | null>(null);
   const [enrolling, setEnrolling] = useState(false);
 
   const courses = Array.isArray(initialCourses) ? initialCourses : [];
@@ -36,6 +35,7 @@ export default function EnrollmentsClient({
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     setSearching(true);
+    setHasSearched(true);
     try {
       const data = await adminService.searchUsers(searchQuery);
       setSearchResults(data);
@@ -118,65 +118,12 @@ export default function EnrollmentsClient({
     if (!confirmed) return;
     try {
       await adminService.deleteEnrollment(enrollment.id);
+      showSuccess("Enrollment removed");
       router.refresh();
     } catch (error) {
       console.log("Failed to delete enrollment:", error);
       showError("Failed to remove enrollment");
     }
-  };
-
-  const handleEdit = (enrollment: Enrollment) => {
-    setEditingEnrollment(enrollment);
-    setSelectedCourses(new Set());
-    setShowEditModal(true);
-  };
-
-  const handleEnrollAdditional = async () => {
-    if (!editingEnrollment || selectedCourses.size === 0) {
-      showError("Please select at least one course");
-      return;
-    }
-
-    setEnrolling(true);
-    let successCount = 0;
-    let errorCount = 0;
-
-    for (const courseId of selectedCourses) {
-      try {
-        await adminService.createEnrollment({
-          userId: editingEnrollment.user!.id,
-          courseId,
-        });
-        successCount++;
-      } catch (error) {
-        console.log("Failed to enroll:", error);
-        errorCount++;
-      }
-    }
-
-    setEnrolling(false);
-
-    if (successCount > 0) {
-      showSuccess(`Enrolled in ${successCount} course${successCount > 1 ? 's' : ''}`);
-    }
-    if (errorCount > 0) {
-      showError(`Failed to enroll in ${errorCount} course${errorCount > 1 ? 's' : ''}`);
-    }
-
-    setShowEditModal(false);
-    setEditingEnrollment(null);
-    setSelectedCourses(new Set());
-    router.refresh();
-  };
-
-  const getAvailableCourses = () => {
-    if (!editingEnrollment) return [];
-    const enrolledCourseIds = initialEnrollments
-      .filter(e => e.user?.id === editingEnrollment.user?.id)
-      .map(e => e.course?.id);
-    return courses.filter(
-      course => !enrolledCourseIds.includes(course.id)
-    );
   };
 
   const filteredEnrollments = initialEnrollments.filter(enrollment => {
@@ -196,7 +143,6 @@ export default function EnrollmentsClient({
 
       <EnrollmentsTable
         enrollments={filteredEnrollments}
-        onEdit={handleEdit}
         onDelete={handleDelete}
         onSelectNew={() => setShowModal(true)}
       />
@@ -209,11 +155,16 @@ export default function EnrollmentsClient({
           setSelectedCourses(new Set());
           setSearchQuery("");
           setSearchResults([]);
+          setHasSearched(false);
         }}
         searchQuery={searchQuery}
-        onSearchQueryChange={setSearchQuery}
+        onSearchQueryChange={(query) => {
+          setSearchQuery(query);
+          if (!query) setHasSearched(false);
+        }}
         onSearch={handleSearch}
         searching={searching}
+        hasSearched={hasSearched}
         searchResults={searchResults}
         selectedUser={selectedUser}
         onSelectUser={handleSelectUser}
@@ -223,24 +174,6 @@ export default function EnrollmentsClient({
         onEnroll={handleEnroll}
         enrolling={enrolling}
       />
-
-      {editingEnrollment && (
-        <EditEnrollmentModal
-          isOpen={showEditModal}
-          onClose={() => {
-            setShowEditModal(false);
-            setEditingEnrollment(null);
-            setSelectedCourses(new Set());
-          }}
-          enrollment={editingEnrollment}
-          currentEnrollments={initialEnrollments.filter(e => e.user?.id === editingEnrollment.user?.id)}
-          availableCourses={getAvailableCourses()}
-          selectedCourses={selectedCourses}
-          onToggleCourse={toggleCourse}
-          onEnrollAdditional={handleEnrollAdditional}
-          enrolling={enrolling}
-        />
-      )}
     </div>
   );
 }

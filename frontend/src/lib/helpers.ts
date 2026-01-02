@@ -189,10 +189,11 @@ export function extractTokenFromUrl(signedUrl: string | null): string | null {
 
 /**
  * Format duration in seconds to MM:SS format
- * @param seconds - Duration in seconds
- * @returns Formatted duration string
+ * @param seconds - Duration in seconds (can be null)
+ * @returns Formatted duration string (or "--:--" if null)
  */
-export function formatDuration(seconds: number): string {
+export function formatDuration(seconds: number | null | undefined): string {
+    if (seconds == null) return "--:--";
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { adminService } from "@/services";
-import { useModal } from "./ModalProvider";
+import { showError, showSuccess } from "@/lib/toast";
 
 interface SocialLinks {
     whatsapp: string;
@@ -18,7 +18,7 @@ interface SocialLinksClientProps {
 }
 
 export default function SocialLinksClient({ initialLinks }: SocialLinksClientProps) {
-    const { showError, showSuccess } = useModal();
+
     const [links, setLinks] = useState<SocialLinks>(initialLinks);
     const [saving, setSaving] = useState(false);
 

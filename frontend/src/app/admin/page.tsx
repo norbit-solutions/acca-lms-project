@@ -5,5 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
   const stats = await adminService.getStats();
+
+  
   return <DashboardClient initialStats={stats} />;
 }

@@ -8,6 +8,7 @@ import type {
   DashboardStats,
   AdminCourse,
   AdminCourseDetail,
+  AdminLessonDetail,
   CreateCourseRequest,
   UpdateCourseRequest,
   CreateChapterRequest,
@@ -194,6 +195,11 @@ export const adminService = {
     return api.get(`/admin/lessons/${id}/status`);
   },
 
+  async getLesson(id: number): Promise<AdminLessonDetail> {
+    const response = await api.get<{ lesson: AdminLessonDetail }>(`/admin/lessons/${id}`);
+    return response.lesson;
+  },
+
   async getLessonSignedUrls(id: number): Promise<{
     playbackId: string;
     playbackToken: string;
@@ -201,6 +207,16 @@ export const adminService = {
     playbackUrl: string;
   }> {
     return api.get(`/admin/lessons/${id}/signed-urls`);
+  },
+
+  async syncLessonMux(id: number): Promise<{
+    message: string;
+    status: string;
+    playbackId?: string;
+    duration?: number;
+    thumbnailUrl?: string;
+  }> {
+    return api.post(`/admin/lessons/${id}/sync-mux`);
   },
 
   // Enrollments

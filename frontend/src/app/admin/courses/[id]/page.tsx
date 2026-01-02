@@ -21,5 +21,5 @@ export default async function CourseDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return <CourseDetailClient initialCourse={course} />;
+  return <CourseDetailClient course={course} />;
 }
