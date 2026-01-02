@@ -47,8 +47,8 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Handle other /admin/* routes - protect them
-  if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) {
+  // Handle /admin/* routes - protect them (admin only)
+  if (pathname.startsWith("/admin")) {
     if (!token) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
@@ -72,9 +72,45 @@ export async function proxy(request: NextRequest) {
 
       const data = await response.json();
 
-      // Check if user is admin
+      // Check if user is admin - non-admins go to dashboard
       if (data.user?.role !== "admin") {
         return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+
+      return NextResponse.next();
+    } catch {
+      return NextResponse.next();
+    }
+  }
+
+  // Handle /dashboard/* routes - protect them (authenticated users only)
+  if (pathname.startsWith("/dashboard")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          ...(sessionToken && { "X-Session-Token": sessionToken }),
+        },
+      });
+
+      if (!response.ok) {
+        // Token invalid - redirect to login
+        const loginUrl = new URL("/login", request.url);
+        const res = NextResponse.redirect(loginUrl);
+        res.cookies.delete("token");
+        res.cookies.delete("sessionToken");
+        return res;
+      }
+
+      const data = await response.json();
+
+      // Admins should use admin dashboard
+      if (data.user?.role === "admin") {
+        return NextResponse.redirect(new URL("/admin", request.url));
       }
 
       return NextResponse.next();

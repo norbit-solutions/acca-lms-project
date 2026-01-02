@@ -1,9 +1,9 @@
-import CourseNavbar from "@/components/course/CourseNavbar";
+import CourseNavbar from "@/components/landing/course/CourseNavbar";
 import {
   CourseCurriculum,
   CourseHero,
   CourseSidebar,
-} from "@/components/course";
+} from "@/components/landing/course";
 import { courseService } from "@/services";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";

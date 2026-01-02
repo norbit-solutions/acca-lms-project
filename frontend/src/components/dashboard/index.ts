@@ -3,7 +3,7 @@
  */
 
 // Components
-export { DashboardStats } from "./DashboardStats";
+export { DashboardStats } from "../admin/components/dashboard/DashboardStats";
 export { RecentLessons } from "./RecentLessons";
 export { CoursesList } from "./CoursesList";
 export { MyCoursesGrid } from "./MyCoursesGrid";
