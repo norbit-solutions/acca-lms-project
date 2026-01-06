@@ -37,10 +37,9 @@ export default function CourseDetailClient({ course, slug }: CourseDetailClientP
 
   return (
     <div className="w-full">
-      <CourseBackButton />
+      <CourseBackButton title={course.title} />
 
       <CourseInfoCard
-        title={course.title}
         description={course.description ?? undefined}
         thumbnail={course.thumbnail ?? undefined}
         chaptersCount={course.chapters.length}

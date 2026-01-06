@@ -111,7 +111,7 @@ export default function CourseDetailClient({ course }: CourseDetailClientProps) 
 
       {/* Course Content Card */}
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="px-4 md:px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="font-display font-semibold text-slate-900">Course Content</h2>
             <p className="text-sm text-slate-500">
@@ -120,7 +120,7 @@ export default function CourseDetailClient({ course }: CourseDetailClientProps) 
           </div>
           <button
             onClick={openNewChapterModal}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium shadow-sm hover:bg-slate-800 transition-all"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium shadow-sm hover:bg-slate-800 transition-all w-full sm:w-auto"
           >
             <PlusIcon className="w-4 h-4" />
             Add Chapter

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminLesson } from "@/types";
-import { ArrowLeftIcon } from "@/lib/icons";
+import { ArrowLeftIcon, BackIcon } from "@/lib/icons";
 import LessonVideoPlayer from "./LessonVideoPlayer";
 import LessonInfo from "./LessonInfo";
 import LessonAttachments from "./LessonAttachments";
@@ -42,10 +42,10 @@ export default function LessonDetailClient({ lesson, playbackToken }: LessonDeta
         <div className="flex items-center gap-4">
           <button
             onClick={handleBack}
-            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-          >
-            <ArrowLeftIcon className="w-5 h-5 text-slate-600" />
-          </button>
+            className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors shrink-0"
+                    >
+                      <BackIcon className="w-5 h-5 text-slate-600" />
+                    </button>
           <div>
             <h1 className="text-2xl font-display font-bold text-slate-900">
               {lesson.title}

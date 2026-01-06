@@ -79,9 +79,9 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
   };
 
   return (
-    <section className="py-32 px-4 overflow-hidden" id="testimonials">
+    <section className="py-12 md:py-32 px-4 overflow-hidden" id="testimonials">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16" data-aos="fade-up">
+        <div className="text-center mb-4 md:mb-16" data-aos="fade-up">
           <h2 className="text-4xl md:text-5xl mb-4">
             What our <span className="font-display">students</span> say
           </h2>

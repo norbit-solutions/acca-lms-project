@@ -12,10 +12,10 @@ export default function MentorSection({ instructors }: MentorSectionProps) {
   if (!mentor) return null;
 
   return (
-    <section className="py-32 px-4 bg-off-white" id="mentors">
+    <section className="py-12 md:py-32 px-4 bg-off-white" id="mentors">
       <div className="w-full">
         <div
-          className="text-center mb-12"
+          className="text-center mb-4 md:mb-12"
           data-aos="fade-up"
         >
           <div className="inline-block px-4 py-1 rounded-full border border-gray-200 bg-white text-sm font-medium mb-6">

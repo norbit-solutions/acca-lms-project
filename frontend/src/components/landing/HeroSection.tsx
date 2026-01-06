@@ -46,7 +46,7 @@ export default function HeroSection({
     : defaultAvatars;
 
   return (
-    <section className="pt-40 pb-20 px-4 min-h-screen flex flex-col items-center justify-center text-center relative overflow-hidden">
+    <section className="pt-40 pb-4 md:pb-20 px-4 min-h-screen flex flex-col items-center justify-center text-center relative overflow-hidden">
       {/* Trusted By */}
       <div
         className="flex flex-col items-center gap-3 mb-8"
@@ -88,7 +88,7 @@ export default function HeroSection({
 
       {/* Subtext */}
       <p
-        className="text-lg text-gray-600 max-w-xl mx-auto mb-10 leading-relaxed"
+        className="text-lg text-gray-600 max-w-xl  mx-auto mb-10 leading-relaxed"
         data-aos="fade-up"
         data-aos-delay="300"
       >
@@ -97,7 +97,7 @@ export default function HeroSection({
 
       {/* CTA Buttons */}
       <div
-        className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+        className="flex flex-col sm:flex-row gap-4 justify-center md:mb-12"
         data-aos="fade-up"
         data-aos-delay="400"
       >
@@ -111,7 +111,7 @@ export default function HeroSection({
 
       {/* Hero Image */}
       <div
-        className="mt-20 w-full max-w-5xl mx-auto relative"
+        className="mt-14 md:mt-20 w-full max-w-5xl mx-auto relative"
         data-aos="zoom-in-up"
         data-aos-delay="500"
         data-aos-duration="1000"

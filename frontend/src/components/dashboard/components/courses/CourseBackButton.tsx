@@ -1,28 +1,26 @@
-"use client";
 
-import { useRouter } from "next/navigation";
 import { BackIcon } from "@/lib";
+import Link from "next/link";
 
 interface CourseBackButtonProps {
   href?: string;
-  label?: string;
+  title?: string;
 }
 
 export default function CourseBackButton({ 
-  href = "/dashboard", 
-  label = "Dashboard" 
+  title
 }: CourseBackButtonProps) {
-  const router = useRouter();
-
   return (
-    <div className="flex items-center justify-between mb-6">
-      <button
-        onClick={() => router.push(href)}
-        className="inline-flex items-center gap-2 text-gray-500 hover:text-black text-sm transition-colors"
+    <div className="flex items-center gap-4 mb-8">
+      <Link
+        href='/dashboard/my-courses'
+        className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors shrink-0"
       >
-        <BackIcon className="w-4 h-4" />
-        <span>{label}</span>
-      </button>
+        <BackIcon className="w-5 h-5 text-gray-600" />
+      </Link>
+      {title && (
+        <h1 className="text-base md:text-2xl font-bold text-black truncate">{title}</h1>
+      )}
     </div>
   );
 }

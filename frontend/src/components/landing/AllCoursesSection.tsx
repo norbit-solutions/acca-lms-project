@@ -11,11 +11,11 @@ export default function AllCoursesSection({ courses }: AllCoursesSectionProps) {
   if (!courses || courses.length === 0) return null;
 
   return (
-    <section className="py-32 px-4 bg-white" id="all-courses">
+    <section className="py-12 md:py-32 px-4 bg-white" id="all-courses">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-16 px-4">
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-4 md:mb-16 px-4">
           <h2
-            className="text-4xl md:text-5xl max-w-xl leading-tight"
+            className="text-4xl md:text-5xl max-w-xl text-center leading-tight"
             data-aos="fade-right"
           >
             Explore <br /> <span className="font-display">All Courses</span>
@@ -24,7 +24,7 @@ export default function AllCoursesSection({ courses }: AllCoursesSectionProps) {
             className="flex flex-col items-end"
             data-aos="fade-left"
           >
-            <p className="text-gray-600 max-w-xs mt-6 md:mt-0 text-right mb-4">
+            <p className="text-gray-600 max-w-xs mt-6 text-center md:mt-0 md:text-right mb-4">
               Browse our complete catalog of professional courses.
             </p>
           </div>

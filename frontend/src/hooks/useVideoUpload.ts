@@ -68,7 +68,39 @@ export function useVideoUpload({
         router.refresh();
       } catch (error) {
         console.log("Failed to upload video:", error);
-        showError("Failed to upload video. Please try again.");
+        
+        // Extract the actual error message
+        let errorMessage = "Failed to upload video. Please try again.";
+        
+        if (error instanceof Error) {
+          // Check if it's an API error with nested message
+          const errorStr = error.message;
+          
+          // Try to parse JSON error from the message
+          try {
+            // Look for JSON in the error message
+            const jsonMatch = errorStr.match(/\{.*\}/);
+            if (jsonMatch) {
+              const parsed = JSON.parse(jsonMatch[0]);
+              if (parsed.error?.messages?.[0]) {
+                errorMessage = parsed.error.messages[0];
+              } else if (parsed.error?.message) {
+                errorMessage = parsed.error.message;
+              } else if (parsed.message) {
+                errorMessage = parsed.message;
+              }
+            } else if (errorStr && errorStr !== "Failed to upload video") {
+              errorMessage = errorStr;
+            }
+          } catch {
+            // If JSON parsing fails, use the error message as-is
+            if (errorStr && errorStr.length < 200) {
+              errorMessage = errorStr;
+            }
+          }
+        }
+        
+        showError(errorMessage);
       } finally {
         setIsUploading(false);
         setUploadProgress(null);

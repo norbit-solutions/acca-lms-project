@@ -26,10 +26,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 <div className="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
                     <p className="text-red-600 font-medium">{error || "Course not found"}</p>
                     <Link
-                        href="/dashboard"
+                        href="/course"
                         className="inline-block mt-4 text-violet-600 hover:text-violet-700 font-medium"
                     >
-                        Back to Dashboard
+                        Back to courses
                     </Link>
                 </div>
             </div>

@@ -35,7 +35,7 @@ export default function LessonPlayerClient({ lesson, slug }: LessonPlayerClientP
     <div className="w-full gap-5 flex flex-col">
       <LessonTopBar
         courseSlug={slug}
-        courseTitle={lesson.course.title}
+        lessonTitle={lesson.title}
         viewCount={lesson.viewCount}
         maxViews={lesson.maxViews}
         hasVideo={hasVideo}
@@ -63,7 +63,6 @@ export default function LessonPlayerClient({ lesson, slug }: LessonPlayerClientP
         {/* Main Content */}
         <div className="flex lg:flex-row flex-col gap-8">
           <LessonInfoCard
-            title={lesson.title}
             description={lesson.description}
             chapterTitle={lesson.chapter.title}
             duration={lesson.duration}

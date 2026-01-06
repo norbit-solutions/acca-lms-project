@@ -64,49 +64,53 @@ export default function ChapterItem({
     <div>
       {/* Chapter Header */}
       <div
-        className="px-6 py-4 bg-slate-50/50 flex items-center justify-between cursor-pointer hover:bg-slate-100/50 transition-colors"
+        className="px-4 md:px-6 py-4 bg-slate-50/50 cursor-pointer hover:bg-slate-100/50 transition-colors"
         onClick={onToggle}
       >
-        <div className="flex items-center gap-3">
-          <span className="text-slate-400">
-            {isExpanded ? (
-              <ChevronDownIcon className="w-4 h-4" />
-            ) : (
-              <ChevronRightIcon className="w-4 h-4" />
-            )}
-          </span>
-          <div>
-            <span className="font-medium text-slate-900">
-              Chapter {chapterIndex + 1}: {chapter.title}
+        <div className="flex items-start md:items-center justify-between gap-3">
+          <div className="flex items-start md:items-center gap-2 md:gap-3 flex-1 min-w-0">
+            <span className="text-slate-400 shrink-0 mt-1 md:mt-0">
+              {isExpanded ? (
+                <ChevronDownIcon className="w-4 h-4" />
+              ) : (
+                <ChevronRightIcon className="w-4 h-4" />
+              )}
             </span>
-            <span className="ml-3 text-sm text-slate-500">
-              ({chapter.lessons.length} lessons)
-            </span>
+            <div className="min-w-0">
+              <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
+                <span className="font-medium text-slate-900 text-sm md:text-base">
+                  Chapter {chapterIndex + 1}: {chapter.title}
+                </span>
+                <span className="text-xs md:text-sm text-slate-500">
+                  ({chapter.lessons.length} lessons)
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-        <div
-          className="flex items-center gap-2"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            onClick={onAddLesson}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors"
+          <div
+            className="flex items-center gap-1 md:gap-2 shrink-0"
+            onClick={(e) => e.stopPropagation()}
           >
-            <PlusIcon className="w-4 h-4" />
-            Lesson
-          </button>
-          <button
-            onClick={onEdit}
-            className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
-          >
-            <EditIcon className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleDelete}
-            className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <TrashIcon className="w-4 h-4" />
-          </button>
+            <button
+              onClick={onAddLesson}
+              className="inline-flex items-center gap-1 px-2 md:px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors"
+            >
+              <PlusIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Lesson</span>
+            </button>
+            <button
+              onClick={onEdit}
+              className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
+            >
+              <EditIcon className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleDelete}
+              className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <TrashIcon className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -128,7 +132,7 @@ export default function ChapterItem({
                 />
               ))
           ) : (
-            <div className="px-6 py-4 pl-14 text-slate-400 text-sm">
+            <div className="px-4 md:px-6 py-4 pl-10 md:pl-14 text-slate-400 text-sm">
               No lessons yet.{" "}
               <button
                 onClick={onAddLesson}

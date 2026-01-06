@@ -21,10 +21,10 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
   };
 
   return (
-    <section className="py-32 px-4 bg-slate-100" id="faq">
+    <section className="py-12 md:py-32 px-4 bg-slate-100" id="faq">
       <div className="w-full">
         <div
-          className="text-center mb-16"
+          className="text-center mb-4 md:mb-16"
           data-aos="fade-up"
         >
           <div className="inline-block px-4 py-1 rounded-full border border-gray-200 bg-white text-sm font-medium mb-6">

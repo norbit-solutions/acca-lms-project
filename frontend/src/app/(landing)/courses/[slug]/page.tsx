@@ -2,8 +2,8 @@ import CourseNavbar from "@/components/landing/course/CourseNavbar";
 import {
   CourseCurriculum,
   CourseHero,
-  CourseSidebar,
 } from "@/components/landing/course";
+import CTASection from "@/components/landing/CTASection";
 import { courseService } from "@/services";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -44,6 +44,7 @@ export default async function CourseDetailsPage({ params }: PageProps) {
   if (!course) {
     notFound();
   }
+
   const chapters = course.chapters.map((chapter) => ({
     id: chapter.id,
     title: chapter.title,
@@ -55,35 +56,28 @@ export default async function CourseDetailsPage({ params }: PageProps) {
     })),
   }));
 
-  // This would come from auth state in a real app
-
   return (
     <div className="min-h-screen bg-off-white">
       <CourseNavbar />
 
       <CourseHero
         title={course.title}
-        shortIntroduction={course.description || ""}
         image={course.thumbnail || ""}
         courseFee={course.price || 0}
         feeCurrency={course.currency}
         courseSlug={course.slug}
       />
 
-      {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-4 py-24 grid grid-cols-1 lg:grid-cols-3 gap-16">
+      {/* Curriculum Section */}
+      <div className="max-w-7xl mx-auto w-full py-12 px-6">
         <CourseCurriculum
           chapters={chapters}
           description={course.description || ""}
-          shortIntroduction={course.description || ""}
-        />
-
-        <CourseSidebar
-          enableManualPayment={true}
-          whatsappNumber="" // Removed from component props logic
-          title={course.title}
         />
       </div>
+
+      {/* CTA Section */}
+      <CTASection />
     </div>
   );
 }
