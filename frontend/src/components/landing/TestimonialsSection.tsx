@@ -15,7 +15,7 @@ function PrevArrow({ onClick }: { onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg flex items-center justify-center hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 group"
+      className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 z-10 w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg items-center justify-center hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 group"
       aria-label="Previous testimonial"
     >
       <svg
@@ -34,7 +34,7 @@ function NextArrow({ onClick }: { onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg flex items-center justify-center hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 group"
+      className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 z-10 w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg items-center justify-center hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 group"
       aria-label="Next testimonial"
     >
       <svg
@@ -61,6 +61,7 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
     autoplay: true,
     autoplaySpeed: 5000,
     pauseOnHover: true,
+    swipeToSlide: true,
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
     responsive: [
@@ -69,6 +70,7 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          arrows: false,
         },
       },
     ],
