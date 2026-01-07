@@ -15,11 +15,11 @@ function PrevArrow({ onClick }: { onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 z-10 w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg items-center justify-center hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 group"
+      className="absolute left-0 md:left-0 top-1/2 -translate-y-1/2 translate-x-1 md:-translate-x-12 z-10 w-9 h-9 md:w-12 md:h-12 rounded-full bg-white border border-slate-200 shadow-lg flex items-center justify-center hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 group"
       aria-label="Previous testimonial"
     >
       <svg
-        className="w-5 h-5 text-slate-600 group-hover:text-slate-900 transition-colors"
+        className="w-4 h-4 md:w-5 md:h-5 text-slate-600 group-hover:text-slate-900 transition-colors"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -34,11 +34,11 @@ function NextArrow({ onClick }: { onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 z-10 w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg items-center justify-center hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 group"
+      className="absolute right-0 md:right-0 top-1/2 -translate-y-1/2 -translate-x-1 md:translate-x-12 z-10 w-9 h-9 md:w-12 md:h-12 rounded-full bg-white border border-slate-200 shadow-lg flex items-center justify-center hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 group"
       aria-label="Next testimonial"
     >
       <svg
-        className="w-5 h-5 text-slate-600 group-hover:text-slate-900 transition-colors"
+        className="w-4 h-4 md:w-5 md:h-5 text-slate-600 group-hover:text-slate-900 transition-colors"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -56,7 +56,7 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 2,
+    slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 5000,
@@ -66,11 +66,17 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
     nextArrow: <NextArrow />,
     responsive: [
       {
-        breakpoint: 768,
+        breakpoint: 9999,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 1024,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
-          arrows: false,
         },
       },
     ],
@@ -92,42 +98,42 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
           </p>
         </div>
 
-        <div className="px-8 md:px-16" data-aos="fade-up" data-aos-delay="100">
+        <div className="px-2 md:px-16" data-aos="fade-up" data-aos-delay="100">
           <Slider {...settings}>
             {testimonials.map((testimonial) => (
-              <div key={testimonial.id} className="px-4">
-                <div className="bg-white rounded-2xl p-8 border border-slate-100 h-full">
+              <div key={testimonial.id} className="px-2 md:px-4 h-full">
+                <div className="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 h-[320px] flex flex-col">
                   {/* Quote icon */}
                   <svg
-                    className="w-10 h-10 text-slate-200 mb-4"
+                    className="w-8 h-8 md:w-10 md:h-10 text-slate-200 mb-3 md:mb-4 flex-shrink-0"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                   </svg>
                   
-                  <p className="text-lg leading-relaxed mb-6 text-slate-700 min-h-[100px]">
+                  <p className="text-base md:text-lg leading-relaxed mb-4 md:mb-6 text-slate-700 flex-grow line-clamp-6">
                     &quot;{testimonial.content}&quot;
                   </p>
                   
-                  <div className="flex items-center gap-4 pt-4 border-t border-slate-100">
+                  <div className="flex items-center gap-4 pt-4 border-t border-slate-100 flex-shrink-0">
                     {testimonial.avatarUrl ? (
                       <Image
                         src={testimonial.avatarUrl}
                         alt={testimonial.name}
                         width={48}
                         height={48}
-                        className="w-12 h-12 rounded-full object-cover"
+                        className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover flex-shrink-0"
                       />
                     ) : (
-                      <div className="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold flex-shrink-0">
                         {testimonial.name.charAt(0)}
                       </div>
                     )}
-                    <div>
-                      <h4 className="font-semibold text-slate-900">{testimonial.name}</h4>
+                    <div className="min-w-0">
+                      <h4 className="font-semibold text-slate-900 truncate">{testimonial.name}</h4>
                       {testimonial.designation && (
-                        <p className="text-sm text-slate-500">{testimonial.designation}</p>
+                        <p className="text-sm text-slate-500 truncate">{testimonial.designation}</p>
                       )}
                       {/* Star rating */}
                       <div className="flex gap-0.5 mt-1">
