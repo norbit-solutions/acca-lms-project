@@ -79,7 +79,7 @@ export default function HeroSection({
         {displayHeadline.includes("|") ? (
           <>
             {displayHeadline.split("|")[0]} <br />
-            <span className="font-display">{displayHeadline.split("|")[1]}</span>
+            <span className="font-display italic ">{displayHeadline.split("|")[1]}</span>
           </>
         ) : (
           displayHeadline
@@ -88,7 +88,7 @@ export default function HeroSection({
 
       {/* Subtext */}
       <p
-        className="text-lg text-gray-600 max-w-xl  mx-auto mb-10 leading-relaxed"
+        className="text-lg text-gray-600 max-w-xl   mx-auto mb-10 leading-relaxed"
         data-aos="fade-up"
         data-aos-delay="300"
       >

@@ -7,15 +7,14 @@ interface AllCoursesSectionProps {
 }
 
 export default function AllCoursesSection({ courses }: AllCoursesSectionProps) {
-  // Courses are already filtered by backend - only published, non-upcoming courses
   if (!courses || courses.length === 0) return null;
 
   return (
     <section className="py-12 md:py-32 px-4 bg-white" id="all-courses">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-4 md:mb-16 px-4">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-16 px-4">
           <h2
-            className="text-4xl md:text-5xl max-w-xl text-center leading-tight"
+            className="text-4xl md:text-5xl max-w-xl md:text-start text-center leading-tight"
             data-aos="fade-right"
           >
             Explore <br /> <span className="font-display">All Courses</span>

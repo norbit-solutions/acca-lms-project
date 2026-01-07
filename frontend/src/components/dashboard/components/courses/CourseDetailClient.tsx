@@ -39,30 +39,36 @@ export default function CourseDetailClient({ course, slug }: CourseDetailClientP
     <div className="w-full">
       <CourseBackButton title={course.title} />
 
-      <CourseInfoCard
-        description={course.description ?? undefined}
-        thumbnail={course.thumbnail ?? undefined}
-        chaptersCount={course.chapters.length}
-        lessonsCount={course.progress.total}
-        totalDuration={totalDuration}
-        completedLessons={course.progress.completed}
-        progressPercentage={course.progress.percentage}
-      />
+      {/* Two-column layout: Course Info Left, Lessons Right on desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Left Column - Course Info (2/5 width on lg) */}
+        <div className="lg:col-span-2">
+          <CourseInfoCard
+            description={course.description ?? undefined}
+            thumbnail={course.thumbnail ?? undefined}
+            chaptersCount={course.chapters.length}
+            lessonsCount={course.progress.total}
+            totalDuration={totalDuration}
+            completedLessons={course.progress.completed}
+            progressPercentage={course.progress.percentage}
+          />
+        </div>
 
-      {/* Chapters List */}
-      <div className="space-y-2">
-        {course.chapters
-          .sort((a, b) => a.sortOrder - b.sortOrder)
-          .map((chapter, chapterIndex) => (
-            <ChapterAccordion
-              key={chapter.id}
-              chapter={chapter}
-              chapterIndex={chapterIndex}
-              courseSlug={slug}
-              isExpanded={expandedChapters.has(chapter.id)}
-              onToggle={() => toggleChapter(chapter.id)}
-            />
-          ))}
+        {/* Right Column - Chapters/Lessons Accordion (3/5 width on lg) */}
+        <div className="lg:col-span-3 space-y-2">
+          {course.chapters
+            .sort((a, b) => a.sortOrder - b.sortOrder)
+            .map((chapter, chapterIndex) => (
+              <ChapterAccordion
+                key={chapter.id}
+                chapter={chapter}
+                chapterIndex={chapterIndex}
+                courseSlug={slug}
+                isExpanded={expandedChapters.has(chapter.id)}
+                onToggle={() => toggleChapter(chapter.id)}
+              />
+            ))}
+        </div>
       </div>
     </div>
   );

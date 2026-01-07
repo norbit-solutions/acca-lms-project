@@ -13,18 +13,18 @@ export default function UpcomingCoursesSection({ courses }: UpcomingCoursesSecti
   return (
     <section className="py-12 md:py-32 px-4 bg-off-white" id="upcoming-courses">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-4 md:mb-16 px-4">
+        <div className="flex flex-col md:flex-row justify-between items-center  mb-4 md:mb-16 px-4">
           <h2
-            className="text-4xl md:text-5xl max-w-xl text-center leading-tight"
+            className="text-4xl  md:text-5xl max-w-xl md:text-start text-center leading-tight"
             data-aos="fade-right"
           >
-            Upcoming <br /> <span className="font-display">Courses</span>
+            Upcoming <br /> <span className="font-display ">Courses</span>
           </h2>
           <div
-            className="flex flex-col items-end"
+            className="flex flex-col  items-end"
             data-aos="fade-left"
           >
-            <p className="text-gray-600 max-w-xs mt-6 md:mt-0 text-center md:text-right mb-4">
+            <p className="text-gray-600 max-w-xs mt-6 md:mt-0  text-center md:text-right mb-4">
               Fast-track your preparation with our intensive crash courses.
             </p>
           </div>

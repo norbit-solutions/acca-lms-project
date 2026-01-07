@@ -19,7 +19,7 @@ export default function ProfileClient({ courses }: ProfileClientProps) {
     const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
     return (
-        <div className="w-full max-w-3xl mx-auto">
+        <div className="w-full  mx-auto">
             {/* Profile Card */}
             <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden mb-8">
                 {/* Header Background */}

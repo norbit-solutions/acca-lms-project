@@ -41,7 +41,10 @@ export default class Lesson extends BaseModel {
   @column()
   declare viewLimit: number
 
-  @column()
+  @column({
+    serialize: (value: number | boolean) => Boolean(value),
+    consume: (value: number | boolean) => Boolean(value),
+  })
   declare isFree: boolean
 
   @column()

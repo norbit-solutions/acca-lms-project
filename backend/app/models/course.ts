@@ -37,16 +37,25 @@ export default class Course extends BaseModel {
   /**
    * If true, course is free. If false, check price field.
    */
-  @column()
+  @column({
+    serialize: (value: number | boolean) => Boolean(value),
+    consume: (value: number | boolean) => Boolean(value),
+  })
   declare isFree: boolean
 
-  @column()
+  @column({
+    serialize: (value: number | boolean) => Boolean(value),
+    consume: (value: number | boolean) => Boolean(value),
+  })
   declare isPublished: boolean
 
   /**
    * If true, course appears in "Upcoming Courses" section
    */
-  @column()
+  @column({
+    serialize: (value: number | boolean) => Boolean(value),
+    consume: (value: number | boolean) => Boolean(value),
+  })
   declare isUpcoming: boolean
 
   @column.dateTime({ autoCreate: true })

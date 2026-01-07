@@ -65,7 +65,7 @@ export default function Navbar() {
       {/* Floating Navbar */}
       <nav className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
         <div
-          className={`bg-white/90 backdrop-blur-md border border-gray-100 px-6 md:px-10 py-4 w-full max-w-6xl shadow-sm transition-all duration-300 ease-out ${
+          className={`bg-white/60 backdrop-blur-xl border border-white/40 shadow-lg shadow-black/5 px-6 md:px-10 py-4 w-full max-w-6xl transition-all duration-300 ease-out ${
             isMobileMenuOpen ? "rounded-2xl" : "rounded-2xl"
           }`}
         >
