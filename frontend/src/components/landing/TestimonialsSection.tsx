@@ -56,7 +56,7 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 1,
+    slidesToShow: 2,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 5000,
@@ -65,13 +65,6 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
     prevArrow: <PrevArrow />,
     nextArrow: <NextArrow />,
     responsive: [
-      {
-        breakpoint: 9999,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
       {
         breakpoint: 1024,
         settings: {
