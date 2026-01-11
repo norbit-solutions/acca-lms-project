@@ -28,6 +28,11 @@ interface CourseModalProps {
   isSubmitting?: boolean;
 }
 
+// Recommended thumbnail dimensions (16:9 aspect ratio)
+const THUMBNAIL_WIDTH = 1280;
+const THUMBNAIL_HEIGHT = 720;
+const ASPECT_RATIO_TOLERANCE = 0.05; // 5% tolerance for aspect ratio
+
 export default function CourseModal({
   isOpen,
   editingCourse,
@@ -77,14 +82,39 @@ export default function CourseModal({
       return;
     }
 
-    // Clean up previous blob URL if exists
-    if (thumbnailPreview && thumbnailPreview.startsWith("blob:")) {
-      URL.revokeObjectURL(thumbnailPreview);
-    }
+    // Validate image dimensions (16:9 aspect ratio)
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      const aspectRatio = img.width / img.height;
+      const expectedRatio = THUMBNAIL_WIDTH / THUMBNAIL_HEIGHT; // 16:9 = 1.778
+      
+      if (Math.abs(aspectRatio - expectedRatio) > ASPECT_RATIO_TOLERANCE) {
+        showError(`Please upload an image with 16:9 aspect ratio (recommended: ${THUMBNAIL_WIDTH}x${THUMBNAIL_HEIGHT}px)`);
+        URL.revokeObjectURL(objectUrl);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
 
-    // Store file for later upload and create local preview
-    setPendingThumbnail(file);
-    setThumbnailPreview(URL.createObjectURL(file));
+      // Clean up previous blob URL if exists
+      if (thumbnailPreview && thumbnailPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(thumbnailPreview);
+      }
+
+      // Store file for later upload and create local preview
+      setPendingThumbnail(file);
+      setThumbnailPreview(objectUrl);
+    };
+
+    img.onerror = () => {
+      showError("Failed to load image. Please try again.");
+      URL.revokeObjectURL(objectUrl);
+    };
+
+    img.src = objectUrl;
   };
 
   const removeThumbnail = () => {
@@ -197,12 +227,12 @@ export default function CourseModal({
           </label>
 
           {displayThumbnail ? (
-            <div className="relative group rounded-xl overflow-hidden">
+            <div className="relative group rounded-xl overflow-hidden aspect-video">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={displayThumbnail}
                 alt="Thumbnail preview"
-                className="w-full h-48 object-cover"
+                className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
                 <button
@@ -238,7 +268,8 @@ export default function CourseModal({
                   <>
                     <ImageUploadIcon className="w-12 h-12 text-slate-400 mx-auto mb-3" />
                     <span className="text-sm text-slate-700 font-semibold block">Click to upload thumbnail</span>
-                    <span className="text-xs text-slate-400 block mt-1">JPG, PNG, WebP, GIF (max 5MB)</span>
+                    <span className="text-xs text-slate-500 block mt-1 font-medium">Required: 1280×720px (16:9 ratio)</span>
+                    <span className="text-xs text-slate-400 block mt-0.5">JPG, PNG, WebP, GIF (max 5MB)</span>
                   </>
                 )}
               </label>

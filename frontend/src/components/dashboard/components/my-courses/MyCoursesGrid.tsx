@@ -32,7 +32,7 @@ function CourseCard({ course }: CourseCardProps) {
             className="group block bg-white rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
         >
             {/* Large Course Image */}
-            <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
+            <div className="aspect-video bg-gray-100 overflow-hidden">
                 {course.thumbnail ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img

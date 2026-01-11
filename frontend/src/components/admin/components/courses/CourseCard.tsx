@@ -14,7 +14,7 @@ export default function CourseCard({ course, onEdit, onDelete }: CourseCardProps
   return (
     <div className="group bg-white rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
       {/* Course Image */}
-      <div className="relative h-44 bg-slate-50 flex items-center justify-center overflow-hidden">
+      <div className="relative aspect-video bg-slate-50 flex items-center justify-center overflow-hidden">
         {course.thumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

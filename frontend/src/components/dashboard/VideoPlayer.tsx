@@ -425,7 +425,7 @@ export default function VideoPlayer({
 
             {/* Watermark - only shows phone number, moves every 10 seconds */}
             <div
-                className="pointer-events-none select-none transition-all duration-1000 ease-in-out"
+                className="pointer-events-none select-none"
                 style={{
                     position: 'absolute',
                     left: `${watermarkPosition.x}%`,
