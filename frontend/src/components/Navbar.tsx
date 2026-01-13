@@ -116,7 +116,7 @@ export default function Navbar() {
                   <Link
                     href={`https://wa.me/${whatsappNumber}?text=Hello, I would like to know more about Learnspire`}
                     target="_blank"
-                    className="bg-[#333c8a] text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#10195c]  transition-colors"
+                    className="bg-[#333c8a] text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#10195c] transition-colors"
                   >
                     Contact Us
                   </Link>
