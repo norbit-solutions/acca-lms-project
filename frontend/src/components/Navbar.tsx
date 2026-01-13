@@ -77,8 +77,9 @@ export default function Navbar() {
                 src="/images/learnspire-logo.png"
                 width={100}
                 height={100}
+                quality={1000}
                 alt="Learnspire Logo"
-                className="w-20 object-cover scale-[2.4]"
+                className="w-20 object-cover scale-[1.9] md:scale-[2.4]"
               />
             </Link>
 
@@ -115,7 +116,7 @@ export default function Navbar() {
                   <Link
                     href={`https://wa.me/${whatsappNumber}?text=Hello, I would like to know more about Learnspire`}
                     target="_blank"
-                    className="bg-black text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors"
+                    className="bg-[#333c8a] text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#10195c]  transition-colors"
                   >
                     Contact Us
                   </Link>

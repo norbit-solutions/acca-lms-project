@@ -103,7 +103,7 @@ export default function HeroSection({
       >
         <Link
           href={displayCtaLink}
-          className="bg-black text-white px-8 py-4 rounded-full font-medium hover:bg-gray-800 transition-all hover:scale-105 shadow-lg"
+          className="bg-[#333c8a] text-white px-8 py-4 rounded-full font-medium hover:bg-[#10195c]  transition-all hover:scale-105 shadow-lg"
         >
           {displayCtaText}
         </Link>
