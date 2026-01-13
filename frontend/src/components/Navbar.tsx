@@ -2,6 +2,7 @@
 
 import { useSocialSafe } from "@/context/SocialContext";
 import { useAuthStore } from "@/lib/store";
+import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
@@ -71,11 +72,14 @@ export default function Navbar() {
         >
           {/* Main navbar row */}
           <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="text-2xl font-display font-medium tracking-tight"
-            >
-              Learnspire
+            <Link href="/">
+              <Image
+                src="/images/learnspire-logo.png"
+                width={100}
+                height={100}
+                alt="Learnspire Logo"
+                className="w-20 object-cover scale-[2.4]"
+              />
             </Link>
 
             {/* Desktop Navigation */}

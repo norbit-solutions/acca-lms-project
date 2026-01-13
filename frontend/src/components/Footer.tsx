@@ -1,4 +1,5 @@
 import { cmsService } from "@/services/cmsService";
+import Image from "next/image";
 import Link from "next/link";
 
 interface SocialLink {
@@ -24,7 +25,13 @@ export default async function Footer() {
           {/* Brand & Socials */}
           <div className="flex flex-col md:flex-row items-center gap-6">
             <Link href="/" className="text-2xl font-medium tracking-tight">
-              Learnspire
+              <Image
+                src="/images/logo.png"
+                width={100}
+                height={100}
+                alt="Learnspire Logo"
+                className="w-10 object-cover"
+              />
             </Link>
 
             <div className="hidden md:block w-px h-6 bg-gray-200"></div>

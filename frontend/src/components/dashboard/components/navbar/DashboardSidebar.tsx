@@ -5,6 +5,7 @@ import { useSocialSafe } from "@/context/SocialContext";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LogoutModal from "../LogoutModal";
+import Image from "next/image";
 
 // Simple line icons
 const DashboardIcon = () => (
@@ -117,8 +118,14 @@ export default function DashboardSidebar({
         {/* Logo */}
         <div className={`h-16 flex items-center ${isCollapsed ? "px-4 justify-center" : "px-5"}`}>
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-black rounded flex items-center justify-center">
-              <span className="text-white text-xs font-bold">L</span>
+            <div className="flex items-center justify-center">
+              <Image
+                alt="Learnspire Logo"
+                src="/images/logo.png"
+                width={100}
+                height={100}
+                className="w-8 object-cover"
+              />
             </div>
             {!isCollapsed && (
               <span className="text-black font-semibold text-lg">Learnspire</span>

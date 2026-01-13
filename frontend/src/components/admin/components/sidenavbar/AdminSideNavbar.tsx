@@ -13,6 +13,7 @@ import {
   ViewSiteIcon,
   personIcon,
 } from "@/lib/icons";
+import Image from "next/image";
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: DashboardIcon },
@@ -74,8 +75,14 @@ export default function AdminSideNavbar({
       {/* Logo */}
       <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
         <Link href="/admin" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xs">LS</span>
+          <div className="flex items-center justify-center">
+            <Image
+              alt="Learnspire Logo"
+              src="/images/logo.png"
+              width={100}
+              height={100}
+              className="w-8 object-cover"
+            />
           </div>
           <span className="font-display text-slate-900 font-semibold">
             Learnspire Admin
