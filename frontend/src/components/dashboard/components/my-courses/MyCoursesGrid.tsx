@@ -49,11 +49,11 @@ function CourseCard({ course }: CourseCardProps) {
 
             {/* Course Info */}
             <div className="p-5">
-                <h3 className="text-lg font-semibold text-black mb-2 group-hover:text-gray-700 transition-colors">
+                <h3 className="text-lg font-semibold text-[#333c8a] mb-2 group-hover:text-black transition-colors">
                     {course.title}
                 </h3>
 
-                <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                <p className="text-sm text-black mb-4 line-clamp-2">
                     {course.description || "Continue your learning journey with this course."}
                 </p>
 
@@ -61,11 +61,11 @@ function CourseCard({ course }: CourseCardProps) {
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-black">
                             {course.completedLessons}/{course.lessonsCount} lessons
                         </span>
                     </div>
-                    <span className="text-lg font-semibold text-black">
+                    <span className="text-lg font-semibold text-[#333c8a]">
                         {Math.round(course.progress)}%
                     </span>
                 </div>

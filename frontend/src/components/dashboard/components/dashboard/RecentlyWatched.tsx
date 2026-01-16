@@ -28,12 +28,12 @@ export default function RecentlyWatched({ recentLessons }: RecentlyWatchedProps)
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-sm font-normal text-neutral-500 uppercase tracking-wide">
+        <h2 className="text-sm font-normal text-[#333c8a] uppercase tracking-wide">
           Recently watched
         </h2>
         <Link
           href="/dashboard/my-courses"
-          className="text-sm text-neutral-400 hover:text-neutral-600 transition-colors flex items-center gap-1"
+          className="text-sm text-black hover:text-neutral-600 transition-colors flex items-center gap-1"
         >
           All courses
           <ArrowIcon />
@@ -45,7 +45,7 @@ export default function RecentlyWatched({ recentLessons }: RecentlyWatchedProps)
           <div className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <BookIcon />
           </div>
-          <p className="text-neutral-400 text-sm mb-4">No lessons watched yet</p>
+          <p className="text-black text-sm mb-4">No lessons watched yet</p>
           <Link
             href="/dashboard/my-courses"
             className="text-sm text-neutral-600 hover:text-neutral-800 underline underline-offset-4"
@@ -85,16 +85,16 @@ export default function RecentlyWatched({ recentLessons }: RecentlyWatchedProps)
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-normal text-neutral-700 truncate group-hover:text-neutral-900 transition-colors">
+                <h3 className="text-sm font-normal text-[#333c8a] truncate group-hover:text-neutral-900 transition-colors">
                   {lesson.lessonTitle}
                 </h3>
-                <p className="text-xs text-neutral-400 mt-0.5 truncate">
+                <p className="text-xs text-black mt-0.5 truncate">
                   {lesson.courseTitle} · {lesson.chapterTitle}
                 </p>
               </div>
 
               {/* Time */}
-              <span className="text-xs text-neutral-300 shrink-0">
+              <span className="text-xs text-black/80 shrink-0">
                 {formatDate(lesson.lastViewedAt)}
               </span>
             </Link>

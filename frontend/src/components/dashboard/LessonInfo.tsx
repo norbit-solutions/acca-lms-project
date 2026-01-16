@@ -29,12 +29,12 @@ export function LessonInfo({ lesson }: LessonInfoProps) {
             {/* Lesson Info */}
             <div className="border border-gray-200 rounded-lg p-6">
                 <div className="mb-4">
-                    <p className="text-sm text-gray-500 mb-1">{lesson.chapter.title}</p>
-                    <h1 className="text-xl font-medium text-black">
+                    <p className="text-sm text-black mb-1">{lesson.chapter.title}</p>
+                    <h1 className="text-xl font-medium text-[#333c8a]">
                         {lesson.title}
                     </h1>
                     {lesson.description && (
-                        <p className="text-sm text-gray-600 mt-2">
+                        <p className="text-sm text-black mt-2">
                             {lesson.description}
                         </p>
                     )}
@@ -43,23 +43,23 @@ export function LessonInfo({ lesson }: LessonInfoProps) {
                 {/* Stats */}
                 <div className="flex gap-8 pt-4 border-t border-gray-100">
                     <div>
-                        <p className="text-2xl font-light text-black">
+                        <p className="text-2xl font-light text-[#333c8a]">
                             {lesson.viewCount}/{lesson.maxViews}
                         </p>
-                        <p className="text-xs text-gray-500">views used</p>
+                        <p className="text-xs text-black">views used</p>
                     </div>
 
                     {lesson.duration && (
                         <div>
-                            <p className="text-2xl font-light text-black">
+                            <p className="text-2xl font-light text-[#333c8a]">
                                 {formatDuration(lesson.duration)}
                             </p>
-                            <p className="text-xs text-gray-500">duration</p>
+                            <p className="text-xs text-black">duration</p>
                         </div>
                     )}
 
                     <div className="ml-auto text-right">
-                        <p className={`text-sm font-medium ${viewsRemaining > 0 ? "text-black" : "text-gray-500"}`}>
+                        <p className={`text-sm font-medium ${viewsRemaining > 0 ? "text-[#333c8a]" : "text-black"}`}>
                             {viewsRemaining > 0 ? `${viewsRemaining} views remaining` : "View limit reached"}
                         </p>
                     </div>
@@ -69,7 +69,7 @@ export function LessonInfo({ lesson }: LessonInfoProps) {
             {/* Study Materials */}
             {hasAttachments && (
                 <div className="border border-gray-200 rounded-lg p-6">
-                    <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">
+                    <h2 className="text-sm font-medium text-black uppercase tracking-wide mb-4">
                         Study Materials
                     </h2>
                     <div className="space-y-2">
@@ -82,13 +82,13 @@ export function LessonInfo({ lesson }: LessonInfoProps) {
                                 className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-gray-300 hover:bg-gray-50 transition-colors group"
                             >
                                 <span className="text-xl">{getDocumentIcon(attachment.type)}</span>
-                                <span className="flex-1 text-sm font-medium text-gray-900 group-hover:text-black">
+                                <span className="flex-1 text-sm font-medium text-gray-900 group-hover:text-[#333c8a]">
                                     {attachment.name}
                                 </span>
                                 <span className="text-xs text-gray-400 uppercase">
                                     {attachment.type.split('/').pop()?.replace('vnd.openxmlformats-officedocument.', '').replace('wordprocessingml.document', 'docx').replace('spreadsheetml.sheet', 'xlsx').replace('presentationml.presentation', 'pptx') || 'file'}
                                 </span>
-                                <svg className="w-4 h-4 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 text-gray-400 group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
                             </a>

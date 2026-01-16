@@ -15,13 +15,13 @@ export function VideoUnavailable({ slug }: VideoUnavailableProps) {
                 <h3 className="text-lg font-bold text-gray-900 mb-2">
                     Video Unavailable
                 </h3>
-                <p className="text-gray-500 mb-8 max-w-md mx-auto">
+                <p className="text-[#333c8a] mb-8 max-w-md mx-auto">
                     This video lesson is not available for watching at the moment.
                     Please check back later or contact support if you believe this is an error.
                 </p>
                 <Link
                     href={`/dashboard/courses/${slug}`}
-                    className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                    className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-xl text-[#333c8a] bg-white hover:bg-gray-50 transition-colors"
                 >
                     Back to Course
                 </Link>

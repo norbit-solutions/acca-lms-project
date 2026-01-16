@@ -101,7 +101,7 @@ export default function Navbar() {
               {isAuthenticated ? (
                 <Link
                   href={dashboardUrl}
-                  className="bg-black text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors"
+                  className="bg-[#333c8a] text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#10195c] transition-colors"
                 >
                   {user?.role === "admin" ? "Admin Dashboard" : "My Dashboard"}
                 </Link>

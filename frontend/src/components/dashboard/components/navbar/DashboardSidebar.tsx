@@ -128,14 +128,14 @@ export default function DashboardSidebar({
               />
             </div>
             {!isCollapsed && (
-              <span className="text-black font-semibold text-lg">Learnspire</span>
+              <span className="font-semibold text-lg text-[#333c8a]">Learnspire</span>
             )}
           </Link>
 
           {/* Mobile Close */}
           <button
             onClick={onClose}
-            className="lg:hidden ml-auto p-2 text-gray-400 hover:text-black"
+            className="lg:hidden ml-auto p-2 text-[#333c8a] hover:text-black"
           >
             <CloseIcon />
           </button>
@@ -144,7 +144,7 @@ export default function DashboardSidebar({
         {/* Menu Section */}
         {!isCollapsed && (
           <div className="px-5 pt-4">
-            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">Menu</p>
+            <p className="text-[10px] font-medium text-[#333c8a] uppercase tracking-wider mb-2">Menu</p>
           </div>
         )}
         <nav className={`${isCollapsed ? "px-2" : "px-3"}`}>
@@ -161,8 +161,8 @@ export default function DashboardSidebar({
                                         transition-all
                                         ${isCollapsed ? "p-2.5 justify-center" : "px-3 py-2.5"}
                                         ${item.active
-                      ? "bg-emerald-100 text-emerald-800"
-                      : "text-gray-600 hover:bg-gray-50"
+                      ? "bg-[#333c8a]/15 text-[#333c8a] font-semibold"
+                      : "text-[#333c8a] hover:bg-gray-50"
                     }
                                     `}
                 >
@@ -177,7 +177,7 @@ export default function DashboardSidebar({
         {/* User Section */}
         {!isCollapsed && (
           <div className="px-5 pt-6">
-            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-2">User</p>
+            <p className="text-[10px] font-medium text-[#333c8a] uppercase tracking-wider mb-2">User</p>
           </div>
         )}
         <nav className={`${isCollapsed ? "px-2" : "px-3"}`}>
@@ -197,8 +197,8 @@ export default function DashboardSidebar({
                                         transition-all
                                         ${isCollapsed ? "p-2.5 justify-center" : "px-3 py-2.5"}
                                         ${item.active
-                      ? "bg-emerald-100 text-emerald-800"
-                      : "text-gray-600 hover:bg-gray-50"
+                      ? "bg-[#333c8a]/15 text-[#333c8a] font-semibold"
+                      : "text-[#333c8a] hover:bg-gray-50"
                     }
                                     `}
                   {...extraProps}

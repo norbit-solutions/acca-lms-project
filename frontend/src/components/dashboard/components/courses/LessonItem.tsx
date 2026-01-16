@@ -49,14 +49,14 @@ export default function LessonItem({ lesson, lessonIndex, courseSlug }: LessonIt
           ) : isLimitReached ? (
             <LockIcon className="w-3 h-3 text-gray-400" />
           ) : (
-            <PlayCircleIcon className="w-3 h-3 text-gray-400 group-hover:text-black" />
+            <PlayCircleIcon className="w-3 h-3 text-gray-400 group-hover:text-[#333c8a]" />
           )}
         </div>
 
         {/* Lesson Info */}
         <div className="flex-1 min-w-0">
           <p className={`text-sm truncate ${
-            isLimitReached ? 'text-gray-500' : 'text-black group-hover:underline'
+            isLimitReached ? 'text-black' : 'text-[#333c8a] group-hover:underline'
           }`}>
             {lessonIndex + 1}. {lesson.title}
           </p>
@@ -68,7 +68,7 @@ export default function LessonItem({ lesson, lessonIndex, courseSlug }: LessonIt
           <span className={`px-1.5 py-0.5 rounded ${
             isLimitReached 
               ? 'bg-red-100 text-red-600' 
-              : 'bg-gray-200 text-gray-600'
+              : 'bg-gray-200 text-black'
           }`}>
             {lesson.viewCount}/{lesson.maxViews}
           </span>

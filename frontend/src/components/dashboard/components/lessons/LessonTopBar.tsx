@@ -31,7 +31,7 @@ export default function LessonTopBar({
                   >
                     <BackIcon className="w-5 h-5 text-slate-600" />
                   </Link>
-        <h1 className="text-base md:text-xl font-semibold text-black truncate">
+        <h1 className="text-base md:text-xl font-semibold text-[#333c8a] truncate">
           {lessonTitle}
         </h1>
       </div>
@@ -42,7 +42,7 @@ export default function LessonTopBar({
           <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${
             viewsRemaining === 0 ? 'bg-red-100 text-red-700' :
             viewsRemaining === 1 ? 'bg-amber-100 text-amber-700' : 
-            'bg-gray-100 text-gray-600'
+            'bg-gray-100 text-black'
           }`}>
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

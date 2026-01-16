@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
-import { MenuIcon, UserIcon, LogoutIcon, ChevronDownIcon, getInitials } from "@/lib";
+import { UserIcon, LogoutIcon, ChevronDownIcon, getInitials } from "@/lib";
 import LogoutModal from "../LogoutModal";
 
 interface DashboardNavProps {
@@ -44,18 +44,43 @@ export default function DashboardNav({ onMenuClick, isSidebarCollapsed, onToggle
                     {/* Mobile Menu Button */}
                     <button
                         onClick={onMenuClick}
-                        className="lg:hidden p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg transition-colors"
+                        className="lg:hidden p-2 text-[#333c8a] hover:bg-[#333c8a]/10 rounded-lg transition-all duration-300"
                     >
-                        <MenuIcon />
+                        <svg 
+                            className="w-5 h-5 transition-transform duration-300" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth={1.5} 
+                            viewBox="0 0 24 24"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
                     </button>
 
-                    {/* Desktop Sidebar Toggle */}
+                    {/* Desktop Sidebar Toggle - Hamburger (expanded) / Expand (collapsed) */}
                     <button
                         onClick={onToggleSidebar}
                         title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                        className="hidden lg:flex p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-lg transition-colors"
+                        className="hidden lg:flex items-center justify-center p-2 text-[#333c8a] hover:bg-[#333c8a]/10 rounded-lg transition-all duration-300"
                     >
-                        <MenuIcon />
+                        <svg 
+                            className="w-5 h-5 transition-all duration-300"
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth={1.5} 
+                            viewBox="0 0 24 24"
+                        >
+                            {isSidebarCollapsed ? (
+                                /* Expand icon - double chevron right */
+                                <>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 19l-7-7 7-7" />
+                                </>
+                            ) : (
+                                /* Hamburger menu icon - 3 lines */
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                            )}
+                        </svg>
                     </button>
                 </div>
 
@@ -65,7 +90,7 @@ export default function DashboardNav({ onMenuClick, isSidebarCollapsed, onToggle
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         className={`
                             flex items-center gap-2 px-2 py-1.5 rounded-lg
-                            text-gray-600 hover:text-black hover:bg-gray-100
+                            text-black hover:text-[#333c8a] hover:bg-gray-100
                             transition-colors
                             ${isDropdownOpen ? 'bg-gray-100' : ''}
                         `}
@@ -84,8 +109,8 @@ export default function DashboardNav({ onMenuClick, isSidebarCollapsed, onToggle
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 overflow-hidden">
                             {/* User Info */}
                             <div className="px-4 py-3 border-b border-gray-100">
-                                <p className="text-sm font-medium text-black">{user?.fullName}</p>
-                                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                                <p className="text-sm font-medium text-[#333c8a]">{user?.fullName}</p>
+                                <p className="text-xs text-black truncate">{user?.email}</p>
                             </div>
 
                             {/* Menu Items */}
@@ -95,7 +120,7 @@ export default function DashboardNav({ onMenuClick, isSidebarCollapsed, onToggle
                                         router.push("/dashboard/profile");
                                         setIsDropdownOpen(false);
                                     }}
-                                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-black transition-colors"
+                                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-black hover:bg-gray-100 hover:text-[#333c8a] transition-colors"
                                 >
                                     <UserIcon className="w-4 h-4" />
                                     Profile
@@ -106,7 +131,7 @@ export default function DashboardNav({ onMenuClick, isSidebarCollapsed, onToggle
                             <div className="border-t border-gray-100 py-1">
                                 <button
                                     onClick={handleLogoutClick}
-                                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-black transition-colors"
+                                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-black hover:bg-gray-100 hover:text-[#333c8a] transition-colors"
                                 >
                                     <LogoutIcon className="w-4 h-4" />
                                     Sign out

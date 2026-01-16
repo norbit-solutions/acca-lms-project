@@ -16,8 +16,8 @@ export function EmptyCoursesState() {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <BookIcon />
             </div>
-            <h3 className="text-lg font-medium text-black mb-2">No Courses Yet</h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            <h3 className="text-lg font-medium text-[#333c8a] mb-2">No Courses Yet</h3>
+            <p className="text-black mb-6 max-w-md mx-auto">
                 You haven&apos;t been enrolled in any courses yet. Contact us via WhatsApp to request enrollment.
             </p>
             <a

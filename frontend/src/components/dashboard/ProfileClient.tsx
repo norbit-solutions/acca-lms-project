@@ -36,28 +36,28 @@ export default function ProfileClient({ courses }: ProfileClientProps) {
                     
                     {/* Name & Email */}
                     <div className="mb-6">
-                        <h1 className="text-xl md:text-2xl font-semibold text-black">
+                        <h1 className="text-xl md:text-2xl font-semibold text-[#333c8a]">
                             {user?.fullName}
                         </h1>
-                        <p className="text-gray-500 text-sm md:text-base">{user?.email}</p>
+                        <p className="text-black text-sm md:text-base">{user?.email}</p>
                         {user?.phone && (
-                            <p className="text-gray-400 text-sm mt-1">{user.phone}</p>
+                            <p className="text-black text-sm mt-1">{user.phone}</p>
                         )}
                     </div>
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-3 gap-3 md:gap-4">
                         <div className="bg-gray-50 rounded-xl p-3 md:p-4 text-center">
-                            <p className="text-2xl md:text-3xl font-light text-black">{courses.length}</p>
-                            <p className="text-xs text-gray-500 uppercase tracking-wide mt-1">Courses</p>
+                            <p className="text-2xl md:text-3xl font-light text-[#333c8a]">{courses.length}</p>
+                            <p className="text-xs text-black uppercase tracking-wide mt-1">Courses</p>
                         </div>
                         <div className="bg-gray-50 rounded-xl p-3 md:p-4 text-center">
-                            <p className="text-2xl md:text-3xl font-light text-black">{completedLessons}</p>
-                            <p className="text-xs text-gray-500 uppercase tracking-wide mt-1">Completed</p>
+                            <p className="text-2xl md:text-3xl font-light text-[#333c8a]">{completedLessons}</p>
+                            <p className="text-xs text-black uppercase tracking-wide mt-1">Completed</p>
                         </div>
                         <div className="bg-gray-50 rounded-xl p-3 md:p-4 text-center">
-                            <p className="text-2xl md:text-3xl font-light text-black">{overallProgress}%</p>
-                            <p className="text-xs text-gray-500 uppercase tracking-wide mt-1">Progress</p>
+                            <p className="text-2xl md:text-3xl font-light text-[#333c8a]">{overallProgress}%</p>
+                            <p className="text-xs text-black uppercase tracking-wide mt-1">Progress</p>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@ export default function ProfileClient({ courses }: ProfileClientProps) {
             {/* Enrolled Courses */}
             {courses.length > 0 && (
                 <div className="mb-8">
-                    <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4 px-1">
+                    <h2 className="text-sm font-medium text-[#333c8a] uppercase tracking-wide mb-4 px-1">
                         Your Courses
                     </h2>
                     <div className="space-y-3">
@@ -82,17 +82,17 @@ export default function ProfileClient({ courses }: ProfileClientProps) {
                                     >
                                         <div className="flex items-start justify-between gap-4">
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-medium text-black group-hover:underline truncate">
+                                                <h3 className="font-medium text-[#333c8a] group-hover:underline truncate">
                                                     {course.title}
                                                 </h3>
-                                                <p className="text-xs md:text-sm text-gray-400 mt-1">
+                                                <p className="text-xs md:text-sm text-black mt-1">
                                                     Enrolled {formatDateString(course.enrolledAt, { month: "short", day: "numeric", year: "numeric" })}
                                                 </p>
                                             </div>
                                             <div className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium ${
                                                 isCompleted 
                                                     ? "bg-green-100 text-green-700" 
-                                                    : "bg-gray-100 text-gray-700"
+                                                    : "bg-gray-100 text-black"
                                             }`}>
                                                 {isCompleted ? "Completed" : `${Math.round(course.progress)}%`}
                                             </div>
@@ -117,12 +117,12 @@ export default function ProfileClient({ courses }: ProfileClientProps) {
             {courses.length === 0 && (
                 <div className="bg-white border border-gray-200 rounded-xl p-8 text-center mb-8">
                     <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
                     </div>
-                    <h3 className="text-lg font-medium text-black mb-2">No courses yet</h3>
-                    <p className="text-gray-500 text-sm mb-4">Start learning by enrolling in a course</p>
+                    <h3 className="text-lg font-medium text-[#333c8a] mb-2">No courses yet</h3>
+                    <p className="text-black text-sm mb-4">Start learning by enrolling in a course</p>
                     <Link
                         href="/courses"
                         className="inline-block bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
@@ -136,8 +136,8 @@ export default function ProfileClient({ courses }: ProfileClientProps) {
             <div className="bg-white border border-gray-200 rounded-xl p-5 md:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h3 className="font-medium text-black mb-1">Need help?</h3>
-                        <p className="text-sm text-gray-500">
+                        <h3 className="font-medium text-[#333c8a] mb-1">Need help?</h3>
+                        <p className="text-sm text-black">
                             Contact us via WhatsApp for support
                         </p>
                     </div>

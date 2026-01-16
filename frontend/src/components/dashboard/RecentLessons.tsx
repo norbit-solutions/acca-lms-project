@@ -15,7 +15,7 @@ export function RecentLessons({ lessons }: RecentLessonsProps) {
                 </h2>
                 <Link
                     href="/dashboard/my-courses"
-                    className="text-sm text-gray-400 hover:text-black transition-colors flex items-center gap-1"
+                    className="text-sm text-gray-400 hover:text-[#333c8a] transition-colors flex items-center gap-1"
                 >
                     All courses
                     <ArrowIcon />
@@ -44,7 +44,7 @@ function EmptyState() {
             <p className="text-gray-500 text-sm mb-4">No lessons watched yet</p>
             <Link
                 href="/dashboard/my-courses"
-                className="text-sm text-black hover:underline"
+                className="text-sm text-[#333c8a] hover:underline"
             >
                 Browse courses
             </Link>
@@ -86,7 +86,7 @@ function LessonItem({ lesson }: LessonItemProps) {
 
             {/* Info */}
             <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-medium text-black truncate group-hover:underline">
+                <h3 className="text-sm font-medium text-[#333c8a] truncate group-hover:underline">
                     {lesson.lessonTitle}
                 </h3>
                 <p className="text-xs text-gray-500 mt-0.5 truncate">

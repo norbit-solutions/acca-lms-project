@@ -45,11 +45,11 @@ export default function ChapterAccordion({
         className="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-gray-50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <span className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-600">
+          <span className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-[#333c8a]">
             {chapterIndex + 1}
           </span>
           <div className="text-left">
-            <p className="font-medium text-black text-sm">
+            <p className="font-medium text-[#333c8a] text-sm">
               {chapter.title}
             </p>
             <p className="text-xs text-gray-400">

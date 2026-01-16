@@ -19,7 +19,7 @@ export function LessonAccessDenied({ slug, viewCount, maxViews }: LessonAccessDe
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <LockIcon className="w-6 h-6 text-gray-500" />
                 </div>
-                <h2 className="text-xl font-medium text-black mb-2">Access Denied</h2>
+                <h2 className="text-xl font-medium text-[#333c8a] mb-2">Access Denied</h2>
                 <p className="text-gray-500 mb-6 max-w-md mx-auto">
                     You have reached the maximum view limit for this lesson ({viewCount}/{maxViews} views used).
                 </p>

@@ -14,7 +14,7 @@ export function CoursesList({ courses, maxItems = 4 }: CoursesListProps) {
 
     return (
         <div className="mt-12 pt-8 border-t border-gray-200">
-            <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-6">
+            <h2 className="text-sm font-medium text-black uppercase tracking-wide mb-6">
                 Your courses
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -45,7 +45,7 @@ function CourseCard({ course }: CourseCardProps) {
                 )}
             </div>
             <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-medium text-black truncate group-hover:underline">{course.title}</h3>
+                <h3 className="text-sm font-medium text-[#333c8a] truncate group-hover:underline">{course.title}</h3>
                 <div className="flex items-center gap-2 mt-2">
                     <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
                         <div
@@ -53,7 +53,7 @@ function CourseCard({ course }: CourseCardProps) {
                             style={{ width: `${course.progress}%` }}
                         />
                     </div>
-                    <span className="text-xs text-gray-500">{course.progress}%</span>
+                    <span className="text-xs text-black">{course.progress}%</span>
                 </div>
             </div>
         </Link>

@@ -9,10 +9,10 @@ export default function DashboardHeader({
 }: DashboardHeaderProps) {
   return (
     <div className="mb-10">
-      <h1 className="text-2xl font-normal text-neutral-800 mb-1">
+      <h1 className="text-2xl font-normal text-[#333c8a] mb-1">
         {title}
       </h1>
-      <p className="text-neutral-400 text-sm font-light">
+      <p className="text-black text-sm font-light">
         {subtitle}
       </p>
     </div>
