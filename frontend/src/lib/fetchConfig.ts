@@ -66,9 +66,34 @@ export const TokenManager = {
     localStorage.setItem("token", token);
     localStorage.setItem("sessionToken", sessionToken);
 
+    // DEBUG: Log token setting
+    const isSecure = window.location.protocol === 'https:';
+    const hostname = window.location.hostname;
+    console.log(`[AUTH DEBUG] Setting tokens`);
+    console.log(`[AUTH DEBUG] Protocol: ${window.location.protocol}`);
+    console.log(`[AUTH DEBUG] Hostname: ${hostname}`);
+    console.log(`[AUTH DEBUG] isSecure (HTTPS): ${isSecure}`);
+    console.log(`[AUTH DEBUG] Token (first 20 chars): ${token.substring(0, 20)}...`);
+
     // Set cookies for server-side access
-    document.cookie = `token=${token}; path=/; max-age=604800; SameSite=Lax`;
-    document.cookie = `sessionToken=${sessionToken}; path=/; max-age=604800; SameSite=Lax`;
+    // Use Secure flag on HTTPS, and SameSite=Lax
+    const cookieBase = `path=/; max-age=604800; SameSite=Lax`;
+    const cookieSuffix = isSecure ? `; Secure` : '';
+    
+    const tokenCookie = `token=${token}; ${cookieBase}${cookieSuffix}`;
+    const sessionCookie = `sessionToken=${sessionToken}; ${cookieBase}${cookieSuffix}`;
+    
+    console.log(`[AUTH DEBUG] Token cookie string: token=<redacted>; ${cookieBase}${cookieSuffix}`);
+    console.log(`[AUTH DEBUG] Session cookie string: sessionToken=<redacted>; ${cookieBase}${cookieSuffix}`);
+    
+    document.cookie = tokenCookie;
+    document.cookie = sessionCookie;
+    
+    // Verify cookies were set
+    setTimeout(() => {
+      console.log(`[AUTH DEBUG] Cookies after setting: ${document.cookie}`);
+      console.log(`[AUTH DEBUG] Token in localStorage: ${localStorage.getItem('token') ? 'YES' : 'NO'}`);
+    }, 100);
   },
 
   clearTokens: (): void => {

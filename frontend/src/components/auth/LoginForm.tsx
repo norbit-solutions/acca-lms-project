@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { Button, Input } from "@/components/ui";
 import { useAuthStore } from "@/lib/store";
-import { Input, Button } from "@/components/ui";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -22,15 +22,29 @@ export default function LoginForm() {
     setError("");
     setLoading(true);
 
+    console.log(`[LOGIN DEBUG] Form submitted with email: ${email}`);
+    
     try {
+      console.log(`[LOGIN DEBUG] Calling login...`);
       await login(email, password);
+      console.log(`[LOGIN DEBUG] Login successful`);
+      
       const currentUser = useAuthStore.getState().user;
+      console.log(`[LOGIN DEBUG] Current user:`, currentUser ? { id: currentUser.id, role: currentUser.role, email: currentUser.email } : 'NO USER');
+      console.log(`[LOGIN DEBUG] Document cookies: ${document.cookie}`);
+      console.log(`[LOGIN DEBUG] localStorage token: ${localStorage.getItem('token') ? 'YES' : 'NO'}`);
+      
       if (currentUser?.role === "admin") {
+        console.log(`[LOGIN DEBUG] User is admin, redirecting to /admin`);
+        console.log(`[LOGIN DEBUG] About to call router.push("/admin")`);
         router.push("/admin");
+        console.log(`[LOGIN DEBUG] router.push("/admin") called`);
       } else {
+        console.log(`[LOGIN DEBUG] User is NOT admin (role: ${currentUser?.role}), redirecting to /dashboard`);
         router.push("/dashboard");
       }
     } catch (err: unknown) {
+      console.log(`[LOGIN DEBUG] Login error:`, err);
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Invalid email or password");
     } finally {
