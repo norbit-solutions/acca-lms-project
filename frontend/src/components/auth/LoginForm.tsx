@@ -36,12 +36,11 @@ export default function LoginForm() {
       
       if (currentUser?.role === "admin") {
         console.log(`[LOGIN DEBUG] User is admin, redirecting to /admin`);
-        console.log(`[LOGIN DEBUG] About to call router.push("/admin")`);
-        router.push("/admin");
-        console.log(`[LOGIN DEBUG] router.push("/admin") called`);
+        console.log(`[LOGIN DEBUG] Using window.location.href for full page navigation`);
+        window.location.href = "/admin";
       } else {
         console.log(`[LOGIN DEBUG] User is NOT admin (role: ${currentUser?.role}), redirecting to /dashboard`);
-        router.push("/dashboard");
+        window.location.href = "/dashboard";
       }
     } catch (err: unknown) {
       console.log(`[LOGIN DEBUG] Login error:`, err);
