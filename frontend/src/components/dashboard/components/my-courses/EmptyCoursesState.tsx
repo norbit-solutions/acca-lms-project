@@ -9,7 +9,10 @@ import { useSocialSafe } from "@/context/SocialContext";
 import { BookIcon } from "@/lib";
 
 export function EmptyCoursesState() {
-    const { whatsappNumber } = useSocialSafe();
+    const { whatsappNumber, whatsappMessage } = useSocialSafe();
+    const whatsappHref = whatsappMessage
+        ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`
+        : `https://wa.me/${whatsappNumber}`;
 
     return (
         <div className="border border-gray-200 rounded-lg p-12 text-center">
@@ -21,7 +24,7 @@ export function EmptyCoursesState() {
                 You haven&apos;t been enrolled in any courses yet. Contact us via WhatsApp to request enrollment.
             </p>
             <a
-                href={`https://wa.me/${whatsappNumber}`}
+                href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors"

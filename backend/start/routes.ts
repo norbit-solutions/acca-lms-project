@@ -141,7 +141,7 @@ router
         router.post('/logout', [AuthController, 'logout'])
         router.get('/me', [AuthController, 'me'])
       })
-      .use(middleware.auth())
+      .use([middleware.auth(), middleware.session()])
   })
   .prefix('/auth')
 
@@ -173,7 +173,7 @@ router
     router.post('/lessons/:id/view', [StudentController, 'startView'])
     router.get('/lessons/:id/view-status', [StudentController, 'viewStatus'])
   })
-  .use(middleware.auth())
+  .use([middleware.auth(), middleware.session()])
 
 /*
 |--------------------------------------------------------------------------
@@ -256,7 +256,7 @@ router
     router.delete('/upload', [AdminUploadsController, 'deleteFile'])
   })
   .prefix('/admin')
-  .use([middleware.auth(), middleware.admin()])
+  .use([middleware.auth(), middleware.session(), middleware.admin()])
 
 // Mux webhook (no auth needed, verified by Mux signature)
 router.post('/webhooks/mux', [AdminLessonsController, 'muxWebhook'])
@@ -267,4 +267,4 @@ router.get('/sse/course/:courseId', [SseController, 'courseUpdates'])
 // Lesson status endpoint (for quick refresh after upload)
 router
   .get('/admin/lessons/:id/status', [SseController, 'lessonStatus'])
-  .use([middleware.auth(), middleware.admin()])
+  .use([middleware.auth(), middleware.session(), middleware.admin()])

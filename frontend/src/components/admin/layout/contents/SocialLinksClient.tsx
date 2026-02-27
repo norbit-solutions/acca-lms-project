@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { adminService } from "@/services";
 import { showError, showSuccess } from "@/lib/toast";
+import { adminService } from "@/services";
+import { useState } from "react";
 
 interface SocialLinks {
     whatsapp: string;
+    whatsappMessage: string;
     facebook: string;
     instagram: string;
     linkedin: string;
@@ -22,11 +23,19 @@ export default function SocialLinksClient({ initialLinks }: SocialLinksClientPro
     const [links, setLinks] = useState<SocialLinks>(initialLinks);
     const [saving, setSaving] = useState(false);
 
+    const sanitizeWhatsAppNumber = (value: string) => value.replace(/\D/g, "");
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
         try {
-            await adminService.createCmsItem("social", links as unknown as Record<string, unknown>);
+            const payload = {
+                ...links,
+                whatsapp: sanitizeWhatsAppNumber(links.whatsapp),
+            };
+
+            await adminService.createCmsItem("social", payload as unknown as Record<string, unknown>);
+            setLinks(payload);
             showSuccess("Social links saved successfully!");
         } catch (error) {
             console.log("Failed to save:", error);
@@ -49,11 +58,27 @@ export default function SocialLinksClient({ initialLinks }: SocialLinksClientPro
                     <input
                         type="text"
                         value={links.whatsapp}
-                        onChange={(e) => setLinks({ ...links, whatsapp: e.target.value })}
+                        onChange={(e) =>
+                            setLinks({
+                                ...links,
+                                whatsapp: sanitizeWhatsAppNumber(e.target.value),
+                            })
+                        }
                         className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"
-                        placeholder="+91 9876543210"
+                        placeholder="919876543210"
                     />
-                    <p className="text-xs text-slate-500 mt-1">Include country code</p>
+                    <p className="text-xs text-slate-500 mt-1">Use digits only with country code (no + or spaces)</p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">WhatsApp Default Message</label>
+                    <textarea
+                        value={links.whatsappMessage}
+                        onChange={(e) => setLinks({ ...links, whatsappMessage: e.target.value })}
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900 min-h-24"
+                        placeholder="Hello, I would like to know more about Learnspire"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Used across the app as the default WhatsApp prefilled message</p>
                 </div>
 
                 <div>

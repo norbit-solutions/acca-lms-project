@@ -1,7 +1,7 @@
-import { create } from "zustand";
-import { authService } from "@/services";
 import { TokenManager } from "@/lib/fetchConfig";
-import type { User, RegisterRequest, AuthStore } from "@/types";
+import { authService } from "@/services";
+import type { AuthStore, RegisterRequest, User } from "@/types";
+import { create } from "zustand";
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
@@ -9,6 +9,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   isAuthenticated: false,
 
   setUser: (user: User | null) => set({ user, isAuthenticated: !!user }),
+  setUnauthenticated: () => set({ user: null, isAuthenticated: false, isLoading: false }),
 
   login: async (email: string, password: string) => {
     const response = await authService.login({ email, password });
@@ -30,7 +31,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   checkAuth: async () => {
-    if (!(await TokenManager.hasToken())) {
+    if (!(await TokenManager.hasValidSession())) {
       set({ isLoading: false, isAuthenticated: false });
       return;
     }

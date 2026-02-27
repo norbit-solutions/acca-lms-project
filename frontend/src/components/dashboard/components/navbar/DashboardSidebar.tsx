@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useSocialSafe } from "@/context/SocialContext";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import LogoutModal from "../LogoutModal";
-import Image from "next/image";
 
 // Simple line icons
 const DashboardIcon = () => (
@@ -57,8 +57,11 @@ export default function DashboardSidebar({
   isCollapsed,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
-  const { whatsappNumber } = useSocialSafe();
+  const { whatsappNumber, whatsappMessage } = useSocialSafe();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const whatsappHref = whatsappMessage
+    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`
+    : `https://wa.me/${whatsappNumber}`;
 
   const menuItems = [
     {
@@ -87,7 +90,7 @@ export default function DashboardSidebar({
     },
     {
       name: "Help & Support",
-      href: `https://wa.me/${whatsappNumber}`,
+      href: whatsappHref,
       icon: HelpIcon,
       active: false,
       external: true,

@@ -110,6 +110,8 @@ export default function HeroSection({
       </div>
 
       {/* Hero Image */}
+      {/* 
+      
       <div
         className="mt-14 md:mt-20 w-full max-w-5xl mx-auto relative"
         data-aos="zoom-in-up"
@@ -124,7 +126,7 @@ export default function HeroSection({
             className="w-full h-full object-cover opacity-90 hover:scale-105 transition-transform duration-700"
           />
 
-          {/* Floating UI Elements (Decorative) */}
+          // Floating UI Elements (Decorative) 
           <div
             className="absolute top-10 left-10 bg-black/80 backdrop-blur text-white p-4 rounded-xl text-sm"
             data-aos="fade-right"
@@ -151,6 +153,7 @@ export default function HeroSection({
           </div>
         </div>
       </div>
+      */}
     </section>
   );
 }

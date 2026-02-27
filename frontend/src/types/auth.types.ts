@@ -69,6 +69,7 @@ export interface AuthActions {
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   setUser: (user: User | null) => void;
+  setUnauthenticated: () => void;
 }
 
 // Combined auth store type

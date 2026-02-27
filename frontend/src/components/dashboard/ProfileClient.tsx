@@ -1,10 +1,10 @@
 "use client";
 
 import { useSocialSafe } from "@/context/SocialContext";
-import Link from "next/link";
-import { useAuthStore } from "@/lib/store";
 import { formatDateString, getInitials } from "@/lib";
+import { useAuthStore } from "@/lib/store";
 import type { EnrolledCourse } from "@/types";
+import Link from "next/link";
 
 interface ProfileClientProps {
     courses: EnrolledCourse[];
@@ -12,7 +12,10 @@ interface ProfileClientProps {
 
 export default function ProfileClient({ courses }: ProfileClientProps) {
     const { user } = useAuthStore();
-    const { whatsappNumber } = useSocialSafe();
+    const { whatsappNumber, whatsappMessage } = useSocialSafe();
+    const whatsappHref = whatsappMessage
+        ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`
+        : `https://wa.me/${whatsappNumber}`;
 
     const completedLessons = courses.reduce((acc, c) => acc + c.completedLessons, 0);
     const totalLessons = courses.reduce((acc, c) => acc + c.lessonsCount, 0);
@@ -142,7 +145,7 @@ export default function ProfileClient({ courses }: ProfileClientProps) {
                         </p>
                     </div>
                     <a
-                        href={`https://wa.me/${whatsappNumber}`}
+                        href={whatsappHref}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center justify-center gap-2 bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors shrink-0"

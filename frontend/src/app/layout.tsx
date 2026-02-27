@@ -30,6 +30,7 @@ export default async function RootLayout({
 }>) {
   const socialData = await cmsService.getSocial<Record<string, string>>().catch(() => null);
   const whatsappNumber = socialData?.content?.whatsapp || "";
+  const whatsappMessage = socialData?.content?.whatsappMessage || "";
 
   return (
     <html lang="en">
@@ -37,7 +38,7 @@ export default async function RootLayout({
         className={`${inter.variable} ${poppins.variable}  antialiased`}
       >
         <AOSProvider>
-          <SocialProvider whatsappNumber={whatsappNumber}>
+          <SocialProvider whatsappNumber={whatsappNumber} whatsappMessage={whatsappMessage}>
             <AuthProvider>{children}</AuthProvider>
           </SocialProvider>
         </AOSProvider>

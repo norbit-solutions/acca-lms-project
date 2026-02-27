@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 interface SocialLinks {
     whatsapp: string;
+    whatsappMessage: string;
     facebook: string;
     instagram: string;
     linkedin: string;
@@ -14,6 +15,7 @@ interface SocialLinks {
 
 const defaultLinks: SocialLinks = {
     whatsapp: "",
+    whatsappMessage: "",
     facebook: "",
     instagram: "",
     linkedin: "",

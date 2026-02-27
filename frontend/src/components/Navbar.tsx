@@ -4,13 +4,16 @@ import { useSocialSafe } from "@/context/SocialContext";
 import { useAuthStore } from "@/lib/store";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const { isAuthenticated, user } = useAuthStore();
-  const { whatsappNumber } = useSocialSafe();
+  const { isAuthenticated, isLoading, user } = useAuthStore();
+  const { whatsappNumber, whatsappMessage } = useSocialSafe();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const contactHref = whatsappMessage
+    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`
+    : `https://wa.me/${whatsappNumber}`;
 
   // Admins go to admin dashboard, students go to user dashboard
   const dashboardUrl = user?.role === "admin" ? "/admin" : "/dashboard";
@@ -57,7 +60,6 @@ export default function Navbar() {
     { href: "#", label: "Home" },
     { href: "#all-courses", label: "Courses" },
     { href: "#mentors", label: "Mentor" },
-    { href: "#benefits", label: "Benefits" },
     { href: "#testimonials", label: "Testimonials" },
   ];
 
@@ -98,7 +100,7 @@ export default function Navbar() {
 
             {/* Desktop Auth Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              {isAuthenticated ? (
+              {isAuthenticated && !isLoading && user ? (
                 <Link
                   href={dashboardUrl}
                   className="bg-[#333c8a] text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#10195c] transition-colors"
@@ -114,7 +116,7 @@ export default function Navbar() {
                     Log In
                   </Link>
                   <Link
-                    href={`https://wa.me/${whatsappNumber}?text=Hello, I would like to know more about Learnspire`}
+                    href={contactHref}
                     target="_blank"
                     className="bg-[#333c8a] text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-[#10195c] transition-colors"
                   >
@@ -210,7 +212,7 @@ export default function Navbar() {
                 transitionDelay: isAnimating ? "250ms" : "0ms",
               }}
             >
-              {isAuthenticated ? (
+              {isAuthenticated && !isLoading && user ? (
                 <Link
                   href={dashboardUrl}
                   onClick={closeMobileMenu}
@@ -228,7 +230,7 @@ export default function Navbar() {
                     Log In
                   </Link>
                   <Link
-                    href={`https://wa.me/${whatsappNumber}?text=Hello, I would like to know more about Learnspire`}
+                    href={contactHref}
                     target="_blank"
                     onClick={closeMobileMenu}
                     className="block text-center bg-black text-white text-sm font-medium py-3 rounded-full hover:bg-gray-800 transition-colors"

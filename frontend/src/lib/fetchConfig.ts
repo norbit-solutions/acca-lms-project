@@ -110,6 +110,15 @@ export const TokenManager = {
     const token = await TokenManager.getToken();
     return !!token;
   },
+
+  hasValidSession: async (): Promise<boolean> => {
+    const [token, sessionToken] = await Promise.all([
+      TokenManager.getToken(),
+      TokenManager.getSessionToken(),
+    ]);
+
+    return !!token && !!sessionToken;
+  },
 };
 
 // Request options type
@@ -170,6 +179,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
     // Handle session expired
     if (errorData.code === "SESSION_INVALID" || response.status === 401) {
       TokenManager.clearTokens();
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("auth:expired"));
+      }
 
       if (typeof window !== "undefined" && response.status === 401) {
         // Only redirect on session invalid, not on failed login

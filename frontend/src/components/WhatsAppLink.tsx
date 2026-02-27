@@ -11,10 +11,11 @@ interface WhatsAppLinkProps {
 }
 
 export default function WhatsAppLink({ message, className, children }: WhatsAppLinkProps) {
-    const { whatsappNumber } = useSocialSafe();
+    const { whatsappNumber, whatsappMessage } = useSocialSafe();
+    const resolvedMessage = message ?? whatsappMessage;
 
-    const href = message
-        ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
+    const href = resolvedMessage
+        ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(resolvedMessage)}`
         : `https://wa.me/${whatsappNumber}`;
 
     return (

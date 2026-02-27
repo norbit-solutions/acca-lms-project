@@ -27,7 +27,7 @@ function getCorsOrigin(): boolean | string | string[] {
 const corsConfig = defineConfig({
   enabled: true,
   origin: getCorsOrigin(),
-  methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   headers: true,
   exposeHeaders: [],
   credentials: true,
